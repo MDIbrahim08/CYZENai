@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { Sparkles, ArrowRight, Trash2, X } from "lucide-react";
 
 const chatResponses: Record<string, string> = {
   phishing: "Phishing is a social engineering attack where attackers send fraudulent messages to trick victims into revealing sensitive information. Look for: suspicious sender addresses, urgent language, misspelled URLs, and requests for personal data. Always verify links before clicking!",
@@ -9,11 +9,12 @@ const chatResponses: Record<string, string> = {
   default: "Great question! Cybersecurity is about protecting systems, networks, and data from digital attacks. Key areas include network security, application security, information security, and disaster recovery. What specific topic would you like to learn more about?",
 };
 
+const INITIAL_MESSAGE = { role: "assistant", text: "Hello! I'm CYZEN. Ask me anything about cybersecurity — phishing, passwords, malware, VPNs, and more!" };
+
 const Chat = () => {
-  const [chatMessages, setChatMessages] = useState<{ role: string; text: string }[]>([
-    { role: "assistant", text: "Hello! I'm CYZEN. Ask me anything about cybersecurity — phishing, passwords, malware, VPNs, and more!" },
-  ]);
+  const [chatMessages, setChatMessages] = useState<{ role: string; text: string }[]>([INITIAL_MESSAGE]);
   const [chatInput, setChatInput] = useState("");
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -29,6 +30,11 @@ const Chat = () => {
       const key = Object.keys(chatResponses).find((k) => msg.includes(k)) || "default";
       setChatMessages((prev) => [...prev, { role: "assistant", text: chatResponses[key] }]);
     }, 600);
+  };
+
+  const clearChat = () => {
+    setChatMessages([INITIAL_MESSAGE]);
+    setShowClearConfirm(false);
   };
 
   return (
@@ -52,9 +58,20 @@ const Chat = () => {
       <div className="relative z-10 w-full max-w-4xl mx-auto flex-1 flex flex-col h-[calc(100vh-8rem)]">
         
         {/* Title Section */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 relative">
           <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight text-white mb-3 drop-shadow-xl">CYZEN Intelligence</h1>
           <p className="text-white/60 text-lg font-medium drop-shadow-md">Your personal cybersecurity advisor.</p>
+          {/* Clear Chat Button */}
+          {chatMessages.length > 1 && (
+            <button
+              onClick={() => setShowClearConfirm(true)}
+              className="absolute right-0 top-1 flex items-center gap-2 text-xs text-white/30 hover:text-red-400 transition-colors group px-3 py-2 rounded-full border border-white/10 hover:border-red-500/30"
+              title="Clear chat"
+            >
+              <Trash2 size={14} className="group-hover:scale-110 transition-transform" />
+              <span>Clear Chat</span>
+            </button>
+          )}
         </div>
 
         {/* Apple Style Curved Glass Chat Container */}
@@ -119,6 +136,33 @@ const Chat = () => {
         </div>
 
       </div>
+
+      {/* Clear Chat Confirmation Modal */}
+      {showClearConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-[#0f0f1a] border border-white/10 rounded-3xl p-8 max-w-sm mx-4 shadow-2xl text-center">
+            <div className="w-14 h-14 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-5">
+              <Trash2 size={26} className="text-red-400" />
+            </div>
+            <h3 className="text-white text-xl font-bold mb-2">Clear Chat History?</h3>
+            <p className="text-white/40 text-sm mb-7 leading-relaxed">All messages will be permanently deleted and the conversation will restart.</p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowClearConfirm(false)}
+                className="flex-1 py-3 rounded-2xl border border-white/10 text-white/60 hover:text-white hover:border-white/20 transition-all text-sm font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={clearChat}
+                className="flex-1 py-3 rounded-2xl bg-red-500 hover:bg-red-400 text-white transition-all text-sm font-bold"
+              >
+                Clear Chat
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
