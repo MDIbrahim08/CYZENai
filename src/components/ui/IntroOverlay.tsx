@@ -14,12 +14,14 @@ export const IntroOverlay = ({ onEnter }: IntroOverlayProps) => {
 
   const startIntro = () => {
     setStage('threat');
-    // Force play on user interaction
+    // Start muted (required for autoplay), then unmute after user interaction
     setTimeout(() => {
       if (videoRef.current) {
+        videoRef.current.muted = false;
+        videoRef.current.volume = 1.0;
         videoRef.current.play().catch(e => console.error("Video play failed:", e));
       }
-    }, 100);
+    }, 150);
   };
 
   useEffect(() => {
