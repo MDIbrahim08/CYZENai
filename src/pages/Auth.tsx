@@ -235,6 +235,8 @@ const Auth = () => {
   const handleGoogleLogin = async () => {
     try {
       setIsLoading(true);
+      // Mark intro as done BEFORE redirecting so it doesn't replay on return
+      sessionStorage.setItem("cyzen-entered", "true");
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {

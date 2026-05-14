@@ -153,9 +153,20 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const AppContent = () => {
+  const { user, loading } = useAuth();
   const [hasEntered, setHasEntered] = useState(() => {
-    return sessionStorage.getItem("cyzen-entered") === "true";
+    // Skip intro if already marked, OR if there's an OAuth hash in the URL
+    return sessionStorage.getItem("cyzen-entered") === "true" || 
+           window.location.hash.includes("access_token");
   });
+
+  // Also skip intro once auth loads and user is confirmed
+  useEffect(() => {
+    if (!loading && user && !hasEntered) {
+      setHasEntered(true);
+      sessionStorage.setItem("cyzen-entered", "true");
+    }
+  }, [user, loading]);
 
   const handleEnter = () => {
     setHasEntered(true);
