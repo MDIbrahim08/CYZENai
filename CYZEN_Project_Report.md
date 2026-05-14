@@ -95,7 +95,7 @@ The CYZEN platform is built as a modern Single Page Application (SPA).
 * **Frontend Framework:** React 18 and Vite for high-performance rendering and rapid building.
 * **Styling:** Tailwind CSS was utilized to create a "liquid-glass" design system, focusing on a dark-mode, premium tech aesthetic with high contrast and micro-animations to enhance user engagement.
 * **State Management & Routing:** React Router DOM manages multi-page navigation seamlessly without page reloads.
-* **Authentication:** Supabase OAuth integration handles secure user sign-ups and sessions.
+* **Authentication:** Google OAuth 2.0 integration via Google Cloud Console and Supabase, providing secure, seamless one-tap authentication for users. This authentication flow was architected and implemented by Mohammed Ibrahim.
 * **Deployment Architecture:** The application was migrated to a fully serverless, client-side architecture for deployment on Netlify. Backend dependencies were replaced with injected `XMLHttpRequest` and `fetch` mocks to ensure all tools function purely within the browser.
 
 ### 4.2 Phishing Detection Engine (Developed by Riyan)
@@ -173,6 +173,10 @@ Running local static HTML files alongside a Flask backend resulted in the browse
 **4. Production Deployment & API Restrictions**
 Deploying the application to Netlify (a static hosting provider) broke tools that originally relied on local Flask backends (`/api/` routes) and exposed API keys (Groq).
 * **Solution:** Ibrahim engineered an advanced client-side mocking system. Using `XMLHttpRequest` and `fetch` interceptors embedded in the HTML, the tools seamlessly simulate backend logic and static AI responses. This entirely removed the requirement for active backend servers and protected sensitive API keys.
+
+**5. Google OAuth & Secure Session Management**
+Implementing a secure authentication flow required careful configuration of Google Cloud credentials and authorized redirect URIs.
+* **Solution:** Ibrahim configured the Google Cloud Console with production-ready OAuth Client IDs and integrated them with Supabase’s authentication middleware. Additionally, a custom session state management system was implemented using `sessionStorage` and URL hash fragments to prevent unauthorized access and maintain user state across the platform's multi-tool architecture.
 
 ---
 
