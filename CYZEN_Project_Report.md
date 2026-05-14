@@ -51,7 +51,7 @@ With the rapid digitization of personal and professional workflows, cyber threat
 
 To address this, we developed **CYZEN (CyberGuard AI)**, a comprehensive, AI-powered cybersecurity platform designed to educate, protect, and guide users. This project represents a fusion of modern web development, data science, machine learning, and cryptography. 
 
-The platform is composed of a responsive, modern web application housing four specialized security tools:
+The platform is composed of a responsive, modern web application housing five specialized security tools:
 1. **Phishing Detection Engine:** A Machine Learning classifier (LightGBM) trained on 164,972 emails to detect malicious intent with 98.31% accuracy.
 2. **Password Security Analyzer:** A 5-layer deep analysis engine utilizing cryptographic hashing, live breach checks (Have I Been Pwned), and pattern recognition.
 3. **Emergency Response Kit:** An AI-powered (LLaMA-3) digital crisis assistant that provides immediate, personalized, and safety-validated mitigation plans.
