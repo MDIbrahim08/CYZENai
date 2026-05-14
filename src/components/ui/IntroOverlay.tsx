@@ -91,8 +91,10 @@ export const IntroOverlay = ({ onEnter }: IntroOverlayProps) => {
           >
             <video 
               ref={videoRef}
+              autoPlay
               playsInline 
               muted
+              loop={false}
               className="absolute inset-0 w-full h-full object-cover"
               onEnded={() => {
                 setStage('solution');
