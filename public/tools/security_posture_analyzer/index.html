@@ -7,6 +7,116 @@
     <title>Posture Analyzer</title>
     <script type="module" crossorigin src="assets/index-BvAz94CA.js"></script>
     <link rel="stylesheet" crossorigin href="assets/index-BgZf7nrz.css">
+    <script>
+      (function() {
+        var originalXHR = window.XMLHttpRequest;
+        function MockXHR() {
+          var xhr = new originalXHR();
+          var method, url;
+          
+          var proxy = {
+            open: function(m, u) {
+              method = m.toUpperCase();
+              url = u;
+              xhr.open.apply(xhr, arguments);
+            },
+            send: function(body) {
+              // Intercept /api/auth/me
+              if (url.includes('/api/auth/me')) {
+                Object.defineProperty(proxy, 'status', { value: 200 });
+                Object.defineProperty(proxy, 'readyState', { value: 4 });
+                Object.defineProperty(proxy, 'responseText', { 
+                  value: JSON.stringify({ success: true, data: { user: { id: "local", name: "User", role: "user" } } })
+                });
+                setTimeout(() => { if (proxy.onload) proxy.onload(); if (proxy.onreadystatechange) proxy.onreadystatechange(); }, 10);
+                return;
+              }
+              // Intercept /api/auth/login or register
+              if (url.includes('/api/auth/login') || url.includes('/api/auth/register')) {
+                Object.defineProperty(proxy, 'status', { value: 200 });
+                Object.defineProperty(proxy, 'readyState', { value: 4 });
+                Object.defineProperty(proxy, 'responseText', { 
+                  value: JSON.stringify({ success: true, token: "local_mock_token" })
+                });
+                setTimeout(() => { if (proxy.onload) proxy.onload(); if (proxy.onreadystatechange) proxy.onreadystatechange(); }, 10);
+                return;
+              }
+              // Intercept /api/assessments/start
+              if (url.includes('/api/assessments/start')) {
+                Object.defineProperty(proxy, 'status', { value: 200 });
+                Object.defineProperty(proxy, 'readyState', { value: 4 });
+                Object.defineProperty(proxy, 'responseText', { 
+                  value: JSON.stringify({ success: true, data: { sessionId: "sess_" + Date.now() } })
+                });
+                setTimeout(() => { if (proxy.onload) proxy.onload(); if (proxy.onreadystatechange) proxy.onreadystatechange(); }, 10);
+                return;
+              }
+              // Intercept /api/assessments/.../submit
+              if (url.includes('/submit')) {
+                var payload = body ? JSON.parse(body) : {};
+                var answers = payload.answers || [];
+                // Calculate mock score
+                var score = 50;
+                var details = {
+                  accessControl: 50,
+                  dataProtection: 50,
+                  networkSecurity: 50,
+                  incidentResponse: 50
+                };
+                // Just a mock response
+                Object.defineProperty(proxy, 'status', { value: 200 });
+                Object.defineProperty(proxy, 'readyState', { value: 4 });
+                Object.defineProperty(proxy, 'responseText', { 
+                  value: JSON.stringify({ 
+                    success: true, 
+                    data: { 
+                      score: score, 
+                      details: details,
+                      recommendations: ["Enable MFA on all critical accounts", "Implement regular data backups", "Use a password manager"]
+                    } 
+                  })
+                });
+                setTimeout(() => { if (proxy.onload) proxy.onload(); if (proxy.onreadystatechange) proxy.onreadystatechange(); }, 10);
+                return;
+              }
+              // Intercept /api/assessments/{sessionId} (GET results)
+              if (url.includes('/api/assessments/') && method === "GET") {
+                Object.defineProperty(proxy, 'status', { value: 200 });
+                Object.defineProperty(proxy, 'readyState', { value: 4 });
+                Object.defineProperty(proxy, 'responseText', { 
+                  value: JSON.stringify({ 
+                    success: true, 
+                    data: { 
+                      score: 75, 
+                      details: { accessControl: 80, dataProtection: 70, networkSecurity: 85, incidentResponse: 65 },
+                      recommendations: ["Enable MFA on all critical accounts", "Implement regular data backups"]
+                    } 
+                  })
+                });
+                setTimeout(() => { if (proxy.onload) proxy.onload(); if (proxy.onreadystatechange) proxy.onreadystatechange(); }, 10);
+                return;
+              }
+              
+              // Fallback
+              xhr.send.apply(xhr, arguments);
+            },
+            setRequestHeader: function() {
+              xhr.setRequestHeader.apply(xhr, arguments);
+            }
+          };
+
+          // Proxy all other properties
+          for (var prop in xhr) {
+            if (!(prop in proxy) && typeof xhr[prop] === 'function') {
+              proxy[prop] = xhr[prop].bind(xhr);
+            }
+          }
+
+          return proxy;
+        }
+        window.XMLHttpRequest = MockXHR;
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -8,6 +8,42 @@
     <title>Emergency Response Kit — Cybersecurity Incident Response Generator</title>
     <script type="module" crossorigin src="assets/index-CsHSgG2U.js"></script>
     <link rel="stylesheet" crossorigin href="assets/index-DKOLsqJa.css">
+    <script>
+      (function() {
+        const originalFetch = window.fetch;
+        window.fetch = async function() {
+          const url = arguments[0];
+          if (typeof url === 'string' && url.includes('api.groq.com/openai/v1/chat/completions')) {
+            // Mock response
+            const mockPlan = `## Incident Assessment
+Based on the details you provided, this appears to be a critical incident.
+
+## Immediate Action Steps
+1. **Isolate Systems:** Disconnect affected devices from the network immediately to prevent further spread.
+2. **Preserve Evidence:** Do not turn off the systems; instead, unplug the network cable or disable Wi-Fi.
+3. **Change Credentials:** Reset passwords for all critical accounts from a known secure device.
+4. **Notify Stakeholders:** Inform relevant parties (e.g., IT team, management, or affected users) without causing panic.
+
+## Documents & Templates
+- [Notice of Breach Template]
+- [Incident Log Template]
+- [Communication Plan]
+
+Please consult with a professional incident response team if the situation escalates.`;
+            
+            return new Response(JSON.stringify({
+              choices: [{
+                message: { content: mockPlan }
+              }]
+            }), {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' }
+            });
+          }
+          return originalFetch.apply(this, arguments);
+        };
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

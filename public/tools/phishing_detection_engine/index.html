@@ -177,23 +177,93 @@
         resultDiv.innerHTML = '<div class="loading">Analyzing your email, please wait...</div>';
 
         try {
-            const response = await fetch('http://localhost:5001/analyze', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email_text: emailText })
-            });
+            // Simulate network delay
+            await new Promise(resolve => setTimeout(resolve, 800));
 
-            const data = await response.json();
+            // Client-side heuristics
+            const lowerText = emailText.toLowerCase();
+            let score = 0;
+            let red_flags = [];
+            let warnings = [];
+            let safe_signals = [];
 
-            if (!data.success) {
-                resultDiv.innerHTML = `<div class="error-box">❌ Error: ${data.error}</div>`;
-                return;
+            // 1. Urgency
+            if (/(urgent|immediate|action required|suspended|blocked|limited time|verify now)/.test(lowerText)) {
+                score += 35;
+                red_flags.push({ flag: "Urgent Language", detail: "Scammers create a false sense of urgency so you act without thinking." });
             }
 
-            renderResult(data.analysis);
+            // 2. Suspicious Links
+            if (/(bit\.ly|t\.co|goo\.gl|tinyurl\.com|ow\.ly|is\.gd|click here|verify your account)/.test(lowerText)) {
+                score += 30;
+                red_flags.push({ flag: "Suspicious or Hidden Links", detail: "Contains URL shorteners or generic 'Click Here' links often used to hide malicious domains." });
+            } else if (/https:\/\/[a-z0-9.-]+\.(com|org|net|edu|gov|io)/.test(lowerText)) {
+                safe_signals.push({ flag: "Standard URL Format", detail: "Contains standard, transparent URLs." });
+            }
+
+            // 3. Sensitive Information Request
+            if (/(password|ssn|social security|credit card|bank account|cvv|pin)/.test(lowerText)) {
+                score += 40;
+                red_flags.push({ flag: "Requests Sensitive Info", detail: "Legitimate organizations will rarely ask for your password or SSN via email." });
+            }
+
+            // 4. Generic Greetings
+            if (/(dear customer|dear user|valued member|hello there|dear sir\/madam)/.test(lowerText)) {
+                score += 15;
+                warnings.push({ flag: "Generic Greeting", detail: "Legitimate companies usually address you by your real name." });
+            }
+
+            // 5. Poor Spelling / Grammar
+            if (/(accountt|verifi|succesfully|payement|kindly|informations)/.test(lowerText)) {
+                score += 15;
+                warnings.push({ flag: "Poor Grammar/Spelling", detail: "Professional emails rarely contain obvious spelling mistakes." });
+            }
+
+            let verdict = "SAFE";
+            let confidence = "High";
+            let summary = "This email appears to be safe. No obvious phishing indicators were detected.";
+            let what_to_do = ["You can safely interact with this email.", "Always remain cautious when clicking unexpected links."];
+
+            if (score > 60) {
+                verdict = "PHISHING";
+                confidence = "High";
+                summary = "Critical alert! This email exhibits strong characteristics of a phishing attack.";
+                what_to_do = ["Do NOT click any links.", "Do NOT download any attachments.", "Mark this email as Spam or Phishing in your email client.", "Delete the email immediately."];
+            } else if (score > 30) {
+                verdict = "SUSPICIOUS";
+                confidence = "Medium";
+                summary = "Exercise caution. This email has several suspicious indicators.";
+                what_to_do = ["Verify the sender's email address carefully.", "Do not click links; type the company's website directly into your browser.", "Contact the organization directly to verify the email's authenticity."];
+            } else if (score > 0) {
+                verdict = "LIKELY SAFE";
+                confidence = "Low";
+                summary = "This email is likely safe, but contains some minor warnings.";
+                what_to_do = ["Ensure the sender's email address matches the company domain.", "Check links by hovering over them before clicking."];
+            } else {
+                safe_signals.push({ flag: "No Threat Signatures", detail: "Passed all heuristic checks without triggering threat rules." });
+            }
+
+            const analysis = {
+                verdict,
+                risk_score: Math.min(score, 100),
+                confidence,
+                summary,
+                red_flags,
+                warnings,
+                safe_signals,
+                what_to_do,
+                stats: {
+                    total_red_flags: red_flags.length,
+                    total_warnings: warnings.length,
+                    total_safe_signals: safe_signals.length
+                }
+            };
+
+            renderResult(analysis);
 
         } catch (err) {
-            resultDiv.innerHTML = `<div class="error-box">❌ Could not connect to the server. Is Flask running?</div>`;
+            resultDiv.innerHTML = `<div class="error-box">❌ An error occurred during analysis.</div>`;
+            console.error(err);
         } finally {
             btn.disabled    = false;
             btn.textContent = '🔍 Analyze Email';

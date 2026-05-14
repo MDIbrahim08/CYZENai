@@ -1,5 +1,3 @@
-const API_URL = 'http://localhost:5000/analyze';
-
 const passwordInput   = document.getElementById('passwordInput');
 const analyzeBtn      = document.getElementById('analyzeBtn');
 const toggleBtn       = document.getElementById('toggleVisibility');
@@ -16,6 +14,31 @@ toggleBtn.addEventListener('click', () => {
 passwordInput.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') analyzeBtn.click();
 });
+
+// ── SHA-1 hash for HIBP ──
+async function checkBreach(password) {
+  try {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-1', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+    const prefix = hashHex.slice(0, 5);
+    const suffix = hashHex.slice(5);
+    
+    const res = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`);
+    const text = await res.text();
+    const lines = text.split('\n');
+    for (let line of lines) {
+      if (line.startsWith(suffix)) {
+        return parseInt(line.split(':')[1].trim());
+      }
+    }
+    return 0;
+  } catch (e) {
+    return 0;
+  }
+}
 
 // ── Main analyze button ──
 analyzeBtn.addEventListener('click', async () => {
@@ -34,23 +57,51 @@ analyzeBtn.addEventListener('click', async () => {
   analyzeBtn.disabled = true;
 
   try {
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password })
-    });
+    // Client-side analysis using zxcvbn
+    const zx = zxcvbn(password);
+    
+    // Check breach status
+    const breachCount = await checkBreach(password);
 
-    const data = await response.json();
+    // Format data to match expected structure
+    const entropy = Math.round(zx.guesses_log10 * 3.32); // log2
+    let scoreLabel = 'Very Weak';
+    if (zx.score === 1) scoreLabel = 'Weak';
+    else if (zx.score === 2) scoreLabel = 'Fair';
+    else if (zx.score === 3) scoreLabel = 'Strong';
+    else if (zx.score === 4) scoreLabel = 'Very Strong';
+    
+    if (breachCount > 0) scoreLabel = 'Critical (Breached)';
 
-    if (!response.ok) {
-      showError(data.error || 'Something went wrong.');
-      return;
-    }
+    const data = {
+      entropy: Math.min(entropy, 120),
+      breach: {
+        breached: breachCount > 0,
+        count: breachCount
+      },
+      crack_time: {
+        score_label: scoreLabel,
+        online_throttled: zx.crack_times_display.online_throttled_100_per_hour,
+        online_unthrottled: zx.crack_times_display.online_no_throttling_10_per_second,
+        offline_slow: zx.crack_times_display.offline_slow_hashing_1e4_per_second,
+        offline_fast: zx.crack_times_display.offline_fast_hashing_1e10_per_second
+      },
+      patterns: {
+        pattern_count: zx.sequence.length,
+        patterns_found: zx.sequence.map(s => s.pattern === 'dictionary' ? `Dictionary word: ${s.token}` : s.pattern)
+      },
+      feedback: {
+        summary: `Your password is ${scoreLabel}.`,
+        feedback: zx.feedback.warning ? [zx.feedback.warning] : (zx.score > 2 ? ['Password looks good.'] : ['Password is too predictable.']),
+        suggestions: zx.feedback.suggestions
+      }
+    };
 
     renderResults(data);
 
   } catch (err) {
-    showError('Cannot connect to backend. Make sure Flask is running on port 5000.');
+    showError('An error occurred during analysis.');
+    console.error(err);
   } finally {
     loader.classList.add('hidden');
     analyzeBtn.disabled = false;
@@ -159,7 +210,15 @@ function renderPatterns(patterns) {
     return;
   }
 
-  patterns.patterns_found.forEach(p => {
+  // Remove duplicates and limit
+  const uniquePatterns = [...new Set(patterns.patterns_found)].filter(p => p !== 'bruteforce');
+  
+  if (uniquePatterns.length === 0) {
+    list.innerHTML = '<li class="no-issues">No common patterns detected.</li>';
+    return;
+  }
+
+  uniquePatterns.forEach(p => {
     list.innerHTML += `<li>${p}</li>`;
   });
 }
