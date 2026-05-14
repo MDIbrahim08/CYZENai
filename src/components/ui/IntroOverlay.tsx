@@ -10,36 +10,37 @@ interface IntroOverlayProps {
 export const IntroOverlay = ({ onEnter }: IntroOverlayProps) => {
   const [stage, setStage] = useState<'welcome' | 'threat' | 'solution'>('welcome');
   const [showButton, setShowButton] = useState(false);
+  const [videoError, setVideoError] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const startIntro = () => {
     setStage('threat');
-    // We'll let the video autoplay once stage changes and it renders
   };
 
   useEffect(() => {
     if (stage === 'threat') {
+      // Auto-transition to solution if video fails or as a safety fallback
       const threatTimer = setTimeout(() => {
         setStage('solution');
-      }, 4000);
+      }, videoError ? 1000 : 4000);
 
       const buttonTimer = setTimeout(() => {
         setShowButton(true);
-      }, 7000);
+      }, videoError ? 2000 : 6000);
 
       return () => {
         clearTimeout(threatTimer);
         clearTimeout(buttonTimer);
       };
     }
-  }, [stage]);
+  }, [stage, videoError]);
 
   return (
     <motion.div 
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 1, ease: "easeInOut" }}
-      className="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center overflow-hidden"
+      className="fixed inset-0 z-[100] bg-[#0a0a0f] flex flex-col items-center justify-center overflow-hidden"
       style={{ fontFamily: "'Architects Daughter', cursive" }}
     >
       <style>
@@ -58,16 +59,16 @@ export const IntroOverlay = ({ onEnter }: IntroOverlayProps) => {
             exit={{ opacity: 0 }}
             className="relative z-20 flex flex-col items-center gap-8 text-center"
           >
-            <div className="p-6 rounded-3xl bg-cyan-50 border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
-              <Shield size={64} className="text-cyan-600" />
+            <div className="p-6 rounded-3xl bg-cyan-500/10 border-4 border-cyan-500/30 shadow-[8px_8px_0px_0px_rgba(34,211,238,0.2)]">
+              <Shield size={64} className="text-cyan-400" />
             </div>
             <div className="space-y-2">
-              <h1 className="text-5xl font-black text-black doodle-font">WELCOME TO CYZEN</h1>
-              <p className="text-black/40 text-lg doodle-font tracking-widest">ENCRYPTED CONNECTION STABLISHED</p>
+              <h1 className="text-5xl font-black text-white doodle-font">WELCOME TO CYZEN</h1>
+              <p className="text-cyan-400/60 text-lg doodle-font tracking-widest uppercase">Encrypted Connection Established</p>
             </div>
             <button 
               onClick={startIntro}
-              className="px-12 py-4 bg-black text-white rounded-2xl font-bold text-xl doodle-font hover:scale-105 active:scale-95 transition-all shadow-[0_10px_30px_rgba(0,0,0,0.3)]"
+              className="px-12 py-4 bg-white text-black rounded-2xl font-bold text-xl doodle-font hover:scale-105 active:scale-95 transition-all shadow-[0_10px_30px_rgba(255,255,255,0.1)]"
             >
               ENTER SYSTEM
             </button>
@@ -82,19 +83,24 @@ export const IntroOverlay = ({ onEnter }: IntroOverlayProps) => {
             animate={{ opacity: 1 }}
             className="absolute inset-0 w-full h-full"
           >
-            <video 
-              ref={videoRef}
-              autoPlay 
-              playsInline 
-              className="absolute inset-0 w-full h-full object-cover"
-              onEnded={() => {
-                // Ensure solution stage is active when video ends
-                setStage('solution');
-                setShowButton(true);
-              }}
-            >
-              <source src="/intro.mp4" type="video/mp4" />
-            </video>
+            {!videoError ? (
+              <video 
+                ref={videoRef}
+                autoPlay 
+                muted
+                playsInline 
+                onError={() => setVideoError(true)}
+                className="absolute inset-0 w-full h-full object-cover opacity-60"
+                onEnded={() => {
+                  setStage('solution');
+                  setShowButton(true);
+                }}
+              >
+                <source src="/intro.mp4" type="video/mp4" />
+              </video>
+            ) : (
+              <div className="absolute inset-0 bg-gradient-to-b from-red-950/20 to-black" />
+            )}
 
             {/* Overlays */}
             <AnimatePresence mode="wait">
@@ -106,7 +112,7 @@ export const IntroOverlay = ({ onEnter }: IntroOverlayProps) => {
                   exit={{ opacity: 0 }}
                   className="absolute inset-0 flex items-center justify-center z-10"
                 >
-                  <div className="bg-red-500 text-white px-6 py-2 rounded-lg rotate-[-2deg] shadow-lg inline-block text-xl font-bold border-2 border-black doodle-font">
+                  <div className="bg-red-500 text-white px-8 py-3 rounded-xl rotate-[-2deg] shadow-[0_0_50px_rgba(239,68,68,0.4)] inline-block text-2xl font-bold border-2 border-white/20 doodle-font animate-pulse">
                     THREAT DETECTED!
                   </div>
                 </motion.div>
@@ -120,17 +126,17 @@ export const IntroOverlay = ({ onEnter }: IntroOverlayProps) => {
                   <motion.div
                     initial={{ y: -20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    className="bg-cyan-100 text-cyan-800 px-4 py-1 rounded-full border border-cyan-300 text-xs font-bold tracking-[0.2em] doodle-font"
+                    className="bg-cyan-500/10 text-cyan-400 px-6 py-2 rounded-full border border-cyan-500/30 text-sm font-bold tracking-[0.2em] doodle-font"
                   >
                     SYSTEM SECURED // THREAT NEUTRALIZED
                   </motion.div>
 
-                  <div className="flex flex-col items-center gap-4 w-full max-w-sm">
+                  <div className="flex flex-col items-center gap-6 w-full max-w-sm">
                     <motion.p 
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.5 }}
-                      className="text-black/70 text-2xl sm:text-3xl font-bold italic doodle-font"
+                      className="text-white/80 text-3xl sm:text-4xl font-bold italic doodle-font"
                     >
                       Your Digital Guardian
                     </motion.p>
@@ -140,7 +146,7 @@ export const IntroOverlay = ({ onEnter }: IntroOverlayProps) => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         onClick={onEnter}
-                        className="w-full group relative flex items-center justify-center gap-3 px-10 py-5 rounded-2xl bg-black text-white font-bold text-xl transition-all hover:scale-[1.02] active:scale-[0.98] border-b-8 border-gray-800 shadow-[0_20px_50px_rgba(0,0,0,0.3)]"
+                        className="w-full group relative flex items-center justify-center gap-3 px-10 py-5 rounded-2xl bg-white text-black font-bold text-xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-[0_20px_50px_rgba(255,255,255,0.1)]"
                       >
                         <span className="doodle-font tracking-wide">GET STARTED</span>
                         <ChevronRight size={24} className="group-hover:translate-x-1 transition-transform" />
@@ -153,6 +159,12 @@ export const IntroOverlay = ({ onEnter }: IntroOverlayProps) => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <div className="absolute inset-0 pointer-events-none opacity-30 mix-blend-overlay bg-[url('https://www.transparenttextures.com/patterns/paper.png')]" />
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black via-transparent to-black/40" />
+    </motion.div>
+  );
+};
 
       <div className="absolute inset-0 pointer-events-none opacity-20 mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/paper.png')]" />
     </motion.div>
