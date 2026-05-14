@@ -26,7 +26,7 @@ export const IntroOverlay = ({ onEnter }: IntroOverlayProps) => {
 
       const buttonTimer = setTimeout(() => {
         setShowButton(true);
-      }, videoError ? 2000 : 6000);
+      }, 500); // Appear almost instantly
 
       return () => {
         clearTimeout(threatTimer);
