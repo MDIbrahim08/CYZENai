@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Shield, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { TextPressure } from "./TextPressure";
 
 interface IntroOverlayProps {
   onEnter: () => void;
@@ -12,16 +11,15 @@ export const IntroOverlay = ({ onEnter }: IntroOverlayProps) => {
   const [showButton, setShowButton] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  // Called directly on button click — within user gesture context so sound works
   const startIntro = () => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = 0;
+      videoRef.current.volume = 1.0;
+      videoRef.current.muted = false;
+      videoRef.current.play().catch(e => console.error("Video play failed:", e));
+    }
     setStage('threat');
-    // Start muted (required for autoplay), then unmute after user interaction
-    setTimeout(() => {
-      if (videoRef.current) {
-        videoRef.current.muted = false;
-        videoRef.current.volume = 1.0;
-        videoRef.current.play().catch(e => console.error("Video play failed:", e));
-      }
-    }, 150);
   };
 
   useEffect(() => {
@@ -35,7 +33,6 @@ export const IntroOverlay = ({ onEnter }: IntroOverlayProps) => {
 
   useEffect(() => {
     if (stage === 'solution') {
-      // Show button 1 second after solution stage begins
       const buttonTimer = setTimeout(() => {
         setShowButton(true);
       }, 1000);
@@ -44,7 +41,7 @@ export const IntroOverlay = ({ onEnter }: IntroOverlayProps) => {
   }, [stage]);
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 1, ease: "easeInOut" }}
@@ -57,10 +54,27 @@ export const IntroOverlay = ({ onEnter }: IntroOverlayProps) => {
         `}
       </style>
 
-      {/* Stage: Welcome */}
+      {/* 
+        Video is ALWAYS in the DOM so it can be preloaded.
+        We hide it when in welcome stage. This lets us call play()
+        directly in the click handler (user gesture context = sound works).
+      */}
+      <video
+        ref={videoRef}
+        playsInline
+        preload="auto"
+        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${stage === 'welcome' ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+        onEnded={() => {
+          setStage('solution');
+          setShowButton(true);
+        }}
+        src="/intro.mp4"
+      />
+
+      {/* Welcome Stage */}
       <AnimatePresence mode="wait">
         {stage === 'welcome' && (
-          <motion.div 
+          <motion.div
             key="welcome"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -74,7 +88,7 @@ export const IntroOverlay = ({ onEnter }: IntroOverlayProps) => {
               <h1 className="text-5xl font-black text-black doodle-font">WELCOME TO CYZEN</h1>
               <p className="text-black/40 text-lg doodle-font tracking-widest uppercase">Encrypted Connection Established</p>
             </div>
-            <button 
+            <button
               onClick={startIntro}
               className="px-12 py-4 bg-black text-white rounded-2xl font-bold text-xl doodle-font hover:scale-105 active:scale-95 transition-all shadow-[0_10px_30px_rgba(0,0,0,0.3)]"
             >
@@ -83,87 +97,66 @@ export const IntroOverlay = ({ onEnter }: IntroOverlayProps) => {
           </motion.div>
         )}
 
-        {/* Video Stage */}
-        {stage !== 'welcome' && (
-          <motion.div 
-            key="video-content"
+        {/* Threat & Solution Overlays on top of the video */}
+        {stage === 'threat' && (
+          <motion.div
+            key="threat"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="absolute inset-0 w-full h-full"
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 flex items-center justify-center z-10"
           >
-            <video 
-              ref={videoRef}
-              autoPlay
-              playsInline 
-              muted
-              loop={false}
-              className="absolute inset-0 w-full h-full object-cover"
-              onEnded={() => {
-                setStage('solution');
-                setShowButton(true);
-              }}
-              src="/intro.mp4"
-            />
+            <div className="bg-red-500 text-white px-8 py-3 rounded-xl rotate-[-2deg] shadow-lg inline-block text-2xl font-bold border-2 border-black doodle-font">
+              THREAT DETECTED!
+            </div>
+          </motion.div>
+        )}
 
-            {/* Overlays */}
-            <AnimatePresence mode="wait">
-              {stage === 'threat' ? (
-                <motion.div 
-                  key="threat"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="absolute inset-0 flex items-center justify-center z-10"
+        {stage === 'solution' && (
+          <motion.div
+            key="solution"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="absolute inset-0 flex flex-col items-center justify-between h-full py-16 px-6 text-center z-10"
+          >
+            <motion.div
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              className="bg-cyan-100 text-cyan-800 px-6 py-2 rounded-full border border-cyan-300 text-sm font-bold tracking-[0.2em] doodle-font"
+            >
+              SYSTEM SECURED // THREAT NEUTRALIZED
+            </motion.div>
+
+            <div className="flex flex-col items-center gap-6 w-full max-w-sm">
+              <motion.p
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="text-black/70 text-3xl sm:text-4xl font-bold italic doodle-font"
+              >
+                Your Digital Guardian
+              </motion.p>
+
+              {showButton && (
+                <motion.button
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  onClick={onEnter}
+                  className="w-full group flex items-center justify-center gap-3 px-10 py-5 rounded-2xl bg-black text-white font-bold text-xl transition-all hover:scale-[1.02] active:scale-[0.98] border-b-8 border-gray-800 shadow-[0_20px_50px_rgba(0,0,0,0.3)]"
                 >
-                  <div className="bg-red-500 text-white px-8 py-3 rounded-xl rotate-[-2deg] shadow-lg inline-block text-2xl font-bold border-2 border-black doodle-font">
-                    THREAT DETECTED!
-                  </div>
-                </motion.div>
-              ) : (
-                <motion.div 
-                  key="solution"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="absolute inset-0 flex flex-col items-center justify-between h-full py-16 px-6 text-center z-10"
-                >
-                  <motion.div
-                    initial={{ y: -20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    className="bg-cyan-100 text-cyan-800 px-6 py-2 rounded-full border border-cyan-300 text-sm font-bold tracking-[0.2em] doodle-font"
-                  >
-                    SYSTEM SECURED // THREAT NEUTRALIZED
-                  </motion.div>
-
-                  <div className="flex flex-col items-center gap-6 w-full max-w-sm">
-                    <motion.p 
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.5 }}
-                      className="text-black/70 text-3xl sm:text-4xl font-bold italic doodle-font"
-                    >
-                      Your Digital Guardian
-                    </motion.p>
-
-                    {showButton && (
-                      <motion.button
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        onClick={onEnter}
-                        className="w-full group relative flex items-center justify-center gap-3 px-10 py-5 rounded-2xl bg-black text-white font-bold text-xl transition-all hover:scale-[1.02] active:scale-[0.98] border-b-8 border-gray-800 shadow-[0_20px_50px_rgba(0,0,0,0.3)]"
-                      >
-                        <span className="doodle-font tracking-wide">GET STARTED</span>
-                        <ChevronRight size={24} className="group-hover:translate-x-1 transition-transform" />
-                      </motion.button>
-                    )}
-                  </div>
-                </motion.div>
+                  <span className="doodle-font tracking-wide">GET STARTED</span>
+                  <ChevronRight size={24} className="group-hover:translate-x-1 transition-transform" />
+                </motion.button>
               )}
-            </AnimatePresence>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <div className="absolute inset-0 pointer-events-none opacity-20 mix-blend-multiply" style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/paper.png')" }} />
+      <div
+        className="absolute inset-0 pointer-events-none opacity-20 mix-blend-multiply"
+        style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/paper.png')" }}
+      />
     </motion.div>
   );
 };
