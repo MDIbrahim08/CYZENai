@@ -3,13 +3,13 @@ School of Engineering
 Title: CYZEN: AI-Powered Cybersecurity Awareness & Incident Response Platform
 
 Submitted by 
-Mohammed Ibrahim (23UG00192) 
-Riyan (23UG00075) 
+Mohammed Ibrahim (cu23bca0035a) 
+Riyan (cu23bca0058a) 
 
 (Submitted as part of the Project Course – Summative Assessment 2025–26)
 
 Under the guidance of 
-Dr. [Enter Guide Name Here]
+Ashith Kumar Naidu
 
 Course: Bachelor of Computer Applications (B.C.A)
 Project Report 
@@ -19,7 +19,7 @@ School of Engineering
 ***
 
 ## Certificate
-This is to certify that the major project work carried out entitled “CYZEN: AI-Powered Cybersecurity Awareness & Incident Response Platform” submitted to the School of Engineering, Chanakya University in partial fulfilment of the requirements of the degree of Bachelor of Computer Applications in the academic year 2025-2026 is a record of the original work done by Mohammed Ibrahim (SRN: 23UG00192) and Riyan (SRN: 23UG00075) under my supervision and guidance and that this midterm project work has not formed the basis for the award of Bachelor of Computer Application Fellowship or similar title to any candidate of any University. 
+This is to certify that the major project work carried out entitled “CYZEN: AI-Powered Cybersecurity Awareness & Incident Response Platform” submitted to the School of Engineering, Chanakya University in partial fulfilment of the requirements of the degree of Bachelor of Computer Applications in the academic year 2025-2026 is a record of the original work done by Mohammed Ibrahim (SRN: cu23bca0035a) and Riyan (SRN: cu23bca0058a) under my supervision and guidance and that this midterm project work has not formed the basis for the award of Bachelor of Computer Application Fellowship or similar title to any candidate of any University. 
 
 Place: 
 Date: 
@@ -179,7 +179,7 @@ Deploying the application to Netlify (a static hosting provider) broke tools tha
 
 ## 8. Acknowledgement
 
-We would like to express our profound gratitude to our project guide, **Dr. [Enter Guide Name Here]**, for their continuous support, valuable feedback, and encouragement throughout the duration of this project. Their insights into software architecture and machine learning were instrumental in shaping the final outcome of CYZEN.
+We would like to express our profound gratitude to our project guide, **Ashith Kumar Naidu**, for their continuous support, valuable feedback, and encouragement throughout the duration of this project. Their insights into software architecture and machine learning were instrumental in shaping the final outcome of CYZEN.
 
 We also extend our thanks to the faculty of the School of Engineering, Chanakya University, for providing the foundational knowledge and resources necessary to undertake a project of this scale. Finally, we thank our peers and open-source contributors (such as the creators of LightGBM, React, and Have I Been Pwned) whose tools and documentation made this application possible.
 
