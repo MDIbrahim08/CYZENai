@@ -27,15 +27,17 @@ export const IntroOverlay = ({ onEnter }: IntroOverlayProps) => {
       const threatTimer = setTimeout(() => {
         setStage('solution');
       }, 4000);
+      return () => clearTimeout(threatTimer);
+    }
+  }, [stage]);
 
+  useEffect(() => {
+    if (stage === 'solution') {
+      // Show button 1 second after solution stage begins
       const buttonTimer = setTimeout(() => {
         setShowButton(true);
-      }, 5000);
-
-      return () => {
-        clearTimeout(threatTimer);
-        clearTimeout(buttonTimer);
-      };
+      }, 1000);
+      return () => clearTimeout(buttonTimer);
     }
   }, [stage]);
 
@@ -90,6 +92,7 @@ export const IntroOverlay = ({ onEnter }: IntroOverlayProps) => {
             <video 
               ref={videoRef}
               playsInline 
+              muted
               className="absolute inset-0 w-full h-full object-cover"
               onEnded={() => {
                 setStage('solution');
