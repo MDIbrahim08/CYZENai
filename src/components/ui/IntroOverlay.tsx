@@ -160,13 +160,8 @@ export const IntroOverlay = ({ onEnter }: IntroOverlayProps) => {
         )}
       </AnimatePresence>
 
-      <div className="absolute inset-0 pointer-events-none opacity-30 mix-blend-overlay bg-[url('https://www.transparenttextures.com/patterns/paper.png')]" />
+      <div className="absolute inset-0 pointer-events-none opacity-30 mix-blend-overlay" style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/paper.png')" }} />
       <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black via-transparent to-black/40" />
-    </motion.div>
-  );
-};
-
-      <div className="absolute inset-0 pointer-events-none opacity-20 mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/paper.png')]" />
     </motion.div>
   );
 };
