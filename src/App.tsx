@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Link, useLocation, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, useLocation, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Shield, Menu, X, Github, Twitter, Linkedin, LogOut, User } from "lucide-react";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
@@ -6,6 +6,7 @@ import Home from "@/pages/Home";
 import Chat from "@/pages/Chat";
 import Tools from "@/pages/Tools";
 import Auth from "@/pages/Auth";
+import NotFound from "@/pages/NotFound";
 import { TextPressure } from "@/components/ui/TextPressure";
 import { IntroOverlay } from "@/components/ui/IntroOverlay";
 import { AnimatePresence } from "framer-motion";
@@ -14,7 +15,6 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, signOut } = useAuth();
   const location = useLocation();
-  const navigate = useNavigate();
 
   const isAuthPage = location.pathname === "/auth";
   if (isAuthPage) return null;
@@ -132,7 +132,13 @@ const Footer = () => {
   );
 };
 
-import { Navigate } from "react-router-dom";
+// Auth guard for already-logged-in users
+const PublicRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user, loading } = useAuth();
+  if (loading) return null;
+  if (user) return <Navigate to="/" replace />;
+  return <>{children}</>;
+};
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
@@ -185,25 +191,19 @@ const AppContent = () => {
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/auth" element={<Auth />} />
+          <Route path="/auth" element={<PublicRoute><Auth /></PublicRoute>} />
           
           {/* Protected Routes */}
-          <Route 
-            path="/chat" 
-            element={
-              <ProtectedRoute>
-                <Chat />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/tools" 
-            element={
-              <ProtectedRoute>
-                <Tools />
-              </ProtectedRoute>
-            } 
-          />
+          <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+          <Route path="/tools" element={<ProtectedRoute><Tools /></ProtectedRoute>} />
+
+          {/* Catch broken card links */}
+          <Route path="/scenarios" element={<ProtectedRoute><Tools /></ProtectedRoute>} />
+          <Route path="/quiz" element={<ProtectedRoute><Tools /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+
+          {/* 404 */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />
       </div>

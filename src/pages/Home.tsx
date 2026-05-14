@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Bot, Mail, Gamepad2, Lock, Award, ShieldCheck, ArrowRight } from "lucide-react";
 import { FlippingCard } from "@/components/ui/FlippingCard";
+import { useAuth } from "@/contexts/AuthContext";
 
 const BG_VIDEO = "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260511_230229_7c9bc431-46cf-489a-948d-e8144d8eb5d4.mp4";
 
@@ -55,7 +56,6 @@ const features = [
   },
 ];
 
-import { useAuth } from "@/contexts/AuthContext";
 
 const Home = () => {
   const { user } = useAuth();
