@@ -30,6 +30,7 @@ trained_models/
 tool_backends/
 public/downloads/
 *.mp4
+!public/intro.mp4
 *.zip
 *.csv
 *.pt
