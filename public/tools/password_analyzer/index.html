@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Password Analyzer</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="container">
+
+    <header>
+      <div class="header-top">
+        <h1>PASSWORD<br/>ANALYZER</h1>
+        <span class="version">v1.0.0</span>
+      </div>
+      <p class="subtitle">5-layer security analysis</p>
+    </header>
+
+    <div class="input-section">
+      <span class="input-label">Enter password to analyze</span>
+      <div class="input-row">
+        <input
+          type="password"
+          id="passwordInput"
+          placeholder="type your password..."
+          autocomplete="off"
+        />
+        <button id="toggleVisibility" title="Toggle visibility">👁</button>
+      </div>
+      <button id="analyzeBtn">Run Analysis</button>
+    </div>
+
+    <div id="errorMsg" class="error-msg hidden"></div>
+    <div id="loader" class="loader hidden">Analyzing password...</div>
+
+    <div id="results" class="results hidden">
+
+      <!-- 01 Summary -->
+      <div class="card" id="summaryCard">
+        <span class="card-label">01 — Overall verdict</span>
+        <p id="summaryText"></p>
+      </div>
+
+      <!-- 02 Entropy -->
+      <div class="card">
+        <span class="card-label">02 — Password Complexity</span>
+        <div class="entropy-row">
+          <span class="entropy-score" id="entropyScore"></span>
+          <span class="entropy-label" id="entropyLabel"></span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill" id="entropyBar"></div>
+        </div>
+      </div>
+
+      <!-- 03 Breach -->
+      <div class="card">
+        <span class="card-label">03 — Breach check</span>
+        <span class="breach-status" id="breachStatus"></span>
+        <p id="breachText" style="margin-top: 0.4rem; font-size: 0.88rem; color: #888;"></p>
+      </div>
+
+      <!-- 04 Crack Time -->
+      <div class="card">
+        <span class="card-label">04 — Crack time estimates</span>
+        <div class="crack-grid" id="crackGrid"></div>
+      </div>
+
+      <!-- 05 Patterns -->
+      <div class="card">
+        <span class="card-label">05 — Pattern detection</span>
+        <ul class="result-list" id="patternList"></ul>
+      </div>
+
+      <!-- 06 Feedback -->
+      <div class="card">
+        <span class="card-label">06 — Detailed feedback</span>
+        <ul class="result-list" id="feedbackList"></ul>
+      </div>
+
+      <!-- 07 Suggestions -->
+      <div class="card" id="suggestionsCard">
+        <span class="card-label">07 — Suggestions</span>
+        <ul class="result-list suggestions" id="suggestionList"></ul>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
