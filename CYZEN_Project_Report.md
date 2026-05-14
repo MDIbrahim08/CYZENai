@@ -56,6 +56,7 @@ The platform is composed of a responsive, modern web application housing four sp
 2. **Password Security Analyzer:** A 5-layer deep analysis engine utilizing cryptographic hashing, live breach checks (Have I Been Pwned), and pattern recognition.
 3. **Emergency Response Kit:** An AI-powered (LLaMA-3) digital crisis assistant that provides immediate, personalized, and safety-validated mitigation plans.
 4. **Security Posture Analyzer:** An interactive assessment tool that evaluates an organization's or individual's cybersecurity readiness and provides a quantifiable risk score.
+5. **CYZEN Intelligence Chat:** A specialized AI chatbot powered by Groq's Llama-3.3-70B model, acting as a real-time expert advisor for any cybersecurity-related queries.
 
 This project demonstrates a full-stack engineering effort. The underlying Machine Learning models and analysis engines were developed by Riyan, while the overarching web application architecture, deployment, UI/UX design, and client-side integration were developed by Mohammed Ibrahim.
 
@@ -123,6 +124,12 @@ An AI-powered digital crisis assistant relying on the Groq API and LLaMA-3.3-70B
 An interactive diagnostic tool that assesses a user's security hygiene through targeted questionnaires. 
 * Operates fully on the client-side, utilizing intercepted API requests to instantly calculate a quantifiable risk score and generate a mock assessment result without relying on a persistent backend.
 
+### 4.6 CYZEN Intelligence Chat
+A real-time AI assistant integrated into the main platform to provide immediate technical support and security education.
+* **Core Engine:** Powered by the Llama-3.3-70B-Versatile model via the Groq API for ultra-low latency responses.
+* **Contextual Memory:** Designed to maintain conversation history, allowing for nuanced multi-turn dialogues about complex security vulnerabilities.
+* **System Guardrails:** Implements a strict system prompt that constrains the AI to cybersecurity domains, ensuring accurate and safe expert guidance.
+
 ---
 
 ## 5. Results and Discussion
@@ -143,6 +150,9 @@ Leveraging Groq's LPU hardware, full incident response plans (~800 tokens) were 
 
 **4. Web Platform Performance:**
 The migration to a fully client-side architecture removed all server bottlenecks. By injecting API mocks directly into the static `index.html` files, the platform achieved instantaneous load times and eliminated 404/Connection Refused errors on mobile and desktop devices.
+
+**5. CYZEN Intelligence Chat:**
+The integration of the Llama-3.3-70B model via Groq's LPU hardware provided exceptional performance, with average response latencies under 2 seconds. The AI successfully handled complex queries regarding Zero-Day vulnerabilities, VPN configurations, and social engineering tactics, proving its value as a real-time educational resource.
 
 ---
 

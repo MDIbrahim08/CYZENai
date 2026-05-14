@@ -1,19 +1,19 @@
 import { useState, useRef, useEffect } from "react";
 import { Sparkles, ArrowRight, Trash2, X } from "lucide-react";
 
-const chatResponses: Record<string, string> = {
-  phishing: "Phishing is a social engineering attack where attackers send fraudulent messages to trick victims into revealing sensitive information. Look for: suspicious sender addresses, urgent language, misspelled URLs, and requests for personal data. Always verify links before clicking!",
-  password: "A strong password should be 12+ characters with uppercase, lowercase, numbers, and symbols. Never reuse passwords across sites. Use a password manager like Bitwarden or 1Password. Enable 2FA wherever possible!",
-  malware: "Malware is malicious software designed to damage or exploit systems. Types include viruses, worms, trojans, ransomware, and spyware. Protect yourself by keeping software updated, using antivirus, and avoiding suspicious downloads.",
-  vpn: "A VPN (Virtual Private Network) encrypts your internet traffic and hides your IP address. Use a reputable VPN on public WiFi, but remember — a VPN doesn't make you anonymous. It's one layer in a defense-in-depth strategy.",
-  default: "Great question! Cybersecurity is about protecting systems, networks, and data from digital attacks. Key areas include network security, application security, information security, and disaster recovery. What specific topic would you like to learn more about?",
-};
+const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
 
 const INITIAL_MESSAGE = { role: "assistant", text: "Hello! I'm CYZEN. Ask me anything about cybersecurity — phishing, passwords, malware, VPNs, and more!" };
+
+const SYSTEM_PROMPT = {
+  role: "system",
+  content: "You are CYZEN, a professional cybersecurity AI assistant. You provide concise, accurate, and safety-focused advice on cybersecurity topics like phishing, malware, network security, and data protection. Use a helpful but serious and expert tone. If asked about non-security topics, politely steer the conversation back to cybersecurity."
+};
 
 const Chat = () => {
   const [chatMessages, setChatMessages] = useState<{ role: string; text: string }[]>([INITIAL_MESSAGE]);
   const [chatInput, setChatInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
@@ -21,15 +21,46 @@ const Chat = () => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatMessages]);
 
-  const sendChat = () => {
-    if (!chatInput.trim()) return;
-    const msg = chatInput.toLowerCase();
-    setChatMessages((prev) => [...prev, { role: "user", text: chatInput }]);
+  const sendChat = async () => {
+    if (!chatInput.trim() || isLoading) return;
+
+    const userMessage = { role: "user", text: chatInput };
+    setChatMessages((prev) => [...prev, userMessage]);
     setChatInput("");
-    setTimeout(() => {
-      const key = Object.keys(chatResponses).find((k) => msg.includes(k)) || "default";
-      setChatMessages((prev) => [...prev, { role: "assistant", text: chatResponses[key] }]);
-    }, 600);
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${GROQ_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [
+            SYSTEM_PROMPT,
+            ...chatMessages.map(m => ({
+              role: m.role,
+              content: m.text
+            })),
+            { role: "user", content: chatInput }
+          ],
+          temperature: 0.7,
+          max_tokens: 1024,
+        }),
+      });
+
+      const data = await response.json();
+      const assistantText = data.choices[0]?.message?.content || "I'm sorry, I couldn't process that request.";
+      
+      setChatMessages((prev) => [...prev, { role: "assistant", text: assistantText }]);
+    } catch (error) {
+      console.error("Groq API Error:", error);
+      setChatMessages((prev) => [...prev, { role: "assistant", text: "I encountered a technical error. Please check your internet connection and try again." }]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const clearChat = () => {
@@ -95,6 +126,20 @@ const Chat = () => {
                 </div>
               </div>
             ))}
+            
+            {isLoading && (
+              <div className="flex justify-start items-center">
+                <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center mr-3 shrink-0 shadow-inner border border-white/5">
+                   <Sparkles size={14} className="text-white/80 animate-pulse" />
+                </div>
+                <div className="bg-white/[0.08] text-white/40 px-5 py-3.5 rounded-[1.5rem] rounded-tl-sm border border-white/[0.08] flex gap-1">
+                  <div className="w-1.5 h-1.5 rounded-full bg-white/40 animate-bounce [animation-delay:-0.3s]"></div>
+                  <div className="w-1.5 h-1.5 rounded-full bg-white/40 animate-bounce [animation-delay:-0.15s]"></div>
+                  <div className="w-1.5 h-1.5 rounded-full bg-white/40 animate-bounce"></div>
+                </div>
+              </div>
+            )}
+            
             <div ref={chatEndRef} className="h-2" />
           </div>
 
