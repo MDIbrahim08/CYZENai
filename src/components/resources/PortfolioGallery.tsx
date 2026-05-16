@@ -50,10 +50,10 @@ export function PortfolioGallery({
               const distanceFromMiddle = Math.abs(index - middle)
               const staggerOffset = maxHeight - distanceFromMiddle * 20
 
-              const zIndex = isHovered ? 100 : totalVideos - index;
-
               const isHovered = hoveredIndex === index
               const isOtherHovered = hoveredIndex !== null && hoveredIndex !== index
+
+              const zIndex = isHovered ? 100 : totalVideos - index;
 
               // When hovering: hovered card moves to consistent top position, others move to baseline
               const yOffset = isHovered ? -140 : isOtherHovered ? 0 : -staggerOffset
