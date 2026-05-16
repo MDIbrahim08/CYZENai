@@ -12,7 +12,8 @@ import {
   FileSearch,
   Activity,
   ChevronRight,
-  Fingerprint
+  Fingerprint,
+  Download
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
