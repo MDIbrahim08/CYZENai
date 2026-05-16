@@ -46,6 +46,7 @@ const Resources = () => {
   const [videoCategory, setVideoCategory] = useState('All');
   const [textbookCategory, setTextbookCategory] = useState('All');
   const [videoSearch, setVideoSearch] = useState('');
+  const [textbookSearch, setTextbookSearch] = useState('');
   const [selectedVideo, setSelectedVideo] = useState<VideoResource | null>(null);
   const [selectedTextbook, setSelectedTextbook] = useState<TextbookResource | null>(null);
   
