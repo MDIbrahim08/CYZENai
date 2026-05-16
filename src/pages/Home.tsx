@@ -41,11 +41,11 @@ const features = [
   },
   {
     icon: ImageIcon,
-    title: "Dark Web Intel",
-    subtitle: "Threat Intelligence",
-    desc: "Deep-scan underground forums and leaked databases for compromised identities and infrastructure exposure using advanced AI.",
-    image: "https://images.unsplash.com/photo-1614064641938-3bbee52942c7?auto=format&fit=crop&q=80&w=600",
-    path: "/darkweb",
+    title: "OSINT Detective",
+    subtitle: "Identity Investigation",
+    desc: "Perform real-world Open Source Intelligence (OSINT) to track usernames and build professional identity profiles.",
+    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=600",
+    path: "/osint",
   },
 ];
 
