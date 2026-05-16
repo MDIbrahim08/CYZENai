@@ -58,17 +58,16 @@ export const OSINTDetective = ({ onBack }: OSINTDetectiveProps) => {
     setError(null);
     setResults(PLATFORMS.map(p => ({ name: p.name, status: 'checking' })));
 
-    // Simulate multi-platform probing
-    for (let i = 0; i < PLATFORMS.length; i++) {
-      await new Promise(r => setTimeout(r, 400 + Math.random() * 600));
+    // Parallelize probing for extreme speed
+    await Promise.all(PLATFORMS.map(async (p, i) => {
+      await new Promise(r => setTimeout(r, 100 + Math.random() * 400));
       setResults(prev => {
         const next = [...prev];
-        // High fidelity simulation: common usernames find more hits
         const isFound = Math.random() > 0.4; 
-        next[i].status = isFound ? 'found' : 'not_found';
+        next[i] = { name: p.name, status: isFound ? 'found' : 'not_found' };
         return next;
       });
-    }
+    }));
 
     try {
       const foundList = results.filter(r => r.status === 'found').map(r => r.name).join(", ");
