@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Bot, Mail, Gamepad2, Lock, Award, ShieldCheck, ArrowRight } from "lucide-react";
+import { Bot, Mail, Gamepad2, Lock, Award, ShieldCheck, ArrowRight, Image as ImageIcon } from "lucide-react";
 import { FlippingCard } from "@/components/ui/FlippingCard";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { useAuth } from "@/contexts/AuthContext";
@@ -38,6 +38,14 @@ const features = [
     desc: "Validate your knowledge with our comprehensive quiz and get a personalized learning path based on your results.",
     image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=600",
     path: "/quiz",
+  },
+  {
+    icon: ImageIcon,
+    title: "Deepfake Studio",
+    subtitle: "AI Media Forensics",
+    desc: "Generate photorealistic synthetic media to understand how AI constructs deepfakes and learn to spot digital manipulation.",
+    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=600",
+    path: "/deepfake",
   },
 ];
 
