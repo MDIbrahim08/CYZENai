@@ -75,65 +75,56 @@ export const OSINTDetective = ({ onBack }: OSINTDetectiveProps) => {
 
     const foundList = finalResults.filter(r => r.status === 'found').map(r => r.name).join(", ");
 
-    const callAI = async (retryCount = 0): Promise<string> => {
-      try {
-        const response = await fetch(
-          "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3",
-          {
-            headers: { 
-              Authorization: `Bearer ${HUGGINGFACE_API_KEY}`,
-              "Content-Type": "application/json"
-            },
-            method: "POST",
-            body: JSON.stringify({
-              inputs: `<s>[INST] You are a professional OSINT Investigator. 
-              Perform a professional IDENTITY ANALYSIS for the username: "${username}". 
-              
-              FOUND PROFILES: ${foundList || "Multiple hits found across social networks"}
-              
-              GENERATE AN INVESTIGATIVE REPORT WITH THESE SECTIONS:
-              1. **DIGITAL FOOTPRINT SUMMARY**
-              2. **PLATFORM CORRELATION**
-              3. **IDENTITY PROJECTION**
-              4. **SECURITY RISKS**
-              5. **ADVICE FOR THE USER**
-              
-              TONE: Clinical, professional, and slightly "detective" style. [/INST]`,
-              parameters: { max_new_tokens: 1000, temperature: 0.7 }
-            }),
+    const callAI = async (): Promise<string> => {
+      // Try HuggingFace (with 2 retries only if loading)
+      for (let i = 0; i < 2; i++) {
+        try {
+          const response = await fetch(
+            "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3",
+            {
+              headers: { 
+                Authorization: `Bearer ${HUGGINGFACE_API_KEY}`,
+                "Content-Type": "application/json"
+              },
+              method: "POST",
+              body: JSON.stringify({
+                inputs: `<s>[INST] You are a professional OSINT Investigator. 
+                Perform a professional IDENTITY ANALYSIS for the username: "${username}". 
+                FOUND PROFILES: ${foundList || "Multiple hits found across social networks"}
+                GENERATE AN INVESTIGATIVE REPORT with Footprint, Correlation, and Risks. [/INST]`,
+                parameters: { max_new_tokens: 800, temperature: 0.7 }
+              }),
+            }
+          );
+
+          if (response.ok) {
+            const result = await response.json();
+            if (Array.isArray(result) && result.length > 0) {
+              return result[0].generated_text.split("[/INST]")[1] || result[0].generated_text;
+            }
+            if (result.generated_text) return result.generated_text;
           }
-        );
-
-        if (response.status === 503 && retryCount < 3) {
-          // Model is loading, wait and retry
-          await new Promise(r => setTimeout(r, 3000));
-          return callAI(retryCount + 1);
+          
+          if (response.status !== 503) break; // Error other than loading, jump to fallback
+          await new Promise(r => setTimeout(r, 2000)); // Wait for model to load
+        } catch (e) {
+          break; // Connection error, jump to fallback
         }
-
-        if (!response.ok) throw new Error("API_ERROR");
-        const result = await response.json();
-        
-        if (Array.isArray(result) && result.length > 0) {
-          return result[0].generated_text.split("[/INST]")[1] || result[0].generated_text;
-        } else if (result.generated_text) {
-          return result.generated_text;
-        }
-        throw new Error("EMPTY_RESPONSE");
-      } catch (err) {
-        if (retryCount < 1) {
-          // Fallback to Pollinations for 100% reliability
-          const fallBackResponse = await fetch(`https://text.pollinations.ai/prompt/You%20are%20a%20Cyber%20OSINT%20Investigator.%20Generate%20a%20professional%20Identity%20Forensic%20Report%20for%20the%20username%20${encodeURIComponent(username)}.%20Found%20on:%20${foundList}.%20Use%20technical%20forensic%20tone.`);
-          return await fallBackResponse.text();
-        }
-        throw err;
       }
+
+      // ULTIMATE FALLBACK: Pollinations (Always works)
+      const prompt = `You are a Cyber OSINT Investigator. Generate a professional Identity Forensic Report for the username "${username}". Found on: ${foundList}. Sections: 1. Footprint Summary, 2. Interest Correlation, 3. Security Risks, 4. Advice. Use clinical forensic tone.`;
+      const fallBackResponse = await fetch(`https://text.pollinations.ai/prompt/${encodeURIComponent(prompt)}?model=openai`);
+      if (fallBackResponse.ok) return await fallBackResponse.text();
+      
+      throw new Error("INVESTIGATION_FAILED");
     };
 
     try {
       const text = await callAI();
       setReport(text.trim());
     } catch (err) {
-      setError("The intelligence servers are currently overloaded. Please wait 10 seconds and try again.");
+      setError("Digital correlation failed. Please check your connection and try again.");
     } finally {
       setLoading(false);
     }
