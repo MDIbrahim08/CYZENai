@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Eye, EyeOff, CheckCircle2, XCircle, ShieldQuestion, Search, AlertTriangle, Info, ShieldCheck, ArrowLeft, Send, ShieldAlert, History, Download, Activity, Shield, Image as ImageIcon } from "lucide-react";
 import { FlippingCard } from "@/components/ui/FlippingCard";
-import { OSINTDetective } from "@/components/tools/OSINTDetective";
+import OSINTDetective from "@/components/tools/OSINTDetective";
 
 /* ───────── LOGIC HELPERS ───────── */
 function getPasswordStrength(pw: string) {
