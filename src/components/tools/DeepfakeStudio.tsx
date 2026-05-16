@@ -46,7 +46,7 @@ export const DeepfakeStudio = ({ onBack }: { onBack?: () => void }) => {
 
       // FALLBACK: Use Pollinations.ai (Standard GET request, zero CORS issues)
       const randomSeed = Math.floor(Math.random() * 1000000);
-      const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&nologo=true&enhance=true&seed=${randomSeed}`;
+      const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=768&height=768&nologo=true&seed=${randomSeed}`;
       
       // Simply set the URL. The <img> tag in the UI will handle the loading.
       setImageUrl(pollinationsUrl);
