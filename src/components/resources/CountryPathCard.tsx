@@ -14,7 +14,6 @@ export const CountryPathCard = ({ country, index }: CountryPathCardProps) => {
   const gradient = gradients[index % gradients.length];
 
   return (
-  return (
     <Accordion type="single" collapsible className="w-full">
       <AccordionItem value={country.id} className="border-0 mb-4">
         <AccordionTrigger className="bg-[#161b22]/50 backdrop-blur-xl border border-white/5 p-5 rounded-2xl hover:no-underline transition-all duration-300 [&[data-state=open]]:rounded-b-none [&[data-state=open]]:border-emerald-500/30">
