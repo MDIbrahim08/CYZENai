@@ -21,7 +21,7 @@ import {
   Download
 } from "lucide-react";
 
-const HUGGINGFACE_API_KEY = import.meta.env.VITE_HUGGINGFACE_API_KEY;
+const HUGGINGFACE_API_KEY = (import.meta.env && import.meta.env.VITE_HUGGINGFACE_API_KEY) || "";
 
 interface OSINTDetectiveProps {
   onBack: () => void;
@@ -350,12 +350,8 @@ export const OSINTDetective = ({ onBack }: OSINTDetectiveProps) => {
         </div>
       </div>
 
-      <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes scan {
-          0% { transform: translateY(-100%); }
-          100% { transform: translateY(600px); }
-        }
-      `}} />
     </div>
   );
 };
+
+export default OSINTDetective;
