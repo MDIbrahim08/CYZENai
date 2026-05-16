@@ -107,7 +107,6 @@ const Tools = ({ initialTool = null }: ToolsProps) => {
       subtitle: 'System Auditing',
       desc: 'Trained auditing tool that evaluates your system configuration against industry best practices and highlights misconfigurations.',
       image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=600'
-    },
     }
   ];
 
