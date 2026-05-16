@@ -84,13 +84,16 @@ export const DarkWebIntel = ({ onBack }: DarkWebIntelProps) => {
       const result = await response.json();
       
       let text = "";
-      if (Array.isArray(result)) {
-        text = result[0].generated_text.split("assistant<|end_header_id|>")[1] || result[0].generated_text;
-      } else {
+      if (Array.isArray(result) && result.length > 0) {
+        const fullText = result[0].generated_text || "";
+        text = fullText.split("assistant<|end_header_id|>")[1] || fullText;
+      } else if (result.generated_text) {
         text = result.generated_text;
+      } else {
+        throw new Error("Invalid response format");
       }
 
-      setReport(text);
+      setReport(text.trim());
     } catch (err) {
       console.warn("HuggingFace failed, falling back to Pollinations Text...");
       // FALLBACK to Pollinations Text
@@ -258,18 +261,31 @@ export const DarkWebIntel = ({ onBack }: DarkWebIntelProps) => {
 
               {/* Final Report */}
               {report && (
-                <div className="mt-6 p-6 rounded-2xl bg-white/5 border border-white/5 text-white/90 leading-relaxed animate-in fade-in slide-in-from-bottom-4 duration-1000 prose prose-invert prose-red max-w-none">
+                <div className="mt-6 p-6 rounded-2xl bg-white/5 border border-white/5 text-white/90 leading-relaxed animate-in fade-in slide-in-from-bottom-4 duration-1000 max-w-none">
                   <div className="flex items-center gap-3 mb-6 pb-4 border-b border-white/10">
                     <FileSearch className="w-5 h-5 text-red-400" />
                     <h3 className="text-lg font-bold text-white m-0">Forensic Intelligence Report</h3>
                   </div>
-                  {/* We render as markdown simple formatting */}
+                  
                   <div className="space-y-4">
-                    {report.split("\n").map((line, i) => {
-                      if (line.startsWith("**") || line.startsWith("#")) {
-                        return <div key={i} className="text-red-400 font-bold mt-6 first:mt-0">{line.replace(/\*\*|#/g, "")}</div>;
+                    {String(report).split("\n").map((line, i) => {
+                      const trimmed = line.trim();
+                      if (!trimmed) return <div key={i} className="h-2" />;
+                      
+                      if (trimmed.startsWith("**") || trimmed.startsWith("#") || trimmed.startsWith("###")) {
+                        return (
+                          <div key={i} className="text-red-400 font-bold mt-6 first:mt-0 uppercase tracking-wider text-xs">
+                            {trimmed.replace(/\*\*|#/g, "").trim()}
+                          </div>
+                        );
                       }
-                      return <p key={i} className="text-sm opacity-80 m-0">{line}</p>;
+                      
+                      return (
+                        <div key={i} className="flex gap-2 text-sm opacity-80 leading-relaxed">
+                          <span className="text-red-500/40 mt-1.5">•</span>
+                          <span>{trimmed}</span>
+                        </div>
+                      );
                     })}
                   </div>
                   
