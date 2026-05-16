@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Home from "@/pages/Home";
 import Chat from "@/pages/Chat";
 import Tools from "@/pages/Tools";
+import Resources from "@/pages/Resources";
 import Auth from "@/pages/Auth";
 import Blog from "@/pages/Blog";
 import NotFound from "@/pages/NotFound";
@@ -25,6 +26,7 @@ const Navbar = () => {
     { label: "Blog", path: "/blog" },
     { label: "AI Chat", path: "/chat" },
     { label: "Tools", path: "/tools" },
+    { label: "Resources", path: "/resources" },
   ];
 
   return (
@@ -199,6 +201,7 @@ const AppContent = () => {
           <Route path="/blog" element={<Blog />} />
           <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
           <Route path="/tools" element={<ProtectedRoute><Tools /></ProtectedRoute>} />
+          <Route path="/resources" element={<ProtectedRoute><Resources /></ProtectedRoute>} />
 
           {/* Catch broken card links */}
           <Route path="/quiz" element={<ProtectedRoute><Tools initialTool="posture" /></ProtectedRoute>} />
