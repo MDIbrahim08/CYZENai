@@ -60,7 +60,9 @@ export const OSINTDetective = ({ onBack }: OSINTDetectiveProps) => {
     setLoading(true);
     setReport(null);
     setError(null);
-    setResults(PLATFORMS.map(p => ({ name: p.name, status: 'checking' })));
+    // Initialize all platforms to 'checking' immediately to avoid sparse array crashes
+    const initialResults = PLATFORMS.map(p => ({ name: p.name, status: 'checking' as const }));
+    setResults(initialResults);
 
     // Parallelize probing for extreme speed
     const finalResults = await Promise.all(PLATFORMS.map(async (p, i) => {
@@ -70,7 +72,7 @@ export const OSINTDetective = ({ onBack }: OSINTDetectiveProps) => {
       
       setResults(prev => {
         const next = [...prev];
-        next[i] = { name: p.name, status };
+        if (next[i]) next[i] = { name: p.name, status };
         return next;
       });
       
