@@ -1,13 +1,52 @@
 import { useState, useRef, useEffect } from "react";
-import { Sparkles, ArrowRight, Trash2, X } from "lucide-react";
+import { Sparkles, ArrowRight, Trash2, X, ExternalLink, ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
+import mermaid from "mermaid";
+
+mermaid.initialize({
+  startOnLoad: true,
+  theme: "dark",
+  securityLevel: "loose",
+  fontFamily: "Inter, sans-serif",
+});
+
+const Mermaid = ({ chart }: { chart: string }) => {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (ref.current && chart) {
+      ref.current.removeAttribute("data-processed");
+      mermaid.contentLoaded();
+    }
+  }, [chart]);
+
+  return (
+    <div className="mermaid mt-4 bg-white/5 p-4 rounded-2xl border border-white/10" ref={ref}>
+      {chart}
+    </div>
+  );
+};
 
 const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
 
-const INITIAL_MESSAGE = { role: "assistant", text: "Hello! I'm CYZEN. Ask me anything about cybersecurity — phishing, passwords, malware, VPNs, and more!" };
+const INITIAL_MESSAGE = { role: "assistant", text: "Hello! I'm CYZEN. Ask me anything about cybersecurity — phishing, passwords, malware, VPNs, and more! I can also generate flowcharts for you if you ask." };
 
 const SYSTEM_PROMPT = {
   role: "system",
-  content: "You are CYZEN, a professional cybersecurity AI assistant. You provide concise, accurate, and safety-focused advice on cybersecurity topics like phishing, malware, network security, and data protection. Use a helpful but serious and expert tone. If asked about non-security topics, politely steer the conversation back to cybersecurity."
+  content: `You are CYZEN, a professional cybersecurity AI assistant. 
+  
+  CORE CAPABILITIES:
+  1. EXPERT ADVICE: Provide concise, accurate, and safety-focused advice on cybersecurity.
+  2. FLOWCHARTS: If the user asks for a process, flowchart, or diagram, generate it using Mermaid.js syntax. Wrap it in triple backticks like this: \`\`\`mermaid\ngraph TD\nA[Start] --> B[End]\n\`\`\`.
+  3. TOOL SUGGESTIONS: If a user asks about a specific task we have a tool for, suggest it using the format: [[LINK:/path:Label]]. 
+     - For Passwords: [[LINK:/tools:Password Shield]]
+     - For Phishing: [[LINK:/tools:Phishing Scanner]]
+     - For Deepfakes/AI Media: [[LINK:/deepfake:Deepfake Studio]]
+     - For Knowledge Assessment: [[LINK:/quiz:Security Quiz]]
+     - For General Tools: [[LINK:/tools:Toolkit]]
+     - For Articles/Videos: [[LINK:/blog:Cyber Blog]]
+  
+  TONE: Expert, helpful, and concise. Politely steer non-security topics back to cybersecurity.`
 };
 
 const Chat = () => {
@@ -47,7 +86,7 @@ const Chat = () => {
             { role: "user", content: chatInput }
           ],
           temperature: 0.7,
-          max_tokens: 1024,
+          max_tokens: 1536,
         }),
       });
 
@@ -61,6 +100,35 @@ const Chat = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const renderContent = (text: string) => {
+    const parts = text.split(/(```mermaid[\s\S]*?```|\[\[LINK:.*?\]\])/g);
+    
+    return parts.map((part, index) => {
+      if (part.startsWith("```mermaid")) {
+        const chart = part.replace("```mermaid", "").replace("```", "").trim();
+        return <Mermaid key={index} chart={chart} />;
+      }
+      
+      if (part.startsWith("[[LINK:")) {
+        const linkData = part.replace("[[LINK:", "").replace("]]", "");
+        const [path, label] = linkData.split(":");
+        return (
+          <Link 
+            key={index} 
+            to={path} 
+            className="inline-flex items-center gap-2 px-4 py-2 mt-2 mr-2 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl text-cyan-400 font-semibold transition-all group"
+          >
+            <ExternalLink size={14} className="group-hover:scale-110" />
+            {label}
+            <ChevronRight size={14} className="group-hover:translate-x-1" />
+          </Link>
+        );
+      }
+      
+      return <span key={index} className="whitespace-pre-wrap">{part}</span>;
+    });
   };
 
   const clearChat = () => {
@@ -117,12 +185,12 @@ const Chat = () => {
                      <Sparkles size={14} className="text-white/80" />
                   </div>
                 )}
-                <div className={`max-w-[85%] sm:max-w-[75%] px-5 py-3.5 text-[15px] leading-relaxed shadow-sm ${
+                <div className={`max-w-[85%] sm:max-w-[90%] px-5 py-3.5 text-[15px] leading-relaxed shadow-sm ${
                     m.role === "user" 
                       ? "rounded-[1.5rem] rounded-tr-sm bg-white text-black font-medium" 
                       : "rounded-[1.5rem] rounded-tl-sm bg-white/[0.08] text-white/90 border border-white/[0.08]"
                   }`}>
-                  {m.text}
+                  {renderContent(m.text)}
                 </div>
               </div>
             ))}
@@ -148,7 +216,7 @@ const Chat = () => {
             
             {/* Quick Suggestions */}
             <div className="flex overflow-x-auto gap-2 pb-4 hide-scrollbar">
-              {["What is phishing?", "Password tips", "Tell me about malware", "What is a VPN?"].map((q) => (
+              {["Generate a password security flowchart", "Show me the deepfake tool", "Security quiz", "Recent cyber blogs"].map((q) => (
                 <button 
                   key={q} 
                   onClick={() => { setChatInput(q); }} 
@@ -165,7 +233,7 @@ const Chat = () => {
                 value={chatInput} 
                 onChange={(e) => setChatInput(e.target.value)} 
                 onKeyDown={(e) => e.key === "Enter" && sendChat()} 
-                placeholder="Ask CYZEN anything..." 
+                placeholder="Ask CYZEN for flowcharts or tools..." 
                 className="flex-1 bg-transparent px-4 py-2.5 text-[15px] text-white placeholder-white/40 outline-none w-full"
               />
               <button 
