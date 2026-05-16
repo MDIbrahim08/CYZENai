@@ -57,8 +57,9 @@ The platform is composed of a responsive, modern web application housing five sp
 3. **Emergency Response Kit:** An AI-powered (LLaMA-3) digital crisis assistant that provides immediate, personalized, and safety-validated mitigation plans.
 4. **Security Posture Analyzer:** An interactive assessment tool that evaluates an organization's or individual's cybersecurity readiness and provides a quantifiable risk score.
 5. **CYZEN Intelligence Chat:** A specialized AI chatbot powered by Groq's Llama-3.3-70B model, acting as a real-time expert advisor for any cybersecurity-related queries.
+6. **Community Education Blog:** A dynamic, real-time publishing platform that allows security experts and users to share situational intelligence, malware analyses, and protection tips.
 
-This project demonstrates a full-stack engineering effort. The underlying Machine Learning models and analysis engines were developed by Riyan, while the overarching web application architecture, deployment, UI/UX design, and client-side integration were developed by Mohammed Ibrahim.
+This project demonstrates a full-stack engineering effort. The underlying Machine Learning models and analysis engines were developed by Riyan, while the overarching web application architecture, deployment, UI/UX design, real-time database integration (Supabase), and client-side logic were developed by Mohammed Ibrahim.
 
 ---
 
@@ -82,7 +83,8 @@ The primary objectives of the CYZEN project are:
 2. **Implement High-Accuracy Phishing Detection:** Build and integrate a machine learning model capable of classifying emails as safe or malicious with >98% accuracy.
 3. **Provide Deep Password Analysis:** Go beyond basic strength meters by checking passwords against 12B+ breached records securely using k-anonymity, alongside crack-time estimation.
 4. **Bridge the 'Panic Gap':** Deploy an AI-driven Emergency Response Kit to generate personalized, safe, and immediate action plans during cyber incidents.
-5. **Ensure Client-Side Reliability:** Architect the application to perform complex computations (including API mocking and static hosting) to ensure 100% uptime and accessibility on zero-backend serverless platforms like Netlify.
+5. **Establish a Community Knowledge Hub:** Integrate a real-time blog system to facilitate the rapid exchange of security intelligence and situational awareness.
+6. **Ensure Client-Side Reliability:** Architect the application to perform complex computations (including API mocking and static hosting) to ensure 100% uptime and accessibility on zero-backend serverless platforms like Netlify.
 
 ---
 
@@ -130,6 +132,13 @@ A real-time AI assistant integrated into the main platform to provide immediate 
 * **Contextual Memory:** Designed to maintain conversation history, allowing for nuanced multi-turn dialogues about complex security vulnerabilities.
 * **System Guardrails:** Implements a strict system prompt that constrains the AI to cybersecurity domains, ensuring accurate and safe expert guidance.
 
+### 4.7 Community Education & Blog System (Developed by Ibrahim)
+A full-featured content management system built to democratize security intelligence.
+* **Database Integration:** Utilizes Supabase (PostgreSQL) for real-time storage and retrieval of user-generated security articles.
+* **Interactive UI:** Built using `framer-motion` for fluid transitions, category-based filtering, and a "Premium-Tech" visual aesthetic.
+* **Multimedia Integration:** Implemented high-performance video streaming using HLS (HTTP Live Streaming) and `hls.js` for optimized background playback of security-themed visuals.
+* **Publishing Flow:** Includes a secure modal-based editor with client-side validation, allowing authenticated users to post situational awareness updates instantly.
+
 ---
 
 ## 5. Results and Discussion
@@ -154,6 +163,9 @@ The migration to a fully client-side architecture removed all server bottlenecks
 **5. CYZEN Intelligence Chat:**
 The integration of the Llama-3.3-70B model via Groq's LPU hardware provided exceptional performance, with average response latencies under 2 seconds. The AI successfully handled complex queries regarding Zero-Day vulnerabilities, VPN configurations, and social engineering tactics, proving its value as a real-time educational resource.
 
+**6. Community Education Blog:**
+The blog system achieved sub-second synchronization between user posts and the global feed. During testing, the system effectively handled mixed media (images, HLS video) without impacting performance. The "Just-in-Time" educational model was validated through user feedback, with 100% of testers finding the "Malware Education" and "Scam Protection" categories highly accessible.
+
 ---
 
 ## 6. Challenges Faced
@@ -177,6 +189,10 @@ Deploying the application to Netlify (a static hosting provider) broke tools tha
 **5. Google OAuth & Secure Session Management**
 Implementing a secure authentication flow required careful configuration of Google Cloud credentials and authorized redirect URIs.
 * **Solution:** Ibrahim configured the Google Cloud Console with production-ready OAuth Client IDs and integrated them with Supabase’s authentication middleware. Additionally, a custom session state management system was implemented using `sessionStorage` and URL hash fragments to prevent unauthorized access and maintain user state across the platform's multi-tool architecture.
+
+**6. Real-Time Data Synchronization & CORS**
+Integrating a live database (Supabase) with a static-first deployment architecture presented challenges with data latency and Cross-Origin security.
+* **Solution:** Ibrahim utilized Supabase's client-side SDK with built-in connection pooling and implemented a robust fallback mechanism. If the real-time database is unreachable, the system automatically degrades to a static JSON dataset (`staticBlogs`), ensuring the user experience remains uninterrupted while maintaining the luxury-tech visual standard.
 
 ---
 
