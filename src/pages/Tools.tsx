@@ -77,7 +77,7 @@ const Tools = () => {
       title: 'Password Shield',
       subtitle: 'Credential Analysis',
       desc: 'Analyze your credentials for vulnerabilities using our trained offline model. Check against complexity rules and common hacking patterns.',
-      image: 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&q=80&w=600'
+      image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=600'
     },
     {
       id: 'phishing',
@@ -104,7 +104,27 @@ const Tools = () => {
       title: 'Posture Analyzer',
       subtitle: 'System Auditing',
       desc: 'Trained auditing tool that evaluates your system configuration against industry best practices and highlights misconfigurations.',
-      image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=600'
+      image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=600'
+    },
+    {
+      id: 'scenarios',
+      icon: AlertTriangle,
+      iconColor: 'text-yellow-400',
+      title: 'Interactive Scenarios',
+      subtitle: 'Simulated Attacks',
+      desc: 'Learn by doing. Navigate through simulated ransomware and phishing attacks and make critical decisions in a safe environment.',
+      image: 'https://images.unsplash.com/photo-1562813733-b31f71025d54?auto=format&fit=crop&q=80&w=600',
+      comingSoon: true
+    },
+    {
+      id: 'gamification',
+      icon: History,
+      iconColor: 'text-green-400',
+      title: 'Gamification & Stats',
+      subtitle: 'Track Progress',
+      desc: 'Earn badges, track your learning streak, and see how you rank against other cybersecurity learners on the global leaderboard.',
+      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=600',
+      comingSoon: true
     }
   ];
 
@@ -119,7 +139,13 @@ const Tools = () => {
         {toolsData.map((tool) => (
           <div 
             key={tool.id}
-            onClick={() => setActiveTool(tool.id as any)}
+            onClick={() => {
+              if (tool.comingSoon) {
+                alert("This feature is currently under development and will be available soon!");
+              } else {
+                setActiveTool(tool.id as any);
+              }
+            }}
             className="group relative w-full h-[400px] overflow-hidden rounded-3xl border border-white/10 bg-[#0f1218] shadow-lg transition-all duration-300 ease-in-out hover:shadow-[0_20px_40px_rgba(0,240,255,0.15)] hover:-translate-y-2 cursor-pointer"
           >
             {/* Background Image with Zoom Effect on Hover */}
@@ -136,10 +162,15 @@ const Tools = () => {
             <div className="relative flex h-full flex-col justify-between p-8 text-white">
               
               {/* Top Section: Icon Logo */}
-              <div className="flex h-16 items-start">
+              <div className="flex h-16 items-start justify-between">
                 <div className={`flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-black/40 backdrop-blur-md shadow-xl ${tool.iconColor}`}>
                   <tool.icon size={20} />
                 </div>
+                {tool.comingSoon && (
+                  <span className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[10px] font-bold tracking-wider text-white/70 uppercase">
+                    Coming Soon
+                  </span>
+                )}
               </div>
               
               {/* Middle Section: Details (slides up on hover) */}
@@ -162,7 +193,7 @@ const Tools = () => {
                   <div
                     className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-semibold px-6 py-3 rounded-full hover:bg-white/20 transition-all"
                   >
-                    Launch Tool <Send size={16} />
+                    {tool.comingSoon ? 'Notify Me' : 'Launch Tool'} <Send size={16} />
                   </div>
                 </div>
               </div>
