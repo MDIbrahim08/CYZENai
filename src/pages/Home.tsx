@@ -10,49 +10,49 @@ const features = [
   {
     icon: Bot,
     title: "AI Chat Assistant",
-    desc: "Ask anything about cybersecurity. Powered by Google Gemini AI for real-time, context-aware answers.",
-    backDesc: "Engage with our advanced AI to resolve your security queries, learn about threats, and get best practice advice instantly.",
-    color: "from-cyan-500 to-blue-600",
+    subtitle: "24/7 Security Support",
+    desc: "Engage with our advanced AI to resolve your security queries, learn about threats, and get best practice advice instantly.",
+    image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=600",
     path: "/chat",
   },
   {
     icon: Mail,
     title: "Phishing Analyzer",
-    desc: "Paste suspicious emails and get instant AI-powered risk analysis with red-flag detection.",
-    backDesc: "Our intelligent engine scans headers, links, and content to identify hidden phishing markers and keep you safe.",
-    color: "from-red-500 to-pink-600",
+    subtitle: "AI Threat Detection",
+    desc: "Our intelligent engine scans headers, links, and content to identify hidden phishing markers and keep you safe.",
+    image: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80&w=600",
     path: "/tools",
   },
   {
     icon: Gamepad2,
     title: "Interactive Scenarios",
-    desc: "Train with 10 real-world cyber threat scenarios across beginner to advanced levels.",
-    backDesc: "Learn by doing. Navigate through simulated attacks and make critical decisions in a safe, controlled environment.",
-    color: "from-purple-500 to-indigo-600",
+    subtitle: "Real-world Training",
+    desc: "Learn by doing. Navigate through simulated attacks and make critical decisions in a safe, controlled environment.",
+    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=600",
     path: "/scenarios",
   },
   {
     icon: Lock,
     title: "Password Checker",
-    desc: "Test your password strength in real-time with crack-time estimates and tips.",
-    backDesc: "Understand how long it takes for a hacker to crack your password and learn how to create unhackable credentials.",
-    color: "from-green-500 to-emerald-600",
+    subtitle: "Strength Estimation",
+    desc: "Understand how long it takes for a hacker to crack your password and learn how to create unhackable credentials.",
+    image: "https://images.unsplash.com/photo-1614064641913-6b71a2ea2e88?auto=format&fit=crop&q=80&w=600",
     path: "/tools",
   },
   {
     icon: Award,
     title: "Gamification",
-    desc: "Earn points, unlock 12 badges, and level up from Beginner to Master.",
-    backDesc: "Stay motivated as you learn. Track your progress, compete for high scores, and showcase your security expertise.",
-    color: "from-yellow-500 to-orange-600",
+    subtitle: "Track Your Progress",
+    desc: "Stay motivated as you learn. Track your progress, compete for high scores, and showcase your security expertise.",
+    image: "https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&q=80&w=600",
     path: "/profile",
   },
   {
     icon: ShieldCheck,
     title: "Security Quiz",
-    desc: "15-question assessment across 5 categories with personalized recommendations.",
-    backDesc: "Validate your knowledge with our comprehensive quiz and get a personalized learning path based on your results.",
-    color: "from-teal-500 to-cyan-600",
+    subtitle: "Knowledge Assessment",
+    desc: "Validate your knowledge with our comprehensive quiz and get a personalized learning path based on your results.",
+    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=600",
     path: "/quiz",
   },
 ];
@@ -133,31 +133,55 @@ const Home = () => {
               duration={750}
               threshold={0.1}
             >
-              <FlippingCard
-                frontContent={
-                  <div className="flex flex-col h-full text-left">
-                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${f.color} flex items-center justify-center mb-4`}>
-                      <f.icon size={22} className="text-white" />
+              <div className="group relative w-full h-[400px] overflow-hidden rounded-2xl border border-white/10 bg-[#0f1218] shadow-lg transition-all duration-300 ease-in-out hover:shadow-[0_20px_40px_rgba(0,240,255,0.15)] hover:-translate-y-2">
+                
+                {/* Background Image with Zoom Effect on Hover */}
+                <img
+                  src={f.image}
+                  alt={f.title}
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110 opacity-60"
+                />
+
+                {/* Gradient Overlay for Text Readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-black/20"></div>
+
+                {/* Content Container */}
+                <div className="relative flex h-full flex-col justify-between p-6 sm:p-8 text-white">
+                  
+                  {/* Top Section: Icon Logo */}
+                  <div className="flex h-16 items-start">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-black/40 backdrop-blur-md shadow-xl text-cyan-400">
+                      <f.icon size={20} />
                     </div>
-                    <h3 className="text-lg font-semibold mb-2 text-white">{f.title}</h3>
-                    <p className="text-white/40 text-sm leading-relaxed">{f.desc}</p>
                   </div>
-                }
-                backContent={
-                  <div className="flex flex-col h-full justify-between py-2">
+                  
+                  {/* Middle Section: Details (slides up on hover) */}
+                  <div className="space-y-4 transition-transform duration-500 ease-in-out group-hover:-translate-y-[88px] mt-auto">
                     <div>
-                      <h3 className="text-lg font-semibold mb-3 text-white">{f.title}</h3>
-                      <p className="text-white/60 text-sm leading-relaxed">{f.backDesc}</p>
+                      <h3 className="text-2xl sm:text-3xl font-bold text-white mb-1 drop-shadow-md">{f.title}</h3>
+                      <p className="text-xs sm:text-sm text-cyan-400 font-medium uppercase tracking-wider">{f.subtitle}</p>
                     </div>
-                    <Link
-                      to={f.path}
-                      className="flex items-center gap-2 text-cyan-400 text-sm font-medium hover:text-cyan-300 transition-colors mt-4 self-center"
-                    >
-                      Try Now <ArrowRight size={14} />
-                    </Link>
+                    <div>
+                      <h4 className="font-semibold text-white/90 text-xs tracking-widest uppercase mb-2">Overview</h4>
+                      <p className="text-sm text-white/70 leading-relaxed">
+                        {f.desc}
+                      </p>
+                    </div>
                   </div>
-                }
-              />
+
+                  {/* Bottom Section: Button (revealed on hover) */}
+                  <div className="absolute -bottom-24 left-0 w-full p-6 sm:p-8 opacity-0 transition-all duration-500 ease-in-out group-hover:bottom-0 group-hover:opacity-100 bg-gradient-to-t from-black via-black to-transparent pt-10">
+                    <div className="flex items-end justify-end">
+                      <Link
+                        to={f.path}
+                        className="flex items-center gap-2 bg-cyan-400 text-black text-sm font-bold px-6 py-3 rounded-full hover:brightness-110 shadow-[0_0_20px_rgba(0,240,255,0.3)] transition-all"
+                      >
+                        Try Now <ArrowRight size={16} />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </ScrollReveal>
           ))}
         </div>
