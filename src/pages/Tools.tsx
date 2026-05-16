@@ -71,7 +71,7 @@ const Tools = ({ initialTool = null }: ToolsProps) => {
   if (activeTool === 'phishing') return <div className="px-6 sm:px-12 min-h-screen bg-[#0a0a0f]"><IframeTool title="Phishing Scanner" url="/tools/phishing_detection_engine/index.html" onBack={() => setActiveTool(null)} /></div>;
   if (activeTool === 'emergency') return <div className="px-6 sm:px-12 min-h-screen bg-[#0a0a0f]"><IframeTool title="Emergency Response Kit" url="/tools/emergency-response-kit/index.html" onBack={() => setActiveTool(null)} /></div>;
   if (activeTool === 'posture') return <div className="px-6 sm:px-12 min-h-screen bg-[#0a0a0f]"><IframeTool title="Security Posture Analyzer" url="/tools/security_posture_analyzer/index.html" onBack={() => setActiveTool(null)} /></div>;
-  if (activeTool === 'deepfake') return <div className="min-h-screen bg-[#0a0a0f]"><DeepfakeStudio onBack={() => setActiveTool(null)} /></div>;
+  if (activeTool === 'deepfake') return <div className="min-h-screen bg-[#0a0a0f] pt-28 px-6 sm:px-12"><DeepfakeStudio onBack={() => setActiveTool(null)} /></div>;
 
   const toolsData = [
     {
