@@ -45,8 +45,8 @@ export const TextbookCard = ({ textbook, onViewDetails }: TextbookCardProps) => 
 
           {/* Author & Publisher */}
           <div className="space-y-0.5">
-            <p className="text-sm text-text-secondary">{textbook.author}</p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-white/80 font-medium">{textbook.author}</p>
+            <p className="text-xs text-white/50">
               {textbook.publisher} • {textbook.year}
             </p>
           </div>
@@ -71,7 +71,7 @@ export const TextbookCard = ({ textbook, onViewDetails }: TextbookCardProps) => 
 
           {/* ISBN */}
           {textbook.isbn && (
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-white/40">
               ISBN: {textbook.isbn}
             </p>
           )}
@@ -80,7 +80,7 @@ export const TextbookCard = ({ textbook, onViewDetails }: TextbookCardProps) => 
 
       {/* Description */}
       <div className="px-4 pb-3">
-        <p className="text-sm text-text-secondary line-clamp-2">
+        <p className="text-sm text-white/60 line-clamp-2 leading-relaxed">
           {textbook.description}
         </p>
       </div>
@@ -111,7 +111,7 @@ export const TextbookCard = ({ textbook, onViewDetails }: TextbookCardProps) => 
           variant="outline"
           size="sm"
           onClick={() => onViewDetails(textbook)}
-          className="flex-1 rounded-xl border-white/10 text-white/40 hover:text-white hover:border-white/20 text-[10px] font-bold uppercase tracking-widest"
+          className="flex-1 rounded-xl border-white/10 text-white/70 hover:text-white hover:bg-white/5 text-[10px] font-bold uppercase tracking-widest transition-all"
         >
           <BookOpen className="w-3 h-3 mr-2" />
           Technical Specs

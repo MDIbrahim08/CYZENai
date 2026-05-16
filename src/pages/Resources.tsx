@@ -11,6 +11,7 @@ import { TextbookModal } from '@/components/resources/TextbookModal';
 import { CuratedCollections } from '@/components/resources/CuratedCollections';
 import { CareerTimeline } from '@/components/resources/CareerTimeline';
 import { CountryPathCard } from '@/components/resources/CountryPathCard';
+import { PortfolioGallery } from '@/components/resources/PortfolioGallery';
 import {
   videoResources,
   textbookResources,
@@ -96,7 +97,7 @@ const Resources = () => {
           <h1 className="font-heading font-black text-5xl md:text-7xl text-white tracking-tighter leading-none">
             SECURITY <span className="text-emerald-500">HUBS</span>
           </h1>
-          <p className="text-white/40 text-lg max-w-xl font-medium leading-relaxed">
+          <p className="text-white/70 text-lg max-w-xl font-medium leading-relaxed">
             Curated technical intelligence and strategic career roadmaps for elite cybersecurity operators.
           </p>
         </motion.div>
@@ -107,14 +108,14 @@ const Resources = () => {
           <TabsList className="grid w-full grid-cols-2 bg-white/5 border border-white/10 rounded-2xl p-1 h-auto backdrop-blur-md">
             <TabsTrigger 
               value="resources" 
-              className="rounded-xl py-4 data-[state=active]:bg-emerald-500 data-[state=active]:text-black transition-all font-bold uppercase tracking-widest text-[10px]"
+              className="rounded-xl py-4 data-[state=active]:bg-emerald-500 data-[state=active]:text-black transition-all font-black uppercase tracking-widest text-[10px] text-white/60 hover:text-white"
             >
               <BookMarked className="w-4 h-4 mr-2" />
               Intelligence Center
             </TabsTrigger>
             <TabsTrigger 
               value="career"
-              className="rounded-xl py-4 data-[state=active]:bg-emerald-500 data-[state=active]:text-black transition-all font-bold uppercase tracking-widest text-[10px]"
+              className="rounded-xl py-4 data-[state=active]:bg-emerald-500 data-[state=active]:text-black transition-all font-black uppercase tracking-widest text-[10px] text-white/60 hover:text-white"
             >
               <GraduationCap className="w-4 h-4 mr-2" />
               Career Roadmap
@@ -128,14 +129,14 @@ const Resources = () => {
               <TabsList className="flex w-fit bg-white/5 border border-white/10 rounded-xl p-1 mb-8">
                 <TabsTrigger 
                   value="videos" 
-                  className="rounded-lg px-8 py-2 data-[state=active]:bg-emerald-500/10 data-[state=active]:text-emerald-400 transition-all text-xs font-bold uppercase tracking-wider"
+                  className="rounded-lg px-8 py-2 data-[state=active]:bg-emerald-500/10 data-[state=active]:text-emerald-400 transition-all text-xs font-black uppercase tracking-wider text-white/50"
                 >
                   <Video className="w-3.5 h-3.5 mr-2" />
                   Technical Videos
                 </TabsTrigger>
                 <TabsTrigger 
                   value="textbooks"
-                  className="rounded-lg px-8 py-2 data-[state=active]:bg-emerald-500/10 data-[state=active]:text-emerald-400 transition-all text-xs font-bold uppercase tracking-wider"
+                  className="rounded-lg px-8 py-2 data-[state=active]:bg-emerald-500/10 data-[state=active]:text-emerald-400 transition-all text-xs font-black uppercase tracking-wider text-white/50"
                 >
                   <BookOpen className="w-3.5 h-3.5 mr-2" />
                   Whitepapers & Books
@@ -146,7 +147,7 @@ const Resources = () => {
               <TabsContent value="videos" className="mt-5 space-y-5">
                 {/* Search */}
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50" />
                   <Input
                     placeholder="Search videos..."
                     value={videoSearch}
@@ -164,10 +165,10 @@ const Resources = () => {
                         setVideoCategory(cat);
                         setVideoSearch('');
                       }}
-                      className={`px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-all border
+                      className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest whitespace-nowrap transition-all border
                         ${videoCategory === cat 
                           ? 'bg-emerald-500 text-black border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.3)]' 
-                          : 'bg-white/5 text-white/40 border-white/10 hover:border-white/20'
+                          : 'bg-white/5 text-white/70 border-white/10 hover:border-white/20'
                         }`}
                     >
                       {cat}
@@ -175,24 +176,14 @@ const Resources = () => {
                   ))}
                 </div>
 
-                {/* Video Grid */}
-                <motion.div 
-                  layout
-                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-                >
-                  <AnimatePresence mode="popLayout">
-                    {filteredVideos.map((video) => (
-                      <VideoCard
-                        key={video.id}
-                        video={video}
-                        onWatch={setSelectedVideo}
-                      />
-                    ))}
-                  </AnimatePresence>
-                </motion.div>
+                {/* Portfolio Gallery Layout for Videos */}
+                <PortfolioGallery 
+                  videos={filteredVideos}
+                  onVideoClick={setSelectedVideo}
+                />
 
                 {filteredVideos.length === 0 && (
-                  <div className="text-center py-12 text-muted-foreground">
+                  <div className="text-center py-12 text-white/40">
                     <Video className="w-12 h-12 mx-auto mb-3 opacity-50" />
                     <p>No videos found matching your search.</p>
                   </div>
@@ -206,7 +197,7 @@ const Resources = () => {
               <TabsContent value="textbooks" className="mt-5 space-y-5">
                 {/* Search */}
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/50" />
                   <Input
                     placeholder="Search textbooks..."
                     value={textbookSearch}
@@ -252,7 +243,7 @@ const Resources = () => {
                 </motion.div>
 
                 {filteredTextbooks.length === 0 && (
-                  <div className="text-center py-12 text-muted-foreground">
+                  <div className="text-center py-12 text-white/40">
                     <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
                     <p>No textbooks found matching your search.</p>
                   </div>
@@ -345,14 +336,14 @@ const Resources = () => {
                       >
                         <CheckCircle2 
                           className={`w-4 h-4 flex-shrink-0 mt-0.5 ${
-                            action.completed ? 'text-success' : 'text-muted-foreground'
+                            action.completed ? 'text-emerald-500' : 'text-white/20'
                           }`} 
                         />
                         <div>
                           <span className={action.completed ? 'line-through text-muted-foreground' : ''}>
                             {action.text}
                           </span>
-                          <span className="text-xs text-muted-foreground ml-2">
+                          <span className="text-xs text-white/40 ml-2">
                             ({action.note})
                           </span>
                         </div>

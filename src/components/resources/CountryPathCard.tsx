@@ -60,7 +60,7 @@ export const CountryPathCard = ({ country, index }: CountryPathCardProps) => {
               </h4>
               <ul className="space-y-2.5">
                 {country.requirements?.map((req, i) => (
-                  <li key={i} className="text-sm text-white/40 flex items-start gap-3 group">
+                  <li key={i} className="text-sm text-white/70 flex items-start gap-3 group">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/20 mt-1.5 group-hover:bg-emerald-500 transition-colors" />
                     {req}
                   </li>
