@@ -61,17 +61,15 @@ const IframeTool = ({ title, url, onBack }: { title: string; url: string; onBack
 
 /* ───────── MAIN PAGE ───────── */
 interface ToolsProps {
-  initialTool?: 'password' | 'phishing' | 'emergency' | 'posture' | 'scenarios' | 'gamification' | null;
+  initialTool?: 'password' | 'phishing' | 'emergency' | 'posture' | null;
 }
 
 const Tools = ({ initialTool = null }: ToolsProps) => {
-  const [activeTool, setActiveTool] = useState<'password' | 'phishing' | 'emergency' | 'posture' | 'scenarios' | 'gamification' | null>(initialTool);
+  const [activeTool, setActiveTool] = useState<'password' | 'phishing' | 'emergency' | 'posture' | null>(initialTool);
   if (activeTool === 'password') return <div className="px-6 sm:px-12 min-h-screen bg-[#0a0a0f]"><IframeTool title="Password Shield" url="/tools/password_analyzer/index.html" onBack={() => setActiveTool(null)} /></div>;
   if (activeTool === 'phishing') return <div className="px-6 sm:px-12 min-h-screen bg-[#0a0a0f]"><IframeTool title="Phishing Scanner" url="/tools/phishing_detection_engine/index.html" onBack={() => setActiveTool(null)} /></div>;
   if (activeTool === 'emergency') return <div className="px-6 sm:px-12 min-h-screen bg-[#0a0a0f]"><IframeTool title="Emergency Response Kit" url="/tools/emergency-response-kit/index.html" onBack={() => setActiveTool(null)} /></div>;
   if (activeTool === 'posture') return <div className="px-6 sm:px-12 min-h-screen bg-[#0a0a0f]"><IframeTool title="Security Posture Analyzer" url="/tools/security_posture_analyzer/index.html" onBack={() => setActiveTool(null)} /></div>;
-  if (activeTool === 'scenarios') return <div className="px-6 sm:px-12 min-h-screen bg-[#0a0a0f]"><IframeTool title="Interactive Scenarios" url="/tools/interactive_scenarios/index.html" onBack={() => setActiveTool(null)} /></div>;
-  if (activeTool === 'gamification') return <div className="px-6 sm:px-12 min-h-screen bg-[#0a0a0f]"><IframeTool title="Gamification & Stats" url="/tools/gamification/index.html" onBack={() => setActiveTool(null)} /></div>;
 
   const toolsData = [
     {
@@ -109,24 +107,6 @@ const Tools = ({ initialTool = null }: ToolsProps) => {
       subtitle: 'System Auditing',
       desc: 'Trained auditing tool that evaluates your system configuration against industry best practices and highlights misconfigurations.',
       image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=600'
-    },
-    {
-      id: 'scenarios',
-      icon: AlertTriangle,
-      iconColor: 'text-yellow-400',
-      title: 'Interactive Scenarios',
-      subtitle: 'Simulated Attacks',
-      desc: 'Learn by doing. Navigate through simulated ransomware and phishing attacks and make critical decisions in a safe environment.',
-      image: 'https://images.unsplash.com/photo-1562813733-b31f71025d54?auto=format&fit=crop&q=80&w=600'
-    },
-    {
-      id: 'gamification',
-      icon: History,
-      iconColor: 'text-green-400',
-      title: 'Gamification & Stats',
-      subtitle: 'Track Progress',
-      desc: 'Earn badges, track your learning streak, and see how you rank against other cybersecurity learners on the global leaderboard.',
-      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=600'
     }
   ];
 

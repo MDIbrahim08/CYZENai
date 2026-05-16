@@ -24,28 +24,12 @@ const features = [
     path: "/tools",
   },
   {
-    icon: Gamepad2,
-    title: "Interactive Scenarios",
-    subtitle: "Real-world Training",
-    desc: "Learn by doing. Navigate through simulated attacks and make critical decisions in a safe, controlled environment.",
-    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=600",
-    path: "/scenarios",
-  },
-  {
     icon: Lock,
     title: "Password Checker",
     subtitle: "Strength Estimation",
     desc: "Understand how long it takes for a hacker to crack your password and learn how to create unhackable credentials.",
     image: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&q=80&w=600",
     path: "/tools",
-  },
-  {
-    icon: Award,
-    title: "Gamification",
-    subtitle: "Track Your Progress",
-    desc: "Stay motivated as you learn. Track your progress, compete for high scores, and showcase your security expertise.",
-    image: "https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&q=80&w=600",
-    path: "/profile",
   },
   {
     icon: ShieldCheck,
