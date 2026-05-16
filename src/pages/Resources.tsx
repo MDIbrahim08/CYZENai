@@ -271,7 +271,7 @@ const Resources = () => {
             {/* Career Header */}
             <motion.div 
               variants={itemVariants}
-              className="bg-emerald-500 rounded-3xl p-8 text-black relative overflow-hidden shadow-2xl"
+              className="bg-emerald-500 rounded-3xl p-8 text-black relative overflow-hidden shadow-2xl mb-10"
             >
               <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-black/5 -translate-y-1/2 translate-x-1/2" />
               <div className="absolute bottom-4 right-8 w-32 h-32 rounded-full bg-black/5" />
@@ -280,6 +280,15 @@ const Resources = () => {
                 <div className="w-16 h-16 rounded-2xl bg-black/10 backdrop-blur-sm flex items-center justify-center mb-6">
                   <GraduationCap className="w-8 h-8" />
                 </div>
+                <h2 className="font-heading font-black text-3xl uppercase tracking-tighter">
+                  Cybersecurity Specialist Roadmap
+                </h2>
+                <p className="text-black/60 text-lg mt-2 font-medium">
+                  From Certifications to Chief Information Security Officer (CISO)
+                </p>
+              </div>
+            </motion.div>
+
             <div className="relative" ref={containerRef}>
               {/* Journey Line SVG */}
               <div className="absolute left-6 top-12 bottom-12 w-8 pointer-events-none hidden md:block">
