@@ -36,7 +36,7 @@ const features = [
     title: "Password Checker",
     subtitle: "Strength Estimation",
     desc: "Understand how long it takes for a hacker to crack your password and learn how to create unhackable credentials.",
-    image: "https://images.unsplash.com/photo-1614064641913-6b71a2ea2e88?auto=format&fit=crop&q=80&w=600",
+    image: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&q=80&w=600",
     path: "/tools",
   },
   {

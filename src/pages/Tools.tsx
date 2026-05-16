@@ -77,7 +77,7 @@ const Tools = () => {
       title: 'Password Shield',
       subtitle: 'Credential Analysis',
       desc: 'Analyze your credentials for vulnerabilities using our trained offline model. Check against complexity rules and common hacking patterns.',
-      image: 'https://images.unsplash.com/photo-1614064641913-6b71a2ea2e88?auto=format&fit=crop&q=80&w=600'
+      image: 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&q=80&w=600'
     },
     {
       id: 'phishing',
