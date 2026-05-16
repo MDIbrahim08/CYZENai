@@ -233,7 +233,7 @@ export default function Blog() {
       <section className="relative z-10 px-6 max-w-7xl mx-auto mb-20">
         <div className="text-center mb-10">
           <span className="text-cyan-400 text-xs font-bold tracking-widest uppercase">Explore Topics</span>
-          <h2 className="text-3xl font-black mt-2">Browse by Category</h2>
+          <h2 className="text-3xl font-bold mt-2">Browse by Category</h2>
         </div>
         <div className="flex overflow-x-auto pb-8 pt-2 gap-5 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {categories.map(cat => {
@@ -243,22 +243,21 @@ export default function Blog() {
               <div
                 key={cat}
                 onClick={() => { setActiveFilter(cat); document.getElementById("all-articles")?.scrollIntoView({ behavior: "smooth" }); }}
-                className="group relative block overflow-hidden rounded-2xl border border-white/10 bg-[#0f1218] text-white transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 cursor-pointer min-w-[260px] flex-shrink-0 snap-start"
+                className="group relative block overflow-hidden rounded-xl border border-white/10 bg-[#0f1218] text-white transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 cursor-pointer min-w-[280px] flex-shrink-0 snap-start"
               >
-                {/* Image container with 4/3 aspect ratio */}
-                <div className="aspect-[4/3] overflow-hidden bg-black/50 relative">
+                {/* Image container with 16/9 aspect ratio */}
+                <div className="aspect-[16/9] overflow-hidden relative">
                   <img
                     src={categoryImages[cat] || fallbackImage}
                     alt={cat}
-                    className="h-full w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105 opacity-60"
+                    className="h-full w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                 </div>
                 
                 {/* Card content */}
-                <div className="p-4 pt-3 bg-[#0f1218]">
-                  <h3 className="font-bold text-sm leading-tight truncate text-white">{cat}</h3>
-                  <p className="mt-1 text-xs text-white/50">{count} {count === 1 ? 'guide' : 'guides'}</p>
+                <div className="p-5 bg-transparent">
+                  <h3 className="font-semibold text-base leading-tight truncate text-white">{cat}</h3>
+                  <p className="mt-1 text-sm text-[#94a3b8]">{count} {count === 1 ? 'guide' : 'guides'}</p>
                 </div>
 
                 {/* Save button - appears on hover */}
@@ -283,14 +282,14 @@ export default function Blog() {
         <section className="relative z-10 px-6 max-w-7xl mx-auto mb-20">
           <div className="text-center mb-10">
             <span className="text-cyan-400 text-xs font-bold tracking-widest uppercase">Must Read</span>
-            <h2 className="text-3xl font-black mt-2">Featured Articles</h2>
+            <h2 className="text-3xl font-bold mt-2">Featured Articles</h2>
           </div>
           <div className="grid md:grid-cols-2 gap-6">
             {featured.map(blog => (
               <div
                 key={blog.id}
                 onClick={() => setSelectedBlog(blog)}
-                className="group relative w-full h-[400px] overflow-hidden rounded-3xl border border-white/10 bg-[#0f1218] shadow-lg transition-all duration-300 ease-in-out hover:shadow-[0_20px_40px_rgba(0,240,255,0.15)] hover:-translate-y-2 cursor-pointer"
+                className="group relative w-full h-[340px] overflow-hidden rounded-2xl border border-white/10 bg-[#0f1218] shadow-lg transition-all duration-300 ease-in-out hover:shadow-[0_20px_40px_rgba(0,240,255,0.1)] hover:-translate-y-2 cursor-pointer"
               >
                 {/* Background Image with Zoom Effect on Hover */}
                 <img
@@ -314,7 +313,7 @@ export default function Blog() {
                   {/* Middle Section: Details (slides up on hover) */}
                   <div className="space-y-4 transition-transform duration-500 ease-in-out group-hover:-translate-y-16 mt-auto">
                     <div>
-                      <h3 className="text-3xl font-black text-white leading-tight mb-2 drop-shadow-lg">{blog.title}</h3>
+                      <h3 className="text-2xl font-bold text-white leading-tight mb-2 drop-shadow-md">{blog.title}</h3>
                       <p className="text-sm text-cyan-400/80 font-medium">{blog.author} • {blog.date}</p>
                     </div>
                     <div>
