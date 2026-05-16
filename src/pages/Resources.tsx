@@ -66,21 +66,38 @@ const Resources = () => {
   }, [textbookCategory, textbookSearch]);
 
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="pb-24 space-y-8"
-    >
-      {/* Header */}
-      <motion.div variants={itemVariants} className="space-y-2">
-        <h1 className="font-heading font-bold text-4xl text-white tracking-tight">
-          <span className="text-emerald-400">Security</span> Intelligence Hub
-        </h1>
-        <p className="text-white/40 text-lg max-w-2xl">
-          Elite curated videos, high-fidelity technical textbooks, and global career roadmaps to forge your path in cybersecurity.
-        </p>
-      </motion.div>
+    <div className="relative w-full">
+      {/* Background Video */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="w-full h-full object-cover opacity-[0.03] grayscale invert"
+          src="https://stream.mux.com/Kec29dVyJgiPdtWaQtPuEiiGHkJIYQAVUJcNiIHUYeo/medium.mp4"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0f] via-transparent to-[#0a0a0f]" />
+      </div>
+
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="relative z-10 pb-24 space-y-12"
+      >
+        {/* Header */}
+        <motion.div variants={itemVariants} className="space-y-4 pt-12">
+          <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-[10px] font-black uppercase tracking-[0.3em] px-4 py-1.5">
+            Classified Intelligence
+          </Badge>
+          <h1 className="font-heading font-black text-5xl md:text-7xl text-white tracking-tighter leading-none">
+            SECURITY <span className="text-emerald-500">HUBS</span>
+          </h1>
+          <p className="text-white/40 text-lg max-w-xl font-medium leading-relaxed">
+            Curated technical intelligence and strategic career roadmaps for elite cybersecurity operators.
+          </p>
+        </motion.div>
 
       {/* Main Tabs: Resources vs Career */}
       <motion.div variants={itemVariants}>
@@ -373,6 +390,7 @@ const Resources = () => {
         onClose={() => setSelectedTextbook(null)}
       />
     </motion.div>
+    </div>
   );
 };
 

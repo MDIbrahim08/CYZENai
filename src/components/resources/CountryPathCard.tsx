@@ -14,64 +14,55 @@ export const CountryPathCard = ({ country, index }: CountryPathCardProps) => {
   const gradient = gradients[index % gradients.length];
 
   return (
-    <Accordion type="single" collapsible>
-      <AccordionItem value={country.id} className="border-0">
-        <AccordionTrigger className="card-elevated p-4 rounded-2xl hover:no-underline [&[data-state=open]]:rounded-b-none">
-          <div className="flex items-center gap-3 w-full">
-            <div className={`w-12 h-12 ${gradient} rounded-xl flex items-center justify-center text-2xl`}>
+  return (
+    <Accordion type="single" collapsible className="w-full">
+      <AccordionItem value={country.id} className="border-0 mb-4">
+        <AccordionTrigger className="bg-[#161b22]/50 backdrop-blur-xl border border-white/5 p-5 rounded-2xl hover:no-underline transition-all duration-300 [&[data-state=open]]:rounded-b-none [&[data-state=open]]:border-emerald-500/30">
+          <div className="flex items-center gap-4 w-full">
+            <div className="w-14 h-14 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center justify-center text-3xl shadow-[0_0_20px_rgba(16,185,129,0.1)]">
               {country.flag}
             </div>
-            <div className="flex-1 text-left">
-              <h3 className="font-heading font-semibold text-base">{country.name}</h3>
-              <p className="text-sm text-muted-foreground">{country.degree}</p>
+            <div className="flex-1 text-left min-w-0">
+              <div className="flex items-center gap-2">
+                <h3 className="font-heading font-black text-lg text-white tracking-tight uppercase">{country.name}</h3>
+                <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-[9px] font-black uppercase tracking-widest px-2 py-0">
+                  Mission Data
+                </Badge>
+              </div>
+              <p className="text-white/40 text-xs font-bold uppercase tracking-widest mt-1 truncate">{country.degree}</p>
             </div>
           </div>
         </AccordionTrigger>
 
-        <AccordionContent className="card-elevated rounded-t-none rounded-b-2xl border-t border-border px-4 pb-5 pt-4">
-          <div className="space-y-5">
-            {/* Quick Stats */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-muted/50 rounded-xl p-3">
-                <div className="flex items-center gap-2 text-muted-foreground text-xs mb-1">
-                  <Clock className="w-3.5 h-3.5" />
-                  Duration
+        <AccordionContent className="bg-[#0d1117] rounded-b-2xl border-x border-b border-white/5 px-6 pb-8 pt-6 space-y-8">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {[
+              { icon: Clock, label: 'Duration', value: country.duration },
+              { icon: DollarSign, label: 'Investment', value: country.estimatedCost },
+              { icon: Briefcase, label: 'Yield', value: country.salary },
+              { icon: GraduationCap, label: 'Roadmap', value: country.timeline }
+            ].map((stat, i) => (
+              <div key={i} className="bg-white/[0.02] border border-white/5 rounded-2xl p-4 flex flex-col gap-2">
+                <div className="flex items-center gap-2 text-white/20">
+                  <stat.icon className="w-3.5 h-3.5" />
+                  <span className="text-[10px] font-black uppercase tracking-widest">{stat.label}</span>
                 </div>
-                <p className="font-medium text-sm">{country.duration}</p>
+                <p className="font-heading font-bold text-sm text-white">{stat.value}</p>
               </div>
-              <div className="bg-muted/50 rounded-xl p-3">
-                <div className="flex items-center gap-2 text-muted-foreground text-xs mb-1">
-                  <DollarSign className="w-3.5 h-3.5" />
-                  Cost
-                </div>
-                <p className="font-medium text-sm">{country.estimatedCost}</p>
-              </div>
-              <div className="bg-muted/50 rounded-xl p-3">
-                <div className="flex items-center gap-2 text-muted-foreground text-xs mb-1">
-                  <Briefcase className="w-3.5 h-3.5" />
-                  Salary
-                </div>
-                <p className="font-medium text-sm">{country.salary}</p>
-              </div>
-              <div className="bg-muted/50 rounded-xl p-3">
-                <div className="flex items-center gap-2 text-muted-foreground text-xs mb-1">
-                  <GraduationCap className="w-3.5 h-3.5" />
-                  Timeline
-                </div>
-                <p className="font-medium text-sm">{country.timeline}</p>
-              </div>
-            </div>
+            ))}
+          </div>
 
+          <div className="grid md:grid-cols-2 gap-8 pt-4 border-t border-white/5">
             {/* Requirements */}
-            <div>
-              <h4 className="font-heading font-semibold text-sm mb-2 flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-success" />
-                Key Requirements
+            <div className="space-y-4">
+              <h4 className="font-heading font-black text-xs uppercase tracking-[0.25em] text-emerald-500 flex items-center gap-2">
+                <CheckCircle className="w-4 h-4" />
+                Operational Requirements
               </h4>
-              <ul className="space-y-1.5">
-                {country.requirements.map((req, i) => (
-                  <li key={i} className="text-sm text-text-secondary flex items-start gap-2">
-                    <span className="text-primary mt-1.5">•</span>
+              <ul className="space-y-2.5">
+                {country.requirements?.map((req, i) => (
+                  <li key={i} className="text-sm text-white/40 flex items-start gap-3 group">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/20 mt-1.5 group-hover:bg-emerald-500 transition-colors" />
                     {req}
                   </li>
                 ))}
@@ -79,49 +70,32 @@ export const CountryPathCard = ({ country, index }: CountryPathCardProps) => {
             </div>
 
             {/* Licensing Path */}
-            <div>
-              <h4 className="font-heading font-semibold text-sm mb-2 flex items-center gap-2">
-                <Building2 className="w-4 h-4 text-primary" />
-                Licensing Path
+            <div className="space-y-4">
+              <h4 className="font-heading font-black text-xs uppercase tracking-[0.25em] text-emerald-500 flex items-center gap-2">
+                <Building2 className="w-4 h-4" />
+                Strategic Deployment
               </h4>
-              <ul className="space-y-1.5">
-                {country.licensingPath.map((step, i) => (
-                  <li key={i} className="text-sm text-text-secondary flex items-start gap-2">
-                    <span className="text-secondary font-medium">{i + 1}.</span>
+              <div className="space-y-3">
+                {country.licensingPath?.map((step, i) => (
+                  <div key={i} className="flex gap-4 p-3 bg-white/[0.02] border border-white/5 rounded-xl text-sm text-white/60">
+                    <span className="font-black text-emerald-500/40">{String(i + 1).padStart(2, '0')}</span>
                     {step}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Top Universities */}
-            <div>
-              <h4 className="font-heading font-semibold text-sm mb-2">🏛️ Top Universities</h4>
-              <div className="flex flex-wrap gap-1.5">
-                {country.topUniversities.map((uni, i) => (
-                  <Badge key={i} variant="outline" className="text-xs bg-primary/5 border-primary/20">
-                    {uni}
-                  </Badge>
+                  </div>
                 ))}
               </div>
             </div>
+          </div>
 
-            {/* Additional Notes */}
-            {country.additionalNotes && country.additionalNotes.length > 0 && (
-              <div className="bg-warning/10 rounded-xl p-3 border border-warning/20">
-                <h4 className="font-heading font-semibold text-sm mb-2 flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 text-warning" />
-                  Important Notes
-                </h4>
-                <ul className="space-y-1">
-                  {country.additionalNotes.map((note, i) => (
-                    <li key={i} className="text-sm text-text-secondary">
-                      • {note}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+          {/* Top Universities */}
+          <div className="pt-6 border-t border-white/5">
+            <h4 className="font-heading font-black text-xs uppercase tracking-[0.25em] text-white/20 mb-4">Tactical Training Grounds</h4>
+            <div className="flex flex-wrap gap-2">
+              {country.topUniversities?.map((uni, i) => (
+                <Badge key={i} className="text-[10px] font-bold uppercase tracking-widest bg-white/5 border-white/10 text-white/40 px-3 py-1">
+                  {uni}
+                </Badge>
+              ))}
+            </div>
           </div>
         </AccordionContent>
       </AccordionItem>

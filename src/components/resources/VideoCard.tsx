@@ -15,11 +15,12 @@ export const VideoCard = ({ video, onWatch }: VideoCardProps) => {
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      whileHover={{ y: -4 }}
-      className="card-elevated overflow-hidden group"
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      whileHover={{ y: -8, scale: 1.02 }}
+      transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+      className="bg-[#161b22]/50 backdrop-blur-xl border border-white/5 rounded-3xl overflow-hidden group hover:border-emerald-500/30 hover:shadow-[0_20px_40px_rgba(0,0,0,0.4),0_0_20px_rgba(16,185,129,0.1)] transition-all duration-500"
     >
       {/* Thumbnail */}
       <div className="relative aspect-video overflow-hidden">
