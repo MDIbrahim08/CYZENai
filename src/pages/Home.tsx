@@ -39,14 +39,7 @@ const features = [
     image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=600",
     path: "/quiz",
   },
-  {
-    icon: ImageIcon,
-    title: "OSINT Detective",
-    subtitle: "Identity Investigation",
-    desc: "Perform real-world Open Source Intelligence (OSINT) to track usernames and build professional identity profiles.",
-    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=600",
-    path: "/osint",
-  },
+
 ];
 
 const Home = () => {

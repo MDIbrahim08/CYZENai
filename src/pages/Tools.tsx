@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Eye, EyeOff, CheckCircle2, XCircle, ShieldQuestion, Search, AlertTriangle, Info, ShieldCheck, ArrowLeft, Send, ShieldAlert, History, Download, Activity, Shield, Image as ImageIcon } from "lucide-react";
 import { FlippingCard } from "@/components/ui/FlippingCard";
-import OSINTDetective from "@/components/tools/OSINTDetective";
 
 /* ───────── LOGIC HELPERS ───────── */
 function getPasswordStrength(pw: string) {
@@ -62,16 +61,15 @@ const IframeTool = ({ title, url, onBack }: { title: string; url: string; onBack
 
 /* ───────── MAIN PAGE ───────── */
 interface ToolsProps {
-  initialTool?: 'password' | 'phishing' | 'emergency' | 'posture' | 'osint' | null;
+  initialTool?: 'password' | 'phishing' | 'emergency' | 'posture' | null;
 }
 
 const Tools = ({ initialTool = null }: ToolsProps) => {
-  const [activeTool, setActiveTool] = useState<'password' | 'phishing' | 'emergency' | 'posture' | 'osint' | null>(initialTool);
+  const [activeTool, setActiveTool] = useState<'password' | 'phishing' | 'emergency' | 'posture' | null>(initialTool);
   if (activeTool === 'password') return <div className="px-6 sm:px-12 min-h-screen bg-[#0a0a0f]"><IframeTool title="Password Shield" url="/tools/password_analyzer/index.html" onBack={() => setActiveTool(null)} /></div>;
   if (activeTool === 'phishing') return <div className="px-6 sm:px-12 min-h-screen bg-[#0a0a0f]"><IframeTool title="Phishing Scanner" url="/tools/phishing_detection_engine/index.html" onBack={() => setActiveTool(null)} /></div>;
   if (activeTool === 'emergency') return <div className="px-6 sm:px-12 min-h-screen bg-[#0a0a0f]"><IframeTool title="Emergency Response Kit" url="/tools/emergency-response-kit/index.html" onBack={() => setActiveTool(null)} /></div>;
   if (activeTool === 'posture') return <div className="px-6 sm:px-12 min-h-screen bg-[#0a0a0f]"><IframeTool title="Security Posture Analyzer" url="/tools/security_posture_analyzer/index.html" onBack={() => setActiveTool(null)} /></div>;
-  if (activeTool === 'osint') return <div className="min-h-screen bg-[#0a0a0f] pt-28 px-6 sm:px-12"><OSINTDetective onBack={() => setActiveTool(null)} /></div>;
 
   const toolsData = [
     {
@@ -110,14 +108,6 @@ const Tools = ({ initialTool = null }: ToolsProps) => {
       desc: 'Trained auditing tool that evaluates your system configuration against industry best practices and highlights misconfigurations.',
       image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=600'
     },
-    {
-      id: 'osint',
-      icon: Search,
-      iconColor: 'text-emerald-400',
-      title: 'OSINT Detective',
-      subtitle: 'Identity Investigation',
-      desc: 'Perform real-world Open Source Intelligence (OSINT) to track usernames and build professional identity profiles.',
-      image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=600'
     }
   ];
 

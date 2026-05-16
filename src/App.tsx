@@ -205,7 +205,6 @@ const AppContent = () => {
 
           {/* Catch broken card links */}
           <Route path="/quiz" element={<ProtectedRoute><Tools initialTool="posture" /></ProtectedRoute>} />
-          <Route path="/osint" element={<ProtectedRoute><Tools initialTool="osint" /></ProtectedRoute>} />
 
           {/* 404 */}
           <Route path="*" element={<NotFound />} />
