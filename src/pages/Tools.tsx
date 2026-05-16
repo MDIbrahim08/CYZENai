@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Eye, EyeOff, CheckCircle2, XCircle, ShieldQuestion, Search, AlertTriangle, Info, ShieldCheck, ArrowLeft, Send, ShieldAlert, History, Download, Activity, Shield, Image as ImageIcon } from "lucide-react";
 import { FlippingCard } from "@/components/ui/FlippingCard";
-import { DeepfakeStudio } from "@/components/tools/DeepfakeStudio";
+import { DarkWebIntel } from "@/components/tools/DarkWebIntel";
 
 /* ───────── LOGIC HELPERS ───────── */
 function getPasswordStrength(pw: string) {
@@ -62,16 +62,16 @@ const IframeTool = ({ title, url, onBack }: { title: string; url: string; onBack
 
 /* ───────── MAIN PAGE ───────── */
 interface ToolsProps {
-  initialTool?: 'password' | 'phishing' | 'emergency' | 'posture' | 'deepfake' | null;
+  initialTool?: 'password' | 'phishing' | 'emergency' | 'posture' | 'darkweb' | null;
 }
 
 const Tools = ({ initialTool = null }: ToolsProps) => {
-  const [activeTool, setActiveTool] = useState<'password' | 'phishing' | 'emergency' | 'posture' | 'deepfake' | null>(initialTool);
+  const [activeTool, setActiveTool] = useState<'password' | 'phishing' | 'emergency' | 'posture' | 'darkweb' | null>(initialTool);
   if (activeTool === 'password') return <div className="px-6 sm:px-12 min-h-screen bg-[#0a0a0f]"><IframeTool title="Password Shield" url="/tools/password_analyzer/index.html" onBack={() => setActiveTool(null)} /></div>;
   if (activeTool === 'phishing') return <div className="px-6 sm:px-12 min-h-screen bg-[#0a0a0f]"><IframeTool title="Phishing Scanner" url="/tools/phishing_detection_engine/index.html" onBack={() => setActiveTool(null)} /></div>;
   if (activeTool === 'emergency') return <div className="px-6 sm:px-12 min-h-screen bg-[#0a0a0f]"><IframeTool title="Emergency Response Kit" url="/tools/emergency-response-kit/index.html" onBack={() => setActiveTool(null)} /></div>;
   if (activeTool === 'posture') return <div className="px-6 sm:px-12 min-h-screen bg-[#0a0a0f]"><IframeTool title="Security Posture Analyzer" url="/tools/security_posture_analyzer/index.html" onBack={() => setActiveTool(null)} /></div>;
-  if (activeTool === 'deepfake') return <div className="min-h-screen bg-[#0a0a0f] pt-28 px-6 sm:px-12"><DeepfakeStudio onBack={() => setActiveTool(null)} /></div>;
+  if (activeTool === 'darkweb') return <div className="min-h-screen bg-[#0a0a0f] pt-28 px-6 sm:px-12"><DarkWebIntel onBack={() => setActiveTool(null)} /></div>;
 
   const toolsData = [
     {
@@ -111,13 +111,13 @@ const Tools = ({ initialTool = null }: ToolsProps) => {
       image: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=80&w=600'
     },
     {
-      id: 'deepfake',
-      icon: ImageIcon,
-      iconColor: 'text-purple-400',
-      title: 'Deepfake Studio',
-      subtitle: 'AI Media Forensics',
-      desc: 'Generate photorealistic synthetic media to understand how AI constructs deepfakes and learn to spot digital manipulation.',
-      image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=600'
+      id: 'darkweb',
+      icon: ShieldAlert,
+      iconColor: 'text-red-400',
+      title: 'Dark Web Intel',
+      subtitle: 'Threat Intelligence',
+      desc: 'Deep-scan underground forums and leaked databases for compromised identities and infrastructure exposure using advanced AI.',
+      image: 'https://images.unsplash.com/photo-1614064641938-3bbee52942c7?auto=format&fit=crop&q=80&w=600'
     }
   ];
 

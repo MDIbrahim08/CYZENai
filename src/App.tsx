@@ -205,7 +205,7 @@ const AppContent = () => {
 
           {/* Catch broken card links */}
           <Route path="/quiz" element={<ProtectedRoute><Tools initialTool="posture" /></ProtectedRoute>} />
-          <Route path="/deepfake" element={<ProtectedRoute><Tools initialTool="deepfake" /></ProtectedRoute>} />
+          <Route path="/darkweb" element={<ProtectedRoute><Tools initialTool="darkweb" /></ProtectedRoute>} />
 
           {/* 404 */}
           <Route path="*" element={<NotFound />} />

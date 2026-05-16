@@ -41,11 +41,11 @@ const features = [
   },
   {
     icon: ImageIcon,
-    title: "Deepfake Studio",
-    subtitle: "AI Media Forensics",
-    desc: "Generate photorealistic synthetic media to understand how AI constructs deepfakes and learn to spot digital manipulation.",
-    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=600",
-    path: "/deepfake",
+    title: "Dark Web Intel",
+    subtitle: "Threat Intelligence",
+    desc: "Deep-scan underground forums and leaked databases for compromised identities and infrastructure exposure using advanced AI.",
+    image: "https://images.unsplash.com/photo-1614064641938-3bbee52942c7?auto=format&fit=crop&q=80&w=600",
+    path: "/darkweb",
   },
 ];
 
