@@ -43,12 +43,16 @@ const PLATFORMS = [
 ];
 
 export const OSINTDetective = ({ onBack }: OSINTDetectiveProps) => {
-  const [username, setUsername] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [report, setReport] = useState<string | null>(null);
-  const [results, setResults] = useState<{name: string, status: 'found' | 'not_found' | 'checking'}[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const handleInputChange = (val: string) => {
+    // Auto-extract username from social links
+    const urlPattern = /(?:https?:\/\/)?(?:www\.)?(?:instagram\.com|twitter\.com|linkedin\.com\/in|github\.com|reddit\.com\/user|facebook\.com|behance\.net)\/([^\/?#]+)/i;
+    const match = val.match(urlPattern);
+    if (match && match[1]) {
+      setUsername(match[1]);
+    } else {
+      setUsername(val);
+    }
+  };
 
   const startInvestigation = async () => {
     if (!username.trim() || loading) return;
@@ -175,8 +179,8 @@ export const OSINTDetective = ({ onBack }: OSINTDetectiveProps) => {
                   <input 
                     type="text" 
                     value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="e.g. h4cker_zero or john_doe"
+                    onChange={(e) => handleInputChange(e.target.value)}
+                    placeholder="e.g. h4cker_zero or paste a link"
                     className="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all font-mono"
                     onKeyDown={(e) => e.key === "Enter" && startInvestigation()}
                   />
