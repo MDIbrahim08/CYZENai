@@ -16,24 +16,39 @@ export function HorizontalBlogScroll({ blogs, onSelect }: Props) {
   const trackRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
-    // Small delay to guarantee DOM is painted and widths are accurate
+    // Safety delay — gives React time to fully paint the DOM so widths are accurate
     const timer = setTimeout(() => {
       const section = sectionRef.current;
       const track = trackRef.current;
       if (!section || !track) return;
 
       const totalScroll = track.scrollWidth - window.innerWidth;
+      if (totalScroll <= 0) return; // nothing to scroll
 
       const ctx = gsap.context(() => {
+        // Animate all cards into view with a stagger as they enter the horizontal viewport
+        gsap.fromTo(
+          track.querySelectorAll(".blog-h-card"),
+          { opacity: 0, y: 50 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.7,
+            stagger: 0.08,
+            ease: "power3.out",
+            delay: 0.1,
+          }
+        );
+
+        // Pin + horizontal scroll
         gsap.to(track, {
           x: () => -totalScroll,
           ease: "none",
           scrollTrigger: {
             trigger: section,
             pin: true,
-            scrub: 1,
+            scrub: 1.2,
             start: "top top",
-            // end is dynamic so it re-calculates correctly after resize
             end: () => `+=${totalScroll}`,
             invalidateOnRefresh: true,
           },
@@ -41,19 +56,22 @@ export function HorizontalBlogScroll({ blogs, onSelect }: Props) {
       }, section);
 
       return () => ctx.revert();
-    }, 120); // 120 ms safety margin for React paint
+    }, 150);
 
     return () => clearTimeout(timer);
   }, [blogs]);
 
   return (
-    <div ref={sectionRef} className="relative overflow-hidden bg-[#05070a]">
-      {/* Section header — sits above the track, doesn't scroll */}
-      <div className="absolute top-0 left-0 w-full z-20 pt-10 pb-6 px-10 pointer-events-none">
+    <div
+      ref={sectionRef}
+      className="relative overflow-hidden bg-[#05070a]"
+    >
+      {/* Section header */}
+      <div className="absolute top-0 left-0 w-full z-20 pt-10 pb-6 px-10 pointer-events-none select-none">
         <span className="text-cyan-400 text-xs font-bold tracking-widest uppercase">
           Complete Library
         </span>
-        <h2 className="text-3xl font-black mt-1 text-white">
+        <h2 className="text-3xl md:text-4xl font-black mt-1 text-white">
           All Articles{" "}
           <span className="text-white/20 text-xl font-medium">
             — scroll to explore →
@@ -65,28 +83,30 @@ export function HorizontalBlogScroll({ blogs, onSelect }: Props) {
       <div
         ref={trackRef}
         className="flex items-center gap-6 px-10 will-change-transform"
-        style={{ paddingTop: "120px", paddingBottom: "48px" }}
+        style={{ paddingTop: "130px", paddingBottom: "60px" }}
       >
         {blogs.map((blog, i) => (
           <BlogCard key={blog.id} blog={blog} index={i} onSelect={onSelect} />
         ))}
 
-        {/* End spacer card */}
-        <div className="flex-shrink-0 w-64 h-[420px] rounded-3xl border border-white/5 bg-white/2 flex flex-col items-center justify-center gap-3 text-white/20">
+        {/* End cap */}
+        <div className="flex-shrink-0 w-56 h-[440px] rounded-3xl border border-white/5 flex flex-col items-center justify-center gap-3 text-white/20 mx-4">
           <span className="text-5xl">📚</span>
-          <p className="text-sm font-semibold text-center px-6">
-            You've reached the end! More articles coming soon.
+          <p className="text-sm font-semibold text-center px-4 leading-snug">
+            You've explored all articles!
           </p>
         </div>
       </div>
 
       {/* Right-edge fade hint */}
-      <div className="absolute top-0 right-0 h-full w-32 pointer-events-none bg-gradient-to-l from-[#05070a] to-transparent z-10" />
+      <div className="absolute top-0 right-0 h-full w-28 pointer-events-none bg-gradient-to-l from-[#05070a] to-transparent z-10" />
+      {/* Left-edge fade */}
+      <div className="absolute top-0 left-0 h-full w-10 pointer-events-none bg-gradient-to-r from-[#05070a] to-transparent z-10" />
     </div>
   );
 }
 
-/* ── Individual card ── */
+/* ── Individual Card ── */
 function BlogCard({
   blog,
   index,
@@ -96,52 +116,21 @@ function BlogCard({
   index: number;
   onSelect: (b: Blog) => void;
 }) {
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  // Staggered entrance fade driven by the horizontal scroll position
-  useLayoutEffect(() => {
-    const card = cardRef.current;
-    if (!card) return;
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        card,
-        { opacity: 0, y: 40 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.6,
-          delay: index * 0.05,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: card,
-            containerAnimation: ScrollTrigger.getAll()[0], // attach to the horizontal scroll
-            start: "left 90%",
-            toggleActions: "play none none none",
-          },
-        }
-      );
-    }, card);
-    return () => ctx.revert();
-  }, [index]);
-
   return (
     <div
-      ref={cardRef}
+      className="blog-h-card flex-shrink-0 w-[320px] md:w-[360px] h-[460px] rounded-3xl overflow-hidden border border-white/8 bg-[#0f1218] cursor-pointer group relative flex flex-col"
+      style={{ opacity: 0 }} // GSAP will animate to opacity:1
       onClick={() => onSelect(blog)}
-      className="flex-shrink-0 w-[340px] h-[460px] rounded-3xl overflow-hidden border border-white/8 bg-[#0f1218] cursor-pointer group relative flex flex-col"
-      style={{ opacity: 0 }} // start hidden; GSAP will reveal
     >
       {/* Image */}
-      <div className="relative h-52 overflow-hidden flex-shrink-0">
+      <div className="relative h-[200px] overflow-hidden flex-shrink-0">
         <img
           src={blog.image}
           alt={blog.title}
           loading="lazy"
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
-        {/* Gradient over image */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0f1218] via-transparent" />
-        {/* Badge */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0f1218] via-[#0f1218]/10 to-transparent" />
         <span className="absolute top-4 left-4 bg-black/60 backdrop-blur-md text-cyan-400 text-[10px] font-bold px-3 py-1 rounded-full border border-cyan-400/30 uppercase tracking-wider">
           {blog.is_user_blog ? "👤 Community" : blog.category}
         </span>
@@ -149,7 +138,7 @@ function BlogCard({
 
       {/* Content */}
       <div className="flex flex-col flex-1 p-5">
-        <div className="flex gap-3 text-[11px] text-white/30 mb-2">
+        <div className="flex gap-3 text-[11px] text-white/30 mb-3">
           <span className="flex items-center gap-1">
             <Calendar size={10} />
             {blog.date}
@@ -165,13 +154,15 @@ function BlogCard({
           {blog.title}
         </h3>
 
-        <p className="text-[13px] text-white/40 line-clamp-3 flex-1">
+        <p className="text-[13px] text-white/40 line-clamp-3 flex-1 leading-relaxed">
           {blog.excerpt}
         </p>
 
         {/* Footer */}
         <div className="mt-4 pt-4 border-t border-white/8 flex items-center justify-between">
-          <span className="text-xs text-white/30">{blog.author}</span>
+          <span className="text-xs text-white/30 truncate max-w-[60%]">
+            {blog.author}
+          </span>
           <span className="flex items-center gap-1 text-cyan-400 text-[11px] font-bold uppercase tracking-wide">
             Read <ArrowRight size={12} />
           </span>
@@ -179,7 +170,7 @@ function BlogCard({
       </div>
 
       {/* Hover glow border */}
-      <div className="absolute inset-0 rounded-3xl border border-cyan-400/0 group-hover:border-cyan-400/30 transition-all duration-500 pointer-events-none" />
+      <div className="absolute inset-0 rounded-3xl border border-cyan-400/0 group-hover:border-cyan-400/40 transition-all duration-500 pointer-events-none" />
     </div>
   );
 }
