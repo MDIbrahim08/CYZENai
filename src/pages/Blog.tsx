@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import Hls from "hls.js";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, X, PenLine, Shield, ArrowRight, BookOpen, Tag, Clock, User, Calendar, Share2, ChevronRight } from "lucide-react";
 import { supabase } from "@/lib/supabase";
@@ -32,6 +33,23 @@ export default function Blog() {
   const [toast, setToast] = useState("");
   const [form, setForm] = useState({ title: "", category: "", image: "", content: "" });
   const searchRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const HLS_SRC = "https://stream.mux.com/BuGGTsiXq1T00WUb8qfURrHkTCbhrkfFLSv4uAOZzdhw.m3u8";
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.canPlayType("application/vnd.apple.mpegurl")) {
+      // Safari — native HLS support
+      video.src = HLS_SRC;
+    } else if (Hls.isSupported()) {
+      const hls = new Hls({ autoStartLoad: true });
+      hls.loadSource(HLS_SRC);
+      hls.attachMedia(video);
+      return () => hls.destroy();
+    }
+  }, []);
 
   useEffect(() => {
     fetchBlogs();
@@ -107,14 +125,14 @@ export default function Blog() {
 
       {/* ── Video Hero ── */}
       <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
-        {/* Video Background */}
+        {/* HLS Video Background */}
         <video
+          ref={videoRef}
           autoPlay
           muted
           loop
           playsInline
           className="absolute inset-0 w-full h-full object-cover z-0"
-          src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260330_145725_08886141-ed95-4a8e-8d6d-b75eaadce638.mp4"
         />
 
         {/* Dark overlay + grid */}
