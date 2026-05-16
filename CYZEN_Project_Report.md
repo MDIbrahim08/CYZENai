@@ -59,7 +59,7 @@ The platform is composed of a responsive, modern web application housing five sp
 5. **CYZEN Intelligence Chat:** A specialized AI chatbot powered by Groq's Llama-3.3-70B model, acting as a real-time expert advisor for any cybersecurity-related queries.
 6. **Community Education Blog:** A dynamic, real-time publishing platform that allows security experts and users to share situational intelligence, malware analyses, and protection tips.
 
-This project demonstrates a full-stack engineering effort. The underlying Machine Learning models and analysis engines were developed by Riyan, while the overarching web application architecture, deployment, UI/UX design, real-time database integration (Supabase), and client-side logic were developed by Mohammed Ibrahim.
+This project demonstrates a full-stack engineering effort. The underlying Machine Learning models, security analysis engines, and the core Community Blog system were developed by Riyan, while the overarching web application architecture, deployment, UI/UX design, real-time database integration (Supabase), and the interactive blog UI/UX were developed and altered by Mohammed Ibrahim.
 
 ---
 
@@ -132,12 +132,12 @@ A real-time AI assistant integrated into the main platform to provide immediate 
 * **Contextual Memory:** Designed to maintain conversation history, allowing for nuanced multi-turn dialogues about complex security vulnerabilities.
 * **System Guardrails:** Implements a strict system prompt that constrains the AI to cybersecurity domains, ensuring accurate and safe expert guidance.
 
-### 4.7 Community Education & Blog System (Developed by Ibrahim)
+### 4.7 Community Education & Blog System (Developed by Riyan & Ibrahim)
 A full-featured content management system built to democratize security intelligence.
-* **Database Integration:** Utilizes Supabase (PostgreSQL) for real-time storage and retrieval of user-generated security articles.
-* **Interactive UI:** Built using `framer-motion` for fluid transitions, category-based filtering, and a "Premium-Tech" visual aesthetic.
-* **Multimedia Integration:** Implemented high-performance video streaming using HLS (HTTP Live Streaming) and `hls.js` for optimized background playback of security-themed visuals.
-* **Publishing Flow:** Includes a secure modal-based editor with client-side validation, allowing authenticated users to post situational awareness updates instantly.
+* **Core Development (Riyan):** Engineered the core blog architecture, content structure, and situational awareness intelligence models.
+* **UI & Frontend Integration (Ibrahim):** Added and altered the entire visual interface using `framer-motion` for fluid transitions, category-based filtering, and a "Premium-Tech" visual aesthetic.
+* **Database Integration (Ibrahim):** Utilized Supabase (PostgreSQL) for real-time storage and retrieval of user-generated security articles.
+* **Multimedia Integration (Ibrahim):** Implemented high-performance video streaming using HLS (HTTP Live Streaming) and `hls.js` for optimized background playback of security-themed visuals.
 
 ---
 
