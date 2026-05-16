@@ -28,7 +28,7 @@ const categoryImages: Record<string, string> = {
   "Network Security": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=400",
   "Travel Security": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&q=80&w=400",
   "Malware Education": "https://images.unsplash.com/photo-1614064641913-6b71a2ea2e88?auto=format&fit=crop&q=80&w=400",
-  "Social Privacy": "https://images.unsplash.com/photo-1516322073741-c22f0dc327f2?auto=format&fit=crop&q=80&w=400",
+  "Social Privacy": "https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&q=80&w=400",
   "Device Safety": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&q=80&w=400",
   "Identity Protection": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=400",
   "Data Recovery": "https://images.unsplash.com/photo-1618044733300-9472054094ee?auto=format&fit=crop&q=80&w=400",
@@ -253,11 +253,6 @@ export default function Blog() {
                     className="h-full w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105 opacity-60"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
-                  
-                  {/* Category icon overlayed on image */}
-                  <div className="absolute bottom-3 left-3 text-2xl drop-shadow-lg">
-                    {categoryIcons[cat] || "📄"}
-                  </div>
                 </div>
                 
                 {/* Card content */}
