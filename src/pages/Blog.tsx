@@ -235,7 +235,7 @@ export default function Blog() {
           <span className="text-cyan-400 text-xs font-bold tracking-widest uppercase">Explore Topics</span>
           <h2 className="text-3xl font-black mt-2">Browse by Category</h2>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div className="flex overflow-x-auto pb-8 pt-2 gap-5 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {categories.map(cat => {
             const count = allBlogs.filter(b => b.category === cat).length;
             const fallbackImage = "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=400";
@@ -243,10 +243,10 @@ export default function Blog() {
               <div
                 key={cat}
                 onClick={() => { setActiveFilter(cat); document.getElementById("all-articles")?.scrollIntoView({ behavior: "smooth" }); }}
-                className="group relative block overflow-hidden rounded-2xl border border-white/10 bg-[#0f1218] text-white transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 cursor-pointer"
+                className="group relative block overflow-hidden rounded-2xl border border-white/10 bg-[#0f1218] text-white transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 cursor-pointer min-w-[260px] flex-shrink-0 snap-start"
               >
-                {/* Image container with aspect ratio */}
-                <div className="aspect-square overflow-hidden bg-black/50 relative">
+                {/* Image container with 4/3 aspect ratio */}
+                <div className="aspect-[4/3] overflow-hidden bg-black/50 relative">
                   <img
                     src={categoryImages[cat] || fallbackImage}
                     alt={cat}
