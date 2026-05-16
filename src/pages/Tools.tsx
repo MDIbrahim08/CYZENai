@@ -62,12 +62,13 @@ const IframeTool = ({ title, url, onBack }: { title: string; url: string; onBack
 /* ───────── MAIN PAGE ───────── */
 
 const Tools = () => {
-  const [activeTool, setActiveTool] = useState<'password' | 'phishing' | 'emergency' | 'posture' | null>(null);
-
+  const [activeTool, setActiveTool] = useState<'password' | 'phishing' | 'emergency' | 'posture' | 'scenarios' | 'gamification' | null>(null);
   if (activeTool === 'password') return <div className="px-6 sm:px-12 min-h-screen bg-[#0a0a0f]"><IframeTool title="Password Shield" url="/tools/password_analyzer/index.html" onBack={() => setActiveTool(null)} /></div>;
   if (activeTool === 'phishing') return <div className="px-6 sm:px-12 min-h-screen bg-[#0a0a0f]"><IframeTool title="Phishing Scanner" url="/tools/phishing_detection_engine/index.html" onBack={() => setActiveTool(null)} /></div>;
   if (activeTool === 'emergency') return <div className="px-6 sm:px-12 min-h-screen bg-[#0a0a0f]"><IframeTool title="Emergency Response Kit" url="/tools/emergency-response-kit/index.html" onBack={() => setActiveTool(null)} /></div>;
   if (activeTool === 'posture') return <div className="px-6 sm:px-12 min-h-screen bg-[#0a0a0f]"><IframeTool title="Security Posture Analyzer" url="/tools/security_posture_analyzer/index.html" onBack={() => setActiveTool(null)} /></div>;
+  if (activeTool === 'scenarios') return <div className="px-6 sm:px-12 min-h-screen bg-[#0a0a0f]"><IframeTool title="Interactive Scenarios" url="/tools/interactive_scenarios/index.html" onBack={() => setActiveTool(null)} /></div>;
+  if (activeTool === 'gamification') return <div className="px-6 sm:px-12 min-h-screen bg-[#0a0a0f]"><IframeTool title="Gamification & Stats" url="/tools/gamification/index.html" onBack={() => setActiveTool(null)} /></div>;
 
   const toolsData = [
     {
@@ -113,8 +114,7 @@ const Tools = () => {
       title: 'Interactive Scenarios',
       subtitle: 'Simulated Attacks',
       desc: 'Learn by doing. Navigate through simulated ransomware and phishing attacks and make critical decisions in a safe environment.',
-      image: 'https://images.unsplash.com/photo-1562813733-b31f71025d54?auto=format&fit=crop&q=80&w=600',
-      comingSoon: true
+      image: 'https://images.unsplash.com/photo-1562813733-b31f71025d54?auto=format&fit=crop&q=80&w=600'
     },
     {
       id: 'gamification',
@@ -123,8 +123,7 @@ const Tools = () => {
       title: 'Gamification & Stats',
       subtitle: 'Track Progress',
       desc: 'Earn badges, track your learning streak, and see how you rank against other cybersecurity learners on the global leaderboard.',
-      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=600',
-      comingSoon: true
+      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=600'
     }
   ];
 
@@ -139,13 +138,7 @@ const Tools = () => {
         {toolsData.map((tool) => (
           <div 
             key={tool.id}
-            onClick={() => {
-              if (tool.comingSoon) {
-                alert("This feature is currently under development and will be available soon!");
-              } else {
-                setActiveTool(tool.id as any);
-              }
-            }}
+            onClick={() => setActiveTool(tool.id as any)}
             className="group relative w-full h-[400px] overflow-hidden rounded-3xl border border-white/10 bg-[#0f1218] shadow-lg transition-all duration-300 ease-in-out hover:shadow-[0_20px_40px_rgba(0,240,255,0.15)] hover:-translate-y-2 cursor-pointer"
           >
             {/* Background Image with Zoom Effect on Hover */}
@@ -166,11 +159,6 @@ const Tools = () => {
                 <div className={`flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-black/40 backdrop-blur-md shadow-xl ${tool.iconColor}`}>
                   <tool.icon size={20} />
                 </div>
-                {tool.comingSoon && (
-                  <span className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[10px] font-bold tracking-wider text-white/70 uppercase">
-                    Coming Soon
-                  </span>
-                )}
               </div>
               
               {/* Middle Section: Details (slides up on hover) */}
@@ -193,7 +181,7 @@ const Tools = () => {
                   <div
                     className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-semibold px-6 py-3 rounded-full hover:bg-white/20 transition-all"
                   >
-                    {tool.comingSoon ? 'Notify Me' : 'Launch Tool'} <Send size={16} />
+                    Launch Tool <Send size={16} />
                   </div>
                 </div>
               </div>

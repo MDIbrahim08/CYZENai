@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import Hls from "hls.js";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, X, PenLine, Shield, ArrowRight, Clock, User, Calendar, Share2 } from "lucide-react";
+import { Search, X, PenLine, Shield, ArrowRight, Clock, User, Calendar, Share2, Bookmark } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { staticBlogs, Blog } from "@/data/blogsData";
@@ -19,7 +19,20 @@ const categoryIcons: Record<string, string> = {
   "Device Safety": "📱",
   "Identity Protection": "👤",
   "Data Recovery": "💾",
-  "Money Safety": "💳",
+  "Money Safety": "💰",
+};
+
+const categoryImages: Record<string, string> = {
+  "Scam Protection": "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80&w=400",
+  "Identity & Access": "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&q=80&w=400",
+  "Network Security": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=400",
+  "Travel Security": "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&q=80&w=400",
+  "Malware Education": "https://images.unsplash.com/photo-1614064641913-6b71a2ea2e88?auto=format&fit=crop&q=80&w=400",
+  "Social Privacy": "https://images.unsplash.com/photo-1516322073741-c22f0dc327f2?auto=format&fit=crop&q=80&w=400",
+  "Device Safety": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&q=80&w=400",
+  "Identity Protection": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=400",
+  "Data Recovery": "https://images.unsplash.com/photo-1618044733300-9472054094ee?auto=format&fit=crop&q=80&w=400",
+  "Money Safety": "https://images.unsplash.com/photo-1613243555988-441166d4d6fd?auto=format&fit=crop&q=80&w=400",
 };
 
 export default function Blog() {
@@ -217,25 +230,56 @@ export default function Blog() {
         <div className="absolute -bottom-32 -right-32 w-[600px] h-[600px] rounded-full bg-violet-600 opacity-5 blur-[120px]" />
       </div>
 
-      {/* Categories */}
       <section className="relative z-10 px-6 max-w-7xl mx-auto mb-20">
         <div className="text-center mb-10">
           <span className="text-cyan-400 text-xs font-bold tracking-widest uppercase">Explore Topics</span>
           <h2 className="text-3xl font-black mt-2">Browse by Category</h2>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {categories.map(cat => (
-            <motion.button
-              key={cat}
-              whileHover={{ y: -6 }}
-              onClick={() => { setActiveFilter(cat); document.getElementById("all-articles")?.scrollIntoView({ behavior: "smooth" }); }}
-              className="bg-[#0f1218] border border-white/8 rounded-2xl p-5 text-left hover:border-cyan-400/50 transition-all group"
-            >
-              <div className="text-3xl mb-3">{categoryIcons[cat] || "📄"}</div>
-              <div className="font-bold text-sm">{cat}</div>
-              <div className="text-xs text-[#64748b] mt-1">{allBlogs.filter(b => b.category === cat).length} guides</div>
-            </motion.button>
-          ))}
+          {categories.map(cat => {
+            const count = allBlogs.filter(b => b.category === cat).length;
+            const fallbackImage = "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=400";
+            return (
+              <div
+                key={cat}
+                onClick={() => { setActiveFilter(cat); document.getElementById("all-articles")?.scrollIntoView({ behavior: "smooth" }); }}
+                className="group relative block overflow-hidden rounded-2xl border border-white/10 bg-[#0f1218] text-white transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1 cursor-pointer"
+              >
+                {/* Image container with aspect ratio */}
+                <div className="aspect-square overflow-hidden bg-black/50 relative">
+                  <img
+                    src={categoryImages[cat] || fallbackImage}
+                    alt={cat}
+                    className="h-full w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105 opacity-60"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                  
+                  {/* Category icon overlayed on image */}
+                  <div className="absolute bottom-3 left-3 text-2xl drop-shadow-lg">
+                    {categoryIcons[cat] || "📄"}
+                  </div>
+                </div>
+                
+                {/* Card content */}
+                <div className="p-4 pt-3 bg-[#0f1218]">
+                  <h3 className="font-bold text-sm leading-tight truncate text-white">{cat}</h3>
+                  <p className="mt-1 text-xs text-white/50">{count} {count === 1 ? 'guide' : 'guides'}</p>
+                </div>
+
+                {/* Save button - appears on hover */}
+                <button
+                  className="absolute top-3 right-3 h-8 w-8 flex items-center justify-center rounded-full bg-white/10 opacity-0 backdrop-blur-md transition-all duration-300 group-hover:opacity-100 hover:bg-white/20 border border-white/20"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    alert("Category saved to bookmarks!");
+                  }}
+                  aria-label="Save category"
+                >
+                  <Bookmark className="h-4 w-4 text-white" />
+                </button>
+              </div>
+            );
+          })}
         </div>
       </section>
 
