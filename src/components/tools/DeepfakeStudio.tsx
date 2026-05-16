@@ -17,7 +17,7 @@ export const DeepfakeStudio = ({ onBack }: { onBack?: () => void }) => {
       const apiKey = import.meta.env.VITE_HUGGINGFACE_API_KEY;
       
       // Try HuggingFace first if we have a key
-      if (apiKey) {
+      if (apiKey && apiKey.length > 5) {
         try {
           const response = await fetch(
             "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
@@ -43,19 +43,25 @@ export const DeepfakeStudio = ({ onBack }: { onBack?: () => void }) => {
         }
       }
 
-      // FALLBACK: Use Pollinations.ai (No API key, No CORS issues)
+      // FALLBACK: Use Pollinations.ai (No API key, No CORS issues if used directly in img)
       console.log("Using Pollinations fallback...");
-      const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&nologo=true&enhance=true`;
+      // Add a random seed to prevent aggressive browser caching
+      const randomSeed = Math.floor(Math.random() * 1000000);
+      const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&nologo=true&enhance=true&seed=${randomSeed}`;
       
-      // Fetch it as a blob so we can show the loading state properly
-      const fallbackResponse = await fetch(pollinationsUrl);
-      if (!fallbackResponse.ok) throw new Error("Fallback generation also failed.");
+      // We don't fetch() it because that triggers CORS errors in the browser.
+      // Instead, we preload it using a standard Image object.
+      await new Promise((resolve, reject) => {
+        const img = new window.Image();
+        img.onload = resolve;
+        img.onerror = () => reject(new Error("Image synthesis failed or timed out."));
+        img.src = pollinationsUrl;
+      });
       
-      const blob = await fallbackResponse.blob();
-      const generatedUrl = URL.createObjectURL(blob);
-      setImageUrl(generatedUrl);
+      setImageUrl(pollinationsUrl);
 
     } catch (err: any) {
+      // If even the fallback fails, show the exact error.
       setError(err.message || "Failed to generate image due to a network error.");
     } finally {
       setLoading(false);
