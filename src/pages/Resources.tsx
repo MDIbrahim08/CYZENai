@@ -74,10 +74,12 @@ const Resources = () => {
           muted
           loop
           playsInline
-          className="w-full h-full object-cover opacity-[0.03] grayscale invert"
-          src="https://stream.mux.com/Kec29dVyJgiPdtWaQtPuEiiGHkJIYQAVUJcNiIHUYeo/medium.mp4"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0f] via-transparent to-[#0a0a0f]" />
+          className="w-full h-full object-cover opacity-15"
+        >
+          <source src="https://stream.mux.com/Kec29dVyJgiPdtWaQtPuEiiGHkJIYQAVUJcNiIHUYeo/medium.mp4" type="video/mp4" />
+          <source src="https://stream.mux.com/Kec29dVyJgiPdtWaQtPuEiiGHkJIYQAVUJcNiIHUYeo.m3u8" type="application/x-mpegURL" />
+        </video>
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0f] via-[#0a0a0f]/80 to-[#0a0a0f]" />
       </div>
 
       <motion.div

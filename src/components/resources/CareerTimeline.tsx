@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 import { TimelineStep } from '@/data/careerPaths';
+import { Badge } from '@/components/ui/badge';
 
 interface CareerTimelineProps {
   steps: TimelineStep[];
