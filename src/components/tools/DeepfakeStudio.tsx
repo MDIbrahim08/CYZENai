@@ -12,6 +12,7 @@ export const DeepfakeStudio = ({ onBack }: { onBack?: () => void }) => {
     if (!prompt.trim()) return;
     setLoading(true);
     setError(null);
+    setImageUrl(null);
 
     try {
       const apiKey = import.meta.env.VITE_HUGGINGFACE_API_KEY;
@@ -36,34 +37,24 @@ export const DeepfakeStudio = ({ onBack }: { onBack?: () => void }) => {
             const generatedUrl = URL.createObjectURL(blob);
             setImageUrl(generatedUrl);
             setLoading(false);
-            return; // Success! Exit early.
+            return;
           }
         } catch (hfError) {
-          console.warn("HuggingFace failed, falling back to Pollinations...", hfError);
+          console.warn("HuggingFace failed, using Pollinations fallback.");
         }
       }
 
-      // FALLBACK: Use Pollinations.ai (No API key, No CORS issues if used directly in img)
-      console.log("Using Pollinations fallback...");
-      // Add a random seed to prevent aggressive browser caching
+      // FALLBACK: Use Pollinations.ai (Standard GET request, zero CORS issues)
       const randomSeed = Math.floor(Math.random() * 1000000);
       const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&nologo=true&enhance=true&seed=${randomSeed}`;
       
-      // We don't fetch() it because that triggers CORS errors in the browser.
-      // Instead, we preload it using a standard Image object.
-      await new Promise((resolve, reject) => {
-        const img = new window.Image();
-        img.onload = resolve;
-        img.onerror = () => reject(new Error("Image synthesis failed or timed out."));
-        img.src = pollinationsUrl;
-      });
-      
+      // Simply set the URL. The <img> tag in the UI will handle the loading.
       setImageUrl(pollinationsUrl);
+      // We keep loading=true so the spinner shows until the <img> onLoad fires.
+      // I will add an onLoad handler to the image in the JSX.
 
     } catch (err: any) {
-      // If even the fallback fails, show the exact error.
-      setError(err.message || "Failed to generate image due to a network error.");
-    } finally {
+      setError("Synthesis encountered a network issue. Please try a shorter prompt.");
       setLoading(false);
     }
   };
@@ -144,7 +135,7 @@ export const DeepfakeStudio = ({ onBack }: { onBack?: () => void }) => {
 
         {/* Right Col: Output */}
         <div className="bg-[#0f1218] border border-white/10 rounded-3xl p-8 shadow-xl flex flex-col items-center justify-center min-h-[500px] relative overflow-hidden group">
-          {loading ? (
+          {loading && (
             <div className="flex flex-col items-center gap-4 z-10">
               <div className="relative">
                 <div className="w-24 h-24 border-4 border-purple-500/20 rounded-full animate-[spin_3s_linear_infinite]" />
@@ -153,26 +144,34 @@ export const DeepfakeStudio = ({ onBack }: { onBack?: () => void }) => {
               </div>
               <p className="text-sm font-medium text-purple-400 animate-pulse tracking-widest uppercase mt-2">Rendering Tensors...</p>
             </div>
-          ) : imageUrl ? (
+          )}
+
+          {imageUrl ? (
             <>
               <img 
                 src={imageUrl} 
                 alt="AI Generated" 
-                className="w-full h-full object-contain rounded-2xl absolute inset-0 z-0 p-2"
+                onLoad={() => setLoading(false)}
+                className={cn(
+                  "w-full h-full object-contain rounded-2xl absolute inset-0 z-0 p-2 transition-opacity duration-700",
+                  loading ? "opacity-0" : "opacity-100"
+                )}
               />
               {/* Overlay on hover */}
-              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 flex items-center justify-center backdrop-blur-sm">
-                <a 
-                  href={imageUrl}
-                  download="synthetic_media.png"
-                  className="bg-white/10 border border-white/20 hover:bg-white/20 text-white px-6 py-3 rounded-full font-semibold flex items-center gap-2 backdrop-blur-md transition-colors"
-                >
-                  <Download className="w-5 h-5" />
-                  Download Image
-                </a>
-              </div>
+              {!loading && (
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 flex items-center justify-center backdrop-blur-sm">
+                  <a 
+                    href={imageUrl}
+                    download="synthetic_media.png"
+                    className="bg-white/10 border border-white/20 hover:bg-white/20 text-white px-6 py-3 rounded-full font-semibold flex items-center gap-2 backdrop-blur-md transition-colors"
+                  >
+                    <Download className="w-5 h-5" />
+                    Download Image
+                  </a>
+                </div>
+              )}
             </>
-          ) : (
+          ) : !loading && (
             <div className="flex flex-col items-center gap-3 text-white/20 z-10">
               <ImageIcon className="w-16 h-16" />
               <p className="text-sm uppercase tracking-widest font-semibold">Output Viewer</p>
