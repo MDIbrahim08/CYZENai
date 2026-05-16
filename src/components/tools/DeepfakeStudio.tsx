@@ -15,32 +15,48 @@ export const DeepfakeStudio = ({ onBack }: { onBack?: () => void }) => {
 
     try {
       const apiKey = import.meta.env.VITE_HUGGINGFACE_API_KEY;
-      if (!apiKey) {
-        throw new Error("Missing HuggingFace API Key. Please add VITE_HUGGINGFACE_API_KEY to your .env file.");
-      }
+      
+      // Try HuggingFace first if we have a key
+      if (apiKey) {
+        try {
+          const response = await fetch(
+            "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
+            {
+              headers: { 
+                Authorization: `Bearer ${apiKey}`,
+                "Content-Type": "application/json",
+              },
+              method: "POST",
+              body: JSON.stringify({ inputs: prompt }),
+            }
+          );
 
-      const response = await fetch(
-        "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
-        {
-          headers: { 
-            Authorization: `Bearer ${apiKey}`,
-            "Content-Type": "application/json",
-          },
-          method: "POST",
-          body: JSON.stringify({ inputs: prompt }),
+          if (response.ok) {
+            const blob = await response.blob();
+            const generatedUrl = URL.createObjectURL(blob);
+            setImageUrl(generatedUrl);
+            setLoading(false);
+            return; // Success! Exit early.
+          }
+        } catch (hfError) {
+          console.warn("HuggingFace failed, falling back to Pollinations...", hfError);
         }
-      );
-
-      if (!response.ok) {
-        const errText = await response.text();
-        throw new Error(`API Error: ${response.statusText}. ${errText.substring(0, 100)}`);
       }
 
-      const blob = await response.blob();
+      // FALLBACK: Use Pollinations.ai (No API key, No CORS issues)
+      console.log("Using Pollinations fallback...");
+      const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&nologo=true&enhance=true`;
+      
+      // Fetch it as a blob so we can show the loading state properly
+      const fallbackResponse = await fetch(pollinationsUrl);
+      if (!fallbackResponse.ok) throw new Error("Fallback generation also failed.");
+      
+      const blob = await fallbackResponse.blob();
       const generatedUrl = URL.createObjectURL(blob);
       setImageUrl(generatedUrl);
+
     } catch (err: any) {
-      setError(err.message || "Failed to generate image.");
+      setError(err.message || "Failed to generate image due to a network error.");
     } finally {
       setLoading(false);
     }
