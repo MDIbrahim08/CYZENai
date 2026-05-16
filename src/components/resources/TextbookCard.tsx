@@ -84,21 +84,21 @@ export const TextbookCard = ({ textbook, onViewDetails }: TextbookCardProps) => 
         </p>
       </div>
 
-      {/* Related Formulas */}
+      {/* Related Tools */}
       <div className="px-4 pb-3">
         <div className="flex flex-wrap gap-1.5">
-          {textbook.relatedFormulas.slice(0, 4).map((formula) => (
+          {textbook.relatedTools.slice(0, 4).map((tool) => (
             <Badge
-              key={formula}
+              key={tool}
               variant="outline"
-              className="text-xs bg-primary/5 border-primary/20 text-primary"
+              className="text-[10px] bg-emerald-500/5 border-emerald-500/20 text-emerald-400 font-bold uppercase tracking-tighter"
             >
-              {formula}
+              {tool}
             </Badge>
           ))}
-          {textbook.relatedFormulas.length > 4 && (
-            <Badge variant="outline" className="text-xs">
-              +{textbook.relatedFormulas.length - 4}
+          {textbook.relatedTools.length > 4 && (
+            <Badge variant="outline" className="text-[10px] border-white/10 text-white/40">
+              +{textbook.relatedTools.length - 4}
             </Badge>
           )}
         </div>
@@ -110,17 +110,17 @@ export const TextbookCard = ({ textbook, onViewDetails }: TextbookCardProps) => 
           variant="outline"
           size="sm"
           onClick={() => onViewDetails(textbook)}
-          className="flex-1 rounded-xl"
+          className="flex-1 rounded-xl border-white/10 text-white/40 hover:text-white hover:border-white/20 text-[10px] font-bold uppercase tracking-widest"
         >
-          <BookOpen className="w-4 h-4 mr-2" />
-          View Details
+          <BookOpen className="w-3 h-3 mr-2" />
+          Technical Specs
         </Button>
         <Button
           size="sm"
           onClick={handleGetBook}
-          className="flex-1 gradient-teal text-white rounded-xl"
+          className="flex-1 bg-emerald-500 text-black hover:bg-emerald-400 rounded-xl font-bold uppercase tracking-widest text-[10px]"
         >
-          Get Book
+          Secure Copy
           <ExternalLink className="w-3 h-3 ml-2" />
         </Button>
       </div>

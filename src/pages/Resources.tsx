@@ -24,7 +24,7 @@ import {
 } from '@/data/resources';
 import { careerTimeline, currentStepDetails, countryPaths } from '@/data/careerPaths';
 
-const categories = ['All', 'Descriptive', 'Inferential', 'Correlation', 'Effect Sizes'];
+const categories = ['All', 'Network Security', 'Cryptography', 'Social Engineering', 'Cloud Security', 'Forensics'];
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -70,54 +70,56 @@ const Resources = () => {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="pb-24 space-y-6"
+      className="pb-24 space-y-8"
     >
       {/* Header */}
-      <motion.div variants={itemVariants} className="space-y-1">
-        <h1 className="font-heading font-bold text-2xl">📚 Learning Resources</h1>
-        <p className="text-text-secondary text-sm">
-          Videos, textbooks, and career guidance to deepen your understanding
+      <motion.div variants={itemVariants} className="space-y-2">
+        <h1 className="font-heading font-bold text-4xl text-white tracking-tight">
+          <span className="text-emerald-400">Security</span> Intelligence Hub
+        </h1>
+        <p className="text-white/40 text-lg max-w-2xl">
+          Elite curated videos, high-fidelity technical textbooks, and global career roadmaps to forge your path in cybersecurity.
         </p>
       </motion.div>
 
       {/* Main Tabs: Resources vs Career */}
       <motion.div variants={itemVariants}>
         <Tabs value={mainTab} onValueChange={(v) => setMainTab(v as 'resources' | 'career')}>
-          <TabsList className="grid w-full grid-cols-2 bg-muted rounded-2xl p-1 h-auto">
+          <TabsList className="grid w-full grid-cols-2 bg-white/5 border border-white/10 rounded-2xl p-1 h-auto backdrop-blur-md">
             <TabsTrigger 
               value="resources" 
-              className="rounded-xl py-3 data-[state=active]:bg-white data-[state=active]:shadow-sm"
+              className="rounded-xl py-4 data-[state=active]:bg-emerald-500 data-[state=active]:text-black transition-all font-bold uppercase tracking-widest text-[10px]"
             >
               <BookMarked className="w-4 h-4 mr-2" />
-              Resources
+              Intelligence Center
             </TabsTrigger>
             <TabsTrigger 
               value="career"
-              className="rounded-xl py-3 data-[state=active]:bg-white data-[state=active]:shadow-sm"
+              className="rounded-xl py-4 data-[state=active]:bg-emerald-500 data-[state=active]:text-black transition-all font-bold uppercase tracking-widest text-[10px]"
             >
               <GraduationCap className="w-4 h-4 mr-2" />
-              Career Path
+              Career Roadmap
             </TabsTrigger>
           </TabsList>
 
           {/* Resources Tab Content */}
-          <TabsContent value="resources" className="mt-6 space-y-6">
+          <TabsContent value="resources" className="mt-8 space-y-8">
             {/* Resource Type Tabs */}
             <Tabs value={resourceTab} onValueChange={(v) => setResourceTab(v as 'videos' | 'textbooks')}>
-              <TabsList className="grid w-full grid-cols-2 bg-muted rounded-2xl p-1 h-auto">
+              <TabsList className="flex w-fit bg-white/5 border border-white/10 rounded-xl p-1 mb-8">
                 <TabsTrigger 
                   value="videos" 
-                  className="rounded-xl py-2.5 data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                  className="rounded-lg px-8 py-2 data-[state=active]:bg-emerald-500/10 data-[state=active]:text-emerald-400 transition-all text-xs font-bold uppercase tracking-wider"
                 >
-                  <Video className="w-4 h-4 mr-2" />
-                  🎬 Videos
+                  <Video className="w-3.5 h-3.5 mr-2" />
+                  Technical Videos
                 </TabsTrigger>
                 <TabsTrigger 
                   value="textbooks"
-                  className="rounded-xl py-2.5 data-[state=active]:bg-white data-[state=active]:shadow-sm"
+                  className="rounded-lg px-8 py-2 data-[state=active]:bg-emerald-500/10 data-[state=active]:text-emerald-400 transition-all text-xs font-bold uppercase tracking-wider"
                 >
-                  <BookOpen className="w-4 h-4 mr-2" />
-                  📖 Textbooks
+                  <BookOpen className="w-3.5 h-3.5 mr-2" />
+                  Whitepapers & Books
                 </TabsTrigger>
               </TabsList>
 
@@ -135,7 +137,7 @@ const Resources = () => {
                 </div>
 
                 {/* Category Filters */}
-                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
                   {categories.map((cat) => (
                     <button
                       key={cat}
@@ -143,10 +145,10 @@ const Resources = () => {
                         setVideoCategory(cat);
                         setVideoSearch('');
                       }}
-                      className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all
+                      className={`px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-all border
                         ${videoCategory === cat 
-                          ? 'gradient-purple text-white' 
-                          : 'bg-muted text-text-secondary hover:bg-muted/80'
+                          ? 'bg-emerald-500 text-black border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.3)]' 
+                          : 'bg-white/5 text-white/40 border-white/10 hover:border-white/20'
                         }`}
                     >
                       {cat}
@@ -244,24 +246,24 @@ const Resources = () => {
           </TabsContent>
 
           {/* Career Path Tab Content */}
-          <TabsContent value="career" className="mt-6 space-y-6">
+          <TabsContent value="career" className="mt-10 space-y-10">
             {/* Career Header */}
             <motion.div 
               variants={itemVariants}
-              className="gradient-pink rounded-3xl p-5 text-white relative overflow-hidden"
+              className="bg-emerald-500 rounded-3xl p-8 text-black relative overflow-hidden shadow-2xl"
             >
-              <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-white/10 -translate-y-1/2 translate-x-1/2" />
-              <div className="absolute bottom-4 right-8 w-16 h-16 rounded-full bg-white/5" />
+              <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-black/5 -translate-y-1/2 translate-x-1/2" />
+              <div className="absolute bottom-4 right-8 w-32 h-32 rounded-full bg-black/5" />
               
               <div className="relative z-10">
-                <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-3">
-                  <GraduationCap className="w-6 h-6" />
+                <div className="w-16 h-16 rounded-2xl bg-black/10 backdrop-blur-sm flex items-center justify-center mb-6">
+                  <GraduationCap className="w-8 h-8" />
                 </div>
-                <h2 className="font-heading font-bold text-xl">
-                  🎓 Clinical Psychology Career Path
+                <h2 className="font-heading font-black text-3xl uppercase tracking-tighter">
+                  Cybersecurity Specialist Roadmap
                 </h2>
-                <p className="text-white/80 text-sm mt-1">
-                  Your roadmap from BA Psychology to Clinical Psychology practice
+                <p className="text-black/60 text-lg mt-2 font-medium">
+                  From Certifications to Chief Information Security Officer (CISO)
                 </p>
               </div>
             </motion.div>
@@ -281,7 +283,7 @@ const Resources = () => {
               <div className="card-elevated p-5 rounded-2xl space-y-5">
                 {/* Duration */}
                 <div className="flex items-center gap-2">
-                  <Badge className="gradient-purple text-white">
+                  <Badge className="bg-emerald-500 text-black font-bold px-3 py-1">
                     Duration: {currentStepDetails.duration}
                   </Badge>
                 </div>

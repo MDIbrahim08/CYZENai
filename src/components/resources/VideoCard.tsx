@@ -63,41 +63,41 @@ export const VideoCard = ({ video, onWatch }: VideoCardProps) => {
           {video.title}
         </h3>
 
-        {/* Difficulty & Formula */}
+        {/* Difficulty & Tool */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-0.5">
             {difficultyStars.map((filled, i) => (
               <Star
                 key={i}
                 className={`w-3.5 h-3.5 ${
-                  filled ? 'text-gold fill-gold' : 'text-muted-foreground/30'
+                  filled ? 'text-emerald-400 fill-emerald-400' : 'text-white/10'
                 }`}
               />
             ))}
           </div>
-          <Badge variant="outline" className="text-xs bg-primary/5 border-primary/20 text-primary">
-            {video.relatedFormula}
+          <Badge variant="outline" className="text-[10px] bg-emerald-500/5 border-emerald-500/20 text-emerald-400 uppercase font-bold tracking-tighter">
+            {video.relatedTool}
           </Badge>
         </div>
 
         {/* Description */}
-        <p className="text-sm text-text-secondary line-clamp-2">
+        <p className="text-xs text-white/40 line-clamp-2">
           {video.description}
         </p>
 
         {/* Creator */}
-        <p className="text-xs text-muted-foreground">
+        <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">
           {video.creator}
         </p>
 
         {/* Watch Button */}
         <Button
           onClick={() => onWatch(video)}
-          className="w-full gradient-purple text-white rounded-xl"
+          className="w-full bg-emerald-500 text-black hover:bg-emerald-400 rounded-xl font-bold uppercase tracking-widest text-[10px]"
           size="sm"
         >
-          <Play className="w-4 h-4 mr-2 fill-current" />
-          Watch Now
+          <Play className="w-3 h-3 mr-2 fill-current" />
+          Access Intelligence
           <ExternalLink className="w-3 h-3 ml-2" />
         </Button>
       </div>
