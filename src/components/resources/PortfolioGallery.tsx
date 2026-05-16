@@ -29,7 +29,7 @@ export function PortfolioGallery({
   onVideoClick,
   className = "",
   maxHeight = 120,
-  spacing = "-space-x-72 md:-space-x-80",
+  spacing = "-space-x-24 md:-space-x-32 lg:-space-x-40",
   pauseOnHover = true,
   marqueeRepeat = 4
 }: PortfolioGalleryProps) {
@@ -50,7 +50,7 @@ export function PortfolioGallery({
               const distanceFromMiddle = Math.abs(index - middle)
               const staggerOffset = maxHeight - distanceFromMiddle * 20
 
-              const zIndex = totalVideos - index
+              const zIndex = isHovered ? 100 : totalVideos - index;
 
               const isHovered = hoveredIndex === index
               const isOtherHovered = hoveredIndex !== null && hoveredIndex !== index
@@ -66,16 +66,16 @@ export function PortfolioGallery({
                     zIndex: zIndex,
                   }}
                   initial={{
-                    transform: `perspective(5000px) rotateY(-45deg) translateY(200px)`,
+                    transform: `perspective(5000px) rotateY(-30deg) translateY(200px)`,
                     opacity: 0,
                   }}
                   animate={{
-                    transform: `perspective(5000px) rotateY(-45deg) translateY(${yOffset}px)`,
+                    transform: `perspective(5000px) rotateY(-30deg) translateY(${yOffset}px)`,
                     opacity: 1,
                   }}
                   transition={{
-                    duration: 0.3,
-                    delay: index * 0.05,
+                    duration: 0.5,
+                    delay: index * 0.08,
                     ease: [0.23, 1, 0.32, 1],
                   }}
                   onHoverStart={() => setHoveredIndex(index)}
@@ -83,24 +83,22 @@ export function PortfolioGallery({
                   onClick={() => onVideoClick(video)}
                 >
                   <div
-                    className="relative aspect-video w-64 md:w-80 lg:w-96 rounded-2xl overflow-hidden border border-white/10 transition-all duration-500 group-hover:border-emerald-500/50 group-hover:shadow-[0_0_30px_rgba(16,185,129,0.2)]"
+                    className="relative aspect-video w-64 md:w-80 lg:w-[400px] rounded-3xl overflow-hidden border border-white/10 transition-all duration-500 group-hover:border-emerald-500/50 group-hover:shadow-[0_0_50px_rgba(16,185,129,0.2)] group-hover:rotate-0"
                     style={{
                       boxShadow: `
-                        rgba(0, 0, 0, 0.01) 0.796192px 0px 0.796192px 0px,
-                        rgba(0, 0, 0, 0.03) 2.41451px 0px 2.41451px 0px,
-                        rgba(0, 0, 0, 0.08) 6.38265px 0px 6.38265px 0px,
-                        rgba(0, 0, 0, 0.25) 20px 0px 20px 0px
+                        rgba(0, 0, 0, 0.1) 0px 4px 6px -1px,
+                        rgba(0, 0, 0, 0.06) 0px 2px 4px -1px
                       `,
                     }}
                   >
                     <img
-                      src={video.thumbnail}
+                      src={video.thumbnailUrl}
                       alt={video.title}
-                      className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700"
+                      className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-1000"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-                      <p className="text-emerald-400 text-[10px] font-black uppercase tracking-widest mb-1">{video.category}</p>
-                      <h4 className="text-white font-heading font-bold text-sm leading-tight">{video.title}</h4>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-8">
+                      <p className="text-emerald-400 text-xs font-black uppercase tracking-[0.3em] mb-2">{video.category}</p>
+                      <h4 className="text-white font-heading font-black text-xl leading-tight tracking-tight">{video.title}</h4>
                     </div>
                   </div>
                 </motion.div>
@@ -140,7 +138,7 @@ export function PortfolioGallery({
                         className="relative aspect-video w-64 rounded-xl overflow-hidden border border-white/10"
                       >
                         <img
-                          src={video.thumbnail}
+                          src={video.thumbnailUrl}
                           alt={video.title}
                           className="w-full h-full object-cover"
                         />

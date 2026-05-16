@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useMemo, useRef } from 'react';
+import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
 import { Search, Video, BookOpen, GraduationCap, CheckCircle2, BookMarked, Sparkles } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -46,9 +46,20 @@ const Resources = () => {
   const [videoCategory, setVideoCategory] = useState('All');
   const [textbookCategory, setTextbookCategory] = useState('All');
   const [videoSearch, setVideoSearch] = useState('');
-  const [textbookSearch, setTextbookSearch] = useState('');
   const [selectedVideo, setSelectedVideo] = useState<VideoResource | null>(null);
   const [selectedTextbook, setSelectedTextbook] = useState<TextbookResource | null>(null);
+  
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end end"]
+  });
+
+  const pathLength = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
 
   // Filter videos
   const filteredVideos = useMemo(() => {
@@ -90,15 +101,15 @@ const Resources = () => {
         className="relative z-10 pb-24 space-y-12"
       >
         {/* Header */}
-        <motion.div variants={itemVariants} className="space-y-4 pt-12">
-          <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-[10px] font-black uppercase tracking-[0.3em] px-4 py-1.5">
-            Classified Intelligence
+        <motion.div variants={itemVariants} className="space-y-3 pt-12 text-center md:text-left">
+          <Badge className="bg-emerald-500/10 text-emerald-400/80 border-emerald-500/20 text-[9px] font-black uppercase tracking-[0.4em] px-4 py-1.5 mx-auto md:mx-0">
+            Intelligence Stream
           </Badge>
-          <h1 className="font-heading font-black text-5xl md:text-7xl text-white tracking-tighter leading-none">
-            SECURITY <span className="text-emerald-500">HUBS</span>
+          <h1 className="font-heading font-black text-4xl md:text-6xl text-white tracking-tighter leading-none">
+            SECURITY <span className="text-emerald-500/80">HUBS</span>
           </h1>
-          <p className="text-white/70 text-lg max-w-xl font-medium leading-relaxed">
-            Curated technical intelligence and strategic career roadmaps for elite cybersecurity operators.
+          <p className="text-white/60 text-base md:text-lg max-w-xl font-medium leading-relaxed mx-auto md:mx-0">
+            Operational intelligence and strategic roadmaps for cybersecurity operators.
           </p>
         </motion.div>
 
@@ -269,22 +280,44 @@ const Resources = () => {
                 <div className="w-16 h-16 rounded-2xl bg-black/10 backdrop-blur-sm flex items-center justify-center mb-6">
                   <GraduationCap className="w-8 h-8" />
                 </div>
-                <h2 className="font-heading font-black text-3xl uppercase tracking-tighter">
-                  Cybersecurity Specialist Roadmap
-                </h2>
-                <p className="text-black/60 text-lg mt-2 font-medium">
-                  From Certifications to Chief Information Security Officer (CISO)
-                </p>
+            <div className="relative" ref={containerRef}>
+              {/* Journey Line SVG */}
+              <div className="absolute left-6 top-12 bottom-12 w-8 pointer-events-none hidden md:block">
+                <svg width="2" height="100%" className="overflow-visible">
+                  <line
+                    x1="1"
+                    y1="0"
+                    x2="1"
+                    y2="100%"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeOpacity="0.05"
+                  />
+                  <motion.line
+                    x1="1"
+                    y1="0"
+                    x2="1"
+                    y2="100%"
+                    stroke="#10b981"
+                    strokeWidth="2"
+                    style={{ pathLength }}
+                  />
+                </svg>
               </div>
-            </motion.div>
 
-            {/* Timeline */}
-            <motion.section variants={itemVariants} className="space-y-4">
-              <h3 className="font-heading font-semibold text-lg">📍 Overview Timeline</h3>
-              <div className="card-elevated p-5 rounded-2xl">
-                <CareerTimeline steps={careerTimeline} />
-              </div>
-            </motion.section>
+              {/* Timeline Section */}
+              <motion.section variants={itemVariants} className="space-y-6 relative z-10">
+                <div className="flex items-center gap-4 mb-2">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                    <Sparkles className="w-5 h-5 text-emerald-500" />
+                  </div>
+                  <h3 className="font-heading font-black text-xl uppercase tracking-tight text-white">Mission Roadmap</h3>
+                </div>
+                <div className="bg-[#161b22]/50 backdrop-blur-xl border border-white/5 p-8 rounded-3xl">
+                  <CareerTimeline steps={careerTimeline} />
+                </div>
+              </motion.section>
+            </div>
 
             {/* Current Step Details */}
             <motion.section variants={itemVariants} className="space-y-4">
