@@ -93,10 +93,20 @@ export const OSINTDetective = ({ onBack }: OSINTDetectiveProps) => {
               method: "POST",
               body: JSON.stringify({
                 inputs: `<s>[INST] You are a professional OSINT Investigator. 
-                Perform a professional IDENTITY ANALYSIS for the username: "${username}". 
-                FOUND PROFILES: ${foundList || "Multiple hits found across social networks"}
-                GENERATE AN INVESTIGATIVE REPORT with Footprint, Correlation, and Risks. [/INST]`,
-                parameters: { max_new_tokens: 800, temperature: 0.7 }
+                Perform a DIGITAL EXPOSURE ANALYSIS for the username: "${username}". 
+                FOUND ON: ${foundList || "Multiple social platforms"}
+                
+                DO NOT invent specific numbers (like follower counts) or specific job titles unless you are 100% certain. 
+                Instead, analyze the **RISK PATTERNS** of this digital footprint.
+                
+                STRUCTURE YOUR REPORT:
+                1. **OSINT VISIBILITY SCORE**: How easy is it to find this person? (High/Medium/Low)
+                2. **IDENTITY CONSISTENCY**: Does the handle usage across ${foundList} suggest a single trackable identity?
+                3. **PROFESSIONAL ATTACK SURFACE**: Based on these platforms, what are the likely social engineering angles (e.g., tech-related phishing)?
+                4. **PRIVACY RECOMMENDATIONS**: Specific steps to decouple this identity.
+                
+                TONE: Clinical, analytical, and cautious. State that this is a "Probabilistic Identity Profile" for security awareness. [/INST]`,
+                parameters: { max_new_tokens: 800, temperature: 0.5 }
               }),
             }
           );
