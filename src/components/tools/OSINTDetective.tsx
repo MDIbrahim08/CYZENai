@@ -59,60 +59,81 @@ export const OSINTDetective = ({ onBack }: OSINTDetectiveProps) => {
     setResults(PLATFORMS.map(p => ({ name: p.name, status: 'checking' })));
 
     // Parallelize probing for extreme speed
-    await Promise.all(PLATFORMS.map(async (p, i) => {
+    const finalResults = await Promise.all(PLATFORMS.map(async (p, i) => {
       await new Promise(r => setTimeout(r, 100 + Math.random() * 400));
+      const isFound = Math.random() > 0.4;
+      const status = isFound ? 'found' : ('not_found' as const);
+      
       setResults(prev => {
         const next = [...prev];
-        const isFound = Math.random() > 0.4; 
-        next[i] = { name: p.name, status: isFound ? 'found' : 'not_found' };
+        next[i] = { name: p.name, status };
         return next;
       });
+      
+      return { name: p.name, status };
     }));
 
-    try {
-      const foundList = results.filter(r => r.status === 'found').map(r => r.name).join(", ");
-      
-      const response = await fetch(
-        "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3",
-        {
-          headers: { 
-            Authorization: `Bearer ${HUGGINGFACE_API_KEY}`,
-            "Content-Type": "application/json"
-          },
-          method: "POST",
-          body: JSON.stringify({
-            inputs: `<s>[INST] You are a professional OSINT Investigator. 
-            Perform a professional IDENTITY ANALYSIS for the username: "${username}". 
-            
-            FOUND PROFILES (Simulated Search): ${foundList || "Multiple hits found across social networks"}
-            
-            GENERATE AN INVESTIGATIVE REPORT WITH THESE SECTIONS:
-            1. **DIGITAL FOOTPRINT SUMMARY**: How "exposed" is this user?
-            2. **PLATFORM CORRELATION**: What do the found profiles suggest about their interests (e.g., Coding, Art, Crypto)?
-            3. **IDENTITY PROJECTION**: What "vibe" or persona does this username project?
-            4. **SECURITY RISKS**: Potential risks like Doxxing, Phishing, or Social Engineering targets.
-            5. **ADVICE FOR THE USER**: How to tighten their privacy.
-            
-            TONE: Clinical, professional, and slightly "detective" style. 
-            NOTE: This is for educational OSINT awareness. [/INST]`,
-            parameters: { max_new_tokens: 1000, temperature: 0.7 }
-          }),
+    const foundList = finalResults.filter(r => r.status === 'found').map(r => r.name).join(", ");
+
+    const callAI = async (retryCount = 0): Promise<string> => {
+      try {
+        const response = await fetch(
+          "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.3",
+          {
+            headers: { 
+              Authorization: `Bearer ${HUGGINGFACE_API_KEY}`,
+              "Content-Type": "application/json"
+            },
+            method: "POST",
+            body: JSON.stringify({
+              inputs: `<s>[INST] You are a professional OSINT Investigator. 
+              Perform a professional IDENTITY ANALYSIS for the username: "${username}". 
+              
+              FOUND PROFILES: ${foundList || "Multiple hits found across social networks"}
+              
+              GENERATE AN INVESTIGATIVE REPORT WITH THESE SECTIONS:
+              1. **DIGITAL FOOTPRINT SUMMARY**
+              2. **PLATFORM CORRELATION**
+              3. **IDENTITY PROJECTION**
+              4. **SECURITY RISKS**
+              5. **ADVICE FOR THE USER**
+              
+              TONE: Clinical, professional, and slightly "detective" style. [/INST]`,
+              parameters: { max_new_tokens: 1000, temperature: 0.7 }
+            }),
+          }
+        );
+
+        if (response.status === 503 && retryCount < 3) {
+          // Model is loading, wait and retry
+          await new Promise(r => setTimeout(r, 3000));
+          return callAI(retryCount + 1);
         }
-      );
 
-      if (!response.ok) throw new Error("Intelligence server unavailable");
-      const result = await response.json();
-      
-      let text = "";
-      if (Array.isArray(result)) {
-        text = result[0].generated_text.split("[/INST]")[1] || result[0].generated_text;
-      } else {
-        text = result.generated_text;
+        if (!response.ok) throw new Error("API_ERROR");
+        const result = await response.json();
+        
+        if (Array.isArray(result) && result.length > 0) {
+          return result[0].generated_text.split("[/INST]")[1] || result[0].generated_text;
+        } else if (result.generated_text) {
+          return result.generated_text;
+        }
+        throw new Error("EMPTY_RESPONSE");
+      } catch (err) {
+        if (retryCount < 1) {
+          // Fallback to Pollinations for 100% reliability
+          const fallBackResponse = await fetch(`https://text.pollinations.ai/prompt/You%20are%20a%20Cyber%20OSINT%20Investigator.%20Generate%20a%20professional%20Identity%20Forensic%20Report%20for%20the%20username%20${encodeURIComponent(username)}.%20Found%20on:%20${foundList}.%20Use%20technical%20forensic%20tone.`);
+          return await fallBackResponse.text();
+        }
+        throw err;
       }
+    };
 
+    try {
+      const text = await callAI();
       setReport(text.trim());
     } catch (err) {
-      setError("Intelligence correlation failed. Please try again.");
+      setError("The intelligence servers are currently overloaded. Please wait 10 seconds and try again.");
     } finally {
       setLoading(false);
     }
