@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import Hls from "hls.js";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, X, PenLine, Shield, ArrowRight, BookOpen, Tag, Clock, User, Calendar, Share2, ChevronRight } from "lucide-react";
+import { Search, X, PenLine, Shield, ArrowRight, Clock, User, Calendar, Share2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { staticBlogs, Blog } from "@/data/blogsData";
+import { HorizontalBlogScroll } from "@/components/ui/HorizontalBlogScroll";
 
 const CATEGORIES = ["All Topics", "Scam Protection", "Identity & Access", "Network Security", "Travel Security", "Malware Education", "Social Privacy", "Device Safety", "Identity Protection", "Data Recovery", "Money Safety"];
 
@@ -264,57 +265,37 @@ export default function Blog() {
         </section>
       )}
 
-      {/* All Articles */}
-      <section id="all-articles" className="relative z-10 px-6 max-w-7xl mx-auto mb-20">
-        <div className="text-center mb-10">
-          <span className="text-cyan-400 text-xs font-bold tracking-widest uppercase">Complete Library</span>
-          <h2 className="text-3xl font-black mt-2">All Articles</h2>
-        </div>
-
-        {/* Filters */}
-        <div className="flex flex-wrap justify-center gap-3 mb-10">
+      {/* All Articles — GSAP Horizontal Scroll Gallery */}
+      <section className="relative z-10">
+        {/* Filter bar */}
+        <div className="flex flex-wrap justify-center gap-3 px-6 pt-16 pb-8 max-w-7xl mx-auto">
           {["All Topics", ...categories].map(cat => (
             <button key={cat} onClick={() => setActiveFilter(cat)}
-              className={`px-4 py-2 rounded-full text-sm font-semibold border transition-all ${activeFilter === cat ? "bg-cyan-400 text-black border-cyan-400 shadow-[0_0_20px_rgba(0,240,255,0.3)]" : "bg-[#0f1218] border-white/10 text-[#94a3b8] hover:border-cyan-400/50 hover:text-white"}`}>
+              className={`px-4 py-2 rounded-full text-sm font-semibold border transition-all ${
+                activeFilter === cat
+                  ? "bg-cyan-400 text-black border-cyan-400 shadow-[0_0_20px_rgba(0,240,255,0.3)]"
+                  : "bg-[#0f1218] border-white/10 text-[#94a3b8] hover:border-cyan-400/50 hover:text-white"
+              }`}>
               {cat}
             </button>
           ))}
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-20"><div className="w-8 h-8 border-2 border-cyan-500/20 border-t-cyan-500 rounded-full animate-spin" /></div>
+          <div className="flex justify-center py-20">
+            <div className="w-8 h-8 border-2 border-cyan-500/20 border-t-cyan-500 rounded-full animate-spin" />
+          </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-20 text-[#64748b]">
             <Search size={48} className="mx-auto mb-4 opacity-30" />
             <p className="text-lg">No articles found. Try a different search.</p>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map((blog, i) => (
-              <motion.div key={blog.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
-                onClick={() => setSelectedBlog(blog)}
-                className="bg-[#0f1218] border border-white/8 rounded-2xl overflow-hidden cursor-pointer hover:-translate-y-2 hover:border-cyan-400/30 hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] transition-all flex flex-col group">
-                <div className="relative h-48 overflow-hidden">
-                  <img src={blog.image} alt={blog.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <span className="absolute top-4 left-4 bg-[#0f1218]/80 backdrop-blur-md text-cyan-400 text-xs font-bold px-3 py-1 rounded-full border border-cyan-400/30">
-                    {blog.is_user_blog ? "👤 Community" : blog.category}
-                  </span>
-                </div>
-                <div className="p-5 flex flex-col flex-1">
-                  <div className="flex gap-3 text-xs text-[#64748b] mb-2">
-                    <span className="flex items-center gap-1"><Calendar size={12} />{blog.date}</span>
-                    <span>•</span>
-                    <span className="flex items-center gap-1"><Clock size={12} />{blog.readTime}</span>
-                  </div>
-                  <h3 className="font-bold text-base leading-snug mb-2 group-hover:text-cyan-400 transition-colors line-clamp-2">{blog.title}</h3>
-                  <p className="text-sm text-[#94a3b8] line-clamp-3 flex-1">{blog.excerpt}</p>
-                  <div className="mt-4 pt-4 border-t border-white/8 flex items-center text-cyan-400 text-xs font-bold uppercase tracking-wide gap-1">
-                    Read Article <ArrowRight size={14} />
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          <HorizontalBlogScroll
+            key={activeFilter + searchQuery} // remount when filter/search changes so GSAP recalculates
+            blogs={filtered}
+            onSelect={setSelectedBlog}
+          />
         )}
       </section>
 
