@@ -295,7 +295,7 @@ export default function Blog() {
                           {blog.readTime}
                         </span>
                       </div>
-                      <button className="bg-cyan-400 text-black font-bold px-6 py-2.5 rounded-xl hover:brightness-110 flex items-center shadow-[0_0_20px_rgba(0,240,255,0.3)]">
+                      <button className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white font-semibold px-6 py-2.5 rounded-xl hover:bg-white/20 transition-all">
                         Read Now <ArrowRight className="ml-2 h-4 w-4" />
                       </button>
                     </div>

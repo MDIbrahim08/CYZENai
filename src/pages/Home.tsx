@@ -174,7 +174,7 @@ const Home = () => {
                     <div className="flex items-end justify-end">
                       <Link
                         to={f.path}
-                        className="flex items-center gap-2 bg-cyan-400 text-black text-sm font-bold px-6 py-3 rounded-full hover:brightness-110 shadow-[0_0_20px_rgba(0,240,255,0.3)] transition-all"
+                        className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-semibold px-6 py-3 rounded-full hover:bg-white/20 transition-all"
                       >
                         Try Now <ArrowRight size={16} />
                       </Link>
