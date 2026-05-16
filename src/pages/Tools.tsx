@@ -69,6 +69,45 @@ const Tools = () => {
   if (activeTool === 'emergency') return <div className="px-6 sm:px-12 min-h-screen bg-[#0a0a0f]"><IframeTool title="Emergency Response Kit" url="/tools/emergency-response-kit/index.html" onBack={() => setActiveTool(null)} /></div>;
   if (activeTool === 'posture') return <div className="px-6 sm:px-12 min-h-screen bg-[#0a0a0f]"><IframeTool title="Security Posture Analyzer" url="/tools/security_posture_analyzer/index.html" onBack={() => setActiveTool(null)} /></div>;
 
+  const toolsData = [
+    {
+      id: 'password',
+      icon: ShieldQuestion,
+      iconColor: 'text-cyan-400',
+      title: 'Password Shield',
+      subtitle: 'Credential Analysis',
+      desc: 'Analyze your credentials for vulnerabilities using our trained offline model. Check against complexity rules and common hacking patterns.',
+      image: 'https://images.unsplash.com/photo-1614064641913-6b71a2ea2e88?auto=format&fit=crop&q=80&w=600'
+    },
+    {
+      id: 'phishing',
+      icon: Search,
+      iconColor: 'text-red-400',
+      title: 'Phishing Scanner',
+      subtitle: 'Threat Detection',
+      desc: 'Scan suspicious emails, SMS, or web content using our trained detection engine for social engineering tactics and malicious intent.',
+      image: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80&w=600'
+    },
+    {
+      id: 'emergency',
+      icon: Activity,
+      iconColor: 'text-orange-400',
+      title: 'Emergency Response',
+      subtitle: 'Incident Mitigation',
+      desc: 'A comprehensive trained toolkit to quickly isolate, analyze, and mitigate active security breaches in your network.',
+      image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=600'
+    },
+    {
+      id: 'posture',
+      icon: Shield,
+      iconColor: 'text-purple-400',
+      title: 'Posture Analyzer',
+      subtitle: 'System Auditing',
+      desc: 'Trained auditing tool that evaluates your system configuration against industry best practices and highlights misconfigurations.',
+      image: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=600'
+    }
+  ];
+
   return (
     <div className="py-24 px-6 sm:px-12 max-w-6xl mx-auto min-h-screen animate-in fade-in duration-500">
       <div className="text-center mb-16">
@@ -77,77 +116,59 @@ const Tools = () => {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-        {/* PASSWORD TOOL CARD */}
-        <div 
-          onClick={() => setActiveTool('password')}
-          className="liquid-glass rounded-[2rem] p-10 cursor-pointer hover:bg-white/[0.03] transition-all group border border-white/5"
-        >
-          <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500">
-            <ShieldQuestion size={32} className="text-cyan-400" />
-          </div>
-          <h3 className="text-3xl font-bold mb-4 text-white group-hover:text-cyan-400 transition-colors">Password Shield</h3>
-          <p className="text-white/40 text-lg leading-relaxed mb-8">
-            Analyze your credentials for vulnerabilities using our trained offline model. Check against complexity rules and common hacking patterns.
-          </p>
-          <div className="flex items-center gap-3 text-cyan-400 font-bold uppercase tracking-widest text-xs">
-            <span>Launch Tool</span>
-            <Send size={14} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-          </div>
-        </div>
+        {toolsData.map((tool) => (
+          <div 
+            key={tool.id}
+            onClick={() => setActiveTool(tool.id as any)}
+            className="group relative w-full h-[400px] overflow-hidden rounded-3xl border border-white/10 bg-[#0f1218] shadow-lg transition-all duration-300 ease-in-out hover:shadow-[0_20px_40px_rgba(0,240,255,0.15)] hover:-translate-y-2 cursor-pointer"
+          >
+            {/* Background Image with Zoom Effect on Hover */}
+            <img
+              src={tool.image}
+              alt={tool.title}
+              className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110 opacity-60"
+            />
 
-        {/* PHISHING TOOL CARD */}
-        <div 
-          onClick={() => setActiveTool('phishing')}
-          className="liquid-glass rounded-[2rem] p-10 cursor-pointer hover:bg-white/[0.03] transition-all group border border-white/5"
-        >
-          <div className="w-16 h-16 rounded-2xl bg-red-500/10 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500">
-            <Search size={32} className="text-red-400" />
-          </div>
-          <h3 className="text-3xl font-bold mb-4 text-white group-hover:text-red-400 transition-colors">Phishing Scanner</h3>
-          <p className="text-white/40 text-lg leading-relaxed mb-8">
-            Scan suspicious emails, SMS, or web content using our trained detection engine for social engineering tactics and malicious intent.
-          </p>
-          <div className="flex items-center gap-3 text-red-400 font-bold uppercase tracking-widest text-xs">
-            <span>Launch Tool</span>
-            <Send size={14} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-          </div>
-        </div>
+            {/* Gradient Overlay for Text Readability */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-black/20"></div>
 
-        {/* EMERGENCY RESPONSE KIT CARD */}
-        <div 
-          onClick={() => setActiveTool('emergency')}
-          className="liquid-glass rounded-[2rem] p-10 cursor-pointer hover:bg-white/[0.03] transition-all group border border-white/5"
-        >
-          <div className="w-16 h-16 rounded-2xl bg-orange-500/10 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500">
-            <Activity size={32} className="text-orange-400" />
-          </div>
-          <h3 className="text-3xl font-bold mb-4 text-white group-hover:text-orange-400 transition-colors">Emergency Response</h3>
-          <p className="text-white/40 text-lg leading-relaxed mb-8">
-            A comprehensive trained toolkit to quickly isolate, analyze, and mitigate active security breaches in your network.
-          </p>
-          <div className="flex items-center gap-3 text-orange-400 font-bold uppercase tracking-widest text-xs">
-            <span>Launch Toolkit</span>
-            <Send size={14} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-          </div>
-        </div>
+            {/* Content Container */}
+            <div className="relative flex h-full flex-col justify-between p-8 text-white">
+              
+              {/* Top Section: Icon Logo */}
+              <div className="flex h-16 items-start">
+                <div className={`flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-black/40 backdrop-blur-md shadow-xl ${tool.iconColor}`}>
+                  <tool.icon size={20} />
+                </div>
+              </div>
+              
+              {/* Middle Section: Details (slides up on hover) */}
+              <div className="space-y-4 transition-transform duration-500 ease-in-out group-hover:-translate-y-[88px] mt-auto">
+                <div>
+                  <h3 className="text-3xl font-bold text-white mb-1 drop-shadow-md">{tool.title}</h3>
+                  <p className={`text-sm ${tool.iconColor} font-medium uppercase tracking-wider`}>{tool.subtitle}</p>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-white/90 text-xs tracking-widest uppercase mb-2">Overview</h4>
+                  <p className="text-sm text-white/70 leading-relaxed">
+                    {tool.desc}
+                  </p>
+                </div>
+              </div>
 
-        {/* SECURITY POSTURE ANALYZER CARD */}
-        <div 
-          onClick={() => setActiveTool('posture')}
-          className="liquid-glass rounded-[2rem] p-10 cursor-pointer hover:bg-white/[0.03] transition-all group border border-white/5"
-        >
-          <div className="w-16 h-16 rounded-2xl bg-purple-500/10 flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500">
-            <Shield size={32} className="text-purple-400" />
+              {/* Bottom Section: Button (revealed on hover) */}
+              <div className="absolute -bottom-24 left-0 w-full p-8 opacity-0 transition-all duration-500 ease-in-out group-hover:bottom-0 group-hover:opacity-100 bg-gradient-to-t from-black via-black to-transparent pt-10">
+                <div className="flex items-end justify-end">
+                  <div
+                    className="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-semibold px-6 py-3 rounded-full hover:bg-white/20 transition-all"
+                  >
+                    Launch Tool <Send size={16} />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <h3 className="text-3xl font-bold mb-4 text-white group-hover:text-purple-400 transition-colors">Posture Analyzer</h3>
-          <p className="text-white/40 text-lg leading-relaxed mb-8">
-            Trained auditing tool that evaluates your system configuration against industry best practices and highlights misconfigurations.
-          </p>
-          <div className="flex items-center gap-3 text-purple-400 font-bold uppercase tracking-widest text-xs">
-            <span>Launch Analyzer</span>
-            <Send size={14} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-          </div>
-        </div>
+        ))}
       </div>
 
       <div className="mt-20 p-12 rounded-[2.5rem] bg-gradient-to-br from-white/5 to-transparent border border-white/5 text-center">
