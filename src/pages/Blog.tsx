@@ -1,0 +1,372 @@
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search, X, PenLine, Shield, ArrowRight, BookOpen, Tag, Clock, User, Calendar, Share2, ChevronRight } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/contexts/AuthContext";
+import { staticBlogs, Blog } from "@/data/blogsData";
+
+const CATEGORIES = ["All Topics", "Scam Protection", "Identity & Access", "Network Security", "Travel Security", "Malware Education", "Social Privacy", "Device Safety", "Identity Protection", "Data Recovery", "Money Safety"];
+
+const categoryIcons: Record<string, string> = {
+  "Scam Protection": "🛡️",
+  "Identity & Access": "🔑",
+  "Network Security": "📡",
+  "Travel Security": "✈️",
+  "Malware Education": "🦠",
+  "Social Privacy": "👁️",
+  "Device Safety": "📱",
+  "Identity Protection": "👤",
+  "Data Recovery": "💾",
+  "Money Safety": "💳",
+};
+
+export default function Blog() {
+  const { user } = useAuth();
+  const [allBlogs, setAllBlogs] = useState<Blog[]>([]);
+  const [activeFilter, setActiveFilter] = useState("All Topics");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedBlog, setSelectedBlog] = useState<Blog | null>(null);
+  const [showWriteModal, setShowWriteModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [toast, setToast] = useState("");
+  const [form, setForm] = useState({ title: "", category: "", image: "", content: "" });
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    fetchBlogs();
+  }, []);
+
+  async function fetchBlogs() {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("blogs")
+        .select("*")
+        .order("created_at", { ascending: false });
+      const dbBlogs: Blog[] = (data && !error) ? data.map((b: any) => ({
+        id: b.id,
+        title: b.title,
+        category: b.category,
+        author: b.author,
+        date: new Date(b.created_at).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+        readTime: b.read_time || "5 min read",
+        image: b.image,
+        excerpt: b.excerpt,
+        content: b.content,
+        is_user_blog: true,
+      })) : [];
+      setAllBlogs([...dbBlogs, ...staticBlogs]);
+    } catch {
+      setAllBlogs(staticBlogs);
+    }
+    setLoading(false);
+  }
+
+  async function handlePublish(e: React.FormEvent) {
+    e.preventDefault();
+    if (!user) { showToast("Please sign in to publish a blog."); return; }
+    setSubmitting(true);
+    const excerpt = form.content.replace(/<[^>]*>/g, "").substring(0, 150) + "...";
+    const { error } = await supabase.from("blogs").insert([{
+      title: form.title,
+      category: form.category,
+      image: form.image,
+      content: form.content,
+      author: user.email?.split("@")[0] || "CYZEN Member",
+      excerpt,
+      read_time: "5 min read",
+    }]);
+    if (error) { showToast("Error publishing. Please try again."); }
+    else {
+      showToast("Blog published successfully! 🎉");
+      setShowWriteModal(false);
+      setForm({ title: "", category: "", image: "", content: "" });
+      fetchBlogs();
+    }
+    setSubmitting(false);
+  }
+
+  function showToast(msg: string) {
+    setToast(msg);
+    setTimeout(() => setToast(""), 3500);
+  }
+
+  const filtered = allBlogs.filter(b => {
+    const matchCat = activeFilter === "All Topics" || b.category === activeFilter;
+    const q = searchQuery.toLowerCase();
+    const matchSearch = !q || b.title.toLowerCase().includes(q) || b.excerpt.toLowerCase().includes(q) || b.category.toLowerCase().includes(q);
+    return matchCat && matchSearch;
+  });
+
+  const featured = allBlogs.slice(0, 2);
+  const categories = [...new Set(allBlogs.map(b => b.category))];
+
+  return (
+    <div className="min-h-screen bg-[#05070a] text-[#e2e8f0] overflow-x-hidden">
+      {/* Background */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute inset-0" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px)", backgroundSize: "50px 50px", maskImage: "radial-gradient(circle at 50% 50%,black,transparent 80%)" }} />
+        <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full bg-cyan-400 opacity-10 blur-[120px]" />
+        <div className="absolute -bottom-32 -right-32 w-[600px] h-[600px] rounded-full bg-violet-600 opacity-10 blur-[120px]" />
+      </div>
+
+      {/* Hero */}
+      <section className="relative pt-32 pb-20 px-6 max-w-7xl mx-auto z-10">
+        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} className="text-center max-w-3xl mx-auto mb-16">
+          <div className="inline-flex items-center gap-2 bg-cyan-400/10 border border-cyan-400/20 text-cyan-400 px-4 py-1.5 rounded-full text-sm font-semibold mb-6">
+            <Shield size={14} /> CYZEN Cybersecurity Awareness Blog
+          </div>
+          <h1 className="text-5xl md:text-6xl font-black mb-6 tracking-tight leading-tight">
+            Your Complete Guide to{" "}
+            <span className="bg-gradient-to-r from-cyan-400 via-violet-500 to-cyan-400 bg-clip-text text-transparent bg-[length:200%] animate-[shine_5s_linear_infinite]">
+              Cybersecurity
+            </span>
+          </h1>
+          <p className="text-lg text-[#94a3b8] mb-8">Expert articles on phishing, passwords, malware, privacy and more — for everyone from beginners to pros.</p>
+
+          {/* Stats */}
+          <div className="flex justify-center gap-10 mb-8">
+            {[
+              { num: allBlogs.length, label: "Articles" },
+              { num: categories.length, label: "Categories" },
+              { num: allBlogs.reduce((a, b) => a + parseInt(b.readTime || "0"), 0) + "+", label: "Min Reading" },
+            ].map(s => (
+              <div key={s.label} className="text-center">
+                <div className="text-3xl font-black text-white">{s.num}</div>
+                <div className="text-sm text-[#64748b]">{s.label}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Search */}
+          <div className="relative max-w-lg mx-auto">
+            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#64748b]" />
+            <input
+              ref={searchRef}
+              type="text"
+              placeholder="Search articles..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-sm outline-none focus:border-cyan-400 focus:shadow-[0_0_0_4px_rgba(0,240,255,0.1)] transition-all"
+            />
+            {searchQuery && <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#64748b] hover:text-white"><X size={16} /></button>}
+          </div>
+        </motion.div>
+
+        {/* Write Blog CTA */}
+        <div className="flex justify-center mb-16">
+          <button
+            onClick={() => setShowWriteModal(true)}
+            className="flex items-center gap-2 bg-cyan-400 text-black font-bold px-6 py-3 rounded-xl hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(0,240,255,0.4)] transition-all"
+          >
+            <PenLine size={18} /> Write Your Own Blog
+          </button>
+        </div>
+      </section>
+
+      {/* Categories */}
+      <section className="relative z-10 px-6 max-w-7xl mx-auto mb-20">
+        <div className="text-center mb-10">
+          <span className="text-cyan-400 text-xs font-bold tracking-widest uppercase">Explore Topics</span>
+          <h2 className="text-3xl font-black mt-2">Browse by Category</h2>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {categories.map(cat => (
+            <motion.button
+              key={cat}
+              whileHover={{ y: -6 }}
+              onClick={() => { setActiveFilter(cat); document.getElementById("all-articles")?.scrollIntoView({ behavior: "smooth" }); }}
+              className="bg-[#0f1218] border border-white/8 rounded-2xl p-5 text-left hover:border-cyan-400/50 transition-all group"
+            >
+              <div className="text-3xl mb-3">{categoryIcons[cat] || "📄"}</div>
+              <div className="font-bold text-sm">{cat}</div>
+              <div className="text-xs text-[#64748b] mt-1">{allBlogs.filter(b => b.category === cat).length} guides</div>
+            </motion.button>
+          ))}
+        </div>
+      </section>
+
+      {/* Featured */}
+      {featured.length > 0 && (
+        <section className="relative z-10 px-6 max-w-7xl mx-auto mb-20">
+          <div className="text-center mb-10">
+            <span className="text-cyan-400 text-xs font-bold tracking-widest uppercase">Must Read</span>
+            <h2 className="text-3xl font-black mt-2">Featured Articles</h2>
+          </div>
+          <div className="grid md:grid-cols-2 gap-6">
+            {featured.map(blog => (
+              <motion.div key={blog.id} whileHover={{ scale: 1.02 }} onClick={() => setSelectedBlog(blog)}
+                className="relative rounded-3xl overflow-hidden h-72 cursor-pointer group">
+                <img src={blog.image} alt={blog.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#05070a] via-transparent" />
+                <div className="absolute bottom-0 left-0 p-6">
+                  <span className="bg-cyan-400 text-black text-xs font-bold px-3 py-1 rounded-full mb-3 inline-block">{blog.category}</span>
+                  <h3 className="text-xl font-bold leading-tight">{blog.title}</h3>
+                  <div className="flex gap-3 text-sm text-[#94a3b8] mt-2">
+                    <span>{blog.author}</span><span>•</span><span>{blog.readTime}</span>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* All Articles */}
+      <section id="all-articles" className="relative z-10 px-6 max-w-7xl mx-auto mb-20">
+        <div className="text-center mb-10">
+          <span className="text-cyan-400 text-xs font-bold tracking-widest uppercase">Complete Library</span>
+          <h2 className="text-3xl font-black mt-2">All Articles</h2>
+        </div>
+
+        {/* Filters */}
+        <div className="flex flex-wrap justify-center gap-3 mb-10">
+          {["All Topics", ...categories].map(cat => (
+            <button key={cat} onClick={() => setActiveFilter(cat)}
+              className={`px-4 py-2 rounded-full text-sm font-semibold border transition-all ${activeFilter === cat ? "bg-cyan-400 text-black border-cyan-400 shadow-[0_0_20px_rgba(0,240,255,0.3)]" : "bg-[#0f1218] border-white/10 text-[#94a3b8] hover:border-cyan-400/50 hover:text-white"}`}>
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        {loading ? (
+          <div className="flex justify-center py-20"><div className="w-8 h-8 border-2 border-cyan-500/20 border-t-cyan-500 rounded-full animate-spin" /></div>
+        ) : filtered.length === 0 ? (
+          <div className="text-center py-20 text-[#64748b]">
+            <Search size={48} className="mx-auto mb-4 opacity-30" />
+            <p className="text-lg">No articles found. Try a different search.</p>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filtered.map((blog, i) => (
+              <motion.div key={blog.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
+                onClick={() => setSelectedBlog(blog)}
+                className="bg-[#0f1218] border border-white/8 rounded-2xl overflow-hidden cursor-pointer hover:-translate-y-2 hover:border-cyan-400/30 hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] transition-all flex flex-col group">
+                <div className="relative h-48 overflow-hidden">
+                  <img src={blog.image} alt={blog.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <span className="absolute top-4 left-4 bg-[#0f1218]/80 backdrop-blur-md text-cyan-400 text-xs font-bold px-3 py-1 rounded-full border border-cyan-400/30">
+                    {blog.is_user_blog ? "👤 Community" : blog.category}
+                  </span>
+                </div>
+                <div className="p-5 flex flex-col flex-1">
+                  <div className="flex gap-3 text-xs text-[#64748b] mb-2">
+                    <span className="flex items-center gap-1"><Calendar size={12} />{blog.date}</span>
+                    <span>•</span>
+                    <span className="flex items-center gap-1"><Clock size={12} />{blog.readTime}</span>
+                  </div>
+                  <h3 className="font-bold text-base leading-snug mb-2 group-hover:text-cyan-400 transition-colors line-clamp-2">{blog.title}</h3>
+                  <p className="text-sm text-[#94a3b8] line-clamp-3 flex-1">{blog.excerpt}</p>
+                  <div className="mt-4 pt-4 border-t border-white/8 flex items-center text-cyan-400 text-xs font-bold uppercase tracking-wide gap-1">
+                    Read Article <ArrowRight size={14} />
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Article Reader Modal */}
+      <AnimatePresence>
+        {selectedBlog && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-start justify-center overflow-y-auto py-10 px-4"
+            onClick={e => { if (e.target === e.currentTarget) setSelectedBlog(null); }}>
+            <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
+              className="bg-[#0f1218] border border-white/10 rounded-3xl max-w-3xl w-full p-8 md:p-12 relative">
+              <button onClick={() => setSelectedBlog(null)}
+                className="fixed top-6 right-6 w-10 h-10 rounded-full bg-[#0f1218] border border-white/10 flex items-center justify-center hover:bg-rose-500 transition-colors z-50">
+                <X size={18} />
+              </button>
+              <span className="inline-block bg-cyan-400/10 border border-cyan-400/20 text-cyan-400 text-xs font-bold px-3 py-1 rounded-full mb-4">{selectedBlog.category}</span>
+              <h1 className="text-2xl md:text-3xl font-black mb-4 leading-tight">{selectedBlog.title}</h1>
+              <div className="flex flex-wrap gap-4 text-sm text-[#94a3b8] mb-6">
+                <span className="flex items-center gap-1"><User size={14} />{selectedBlog.author}</span>
+                <span className="flex items-center gap-1"><Calendar size={14} />{selectedBlog.date}</span>
+                <span className="flex items-center gap-1"><Clock size={14} />{selectedBlog.readTime}</span>
+              </div>
+              <img src={selectedBlog.image} alt={selectedBlog.title} className="w-full h-64 object-cover rounded-2xl mb-8" />
+              <div className="prose prose-invert max-w-none text-[#e2e8f0] leading-relaxed [&_h2]:text-xl [&_h2]:font-black [&_h2]:mt-8 [&_h2]:mb-3 [&_h3]:text-base [&_h3]:font-bold [&_h3]:mt-5 [&_h3]:mb-2 [&_p]:text-[#94a3b8] [&_p]:mb-4 [&_ul]:pl-5 [&_ol]:pl-5 [&_li]:mb-2 [&_li]:text-[#94a3b8] [&_.tip-box]:bg-cyan-400/5 [&_.tip-box]:border [&_.tip-box]:border-cyan-400/20 [&_.tip-box]:rounded-xl [&_.tip-box]:p-4 [&_.tip-box]:my-5 [&_.tip-box]:text-sm [&_strong]:text-white"
+                dangerouslySetInnerHTML={{ __html: selectedBlog.content }} />
+              <div className="mt-10 pt-8 border-t border-white/10 text-center">
+                <p className="text-[#94a3b8] mb-4">Found this helpful? Share it!</p>
+                <button onClick={() => { navigator.clipboard.writeText(window.location.href); showToast("Link copied!"); }}
+                  className="inline-flex items-center gap-2 bg-cyan-400 text-black font-bold px-5 py-2.5 rounded-xl hover:brightness-110 transition-all">
+                  <Share2 size={16} /> Share This Guide
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Write Blog Modal */}
+      <AnimatePresence>
+        {showWriteModal && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-start justify-center overflow-y-auto py-10 px-4"
+            onClick={e => { if (e.target === e.currentTarget) setShowWriteModal(false); }}>
+            <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.95, y: 20 }}
+              className="bg-[#0f1218] border border-white/10 rounded-3xl max-w-2xl w-full p-8 relative">
+              <button onClick={() => setShowWriteModal(false)}
+                className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/5 flex items-center justify-center hover:bg-rose-500 transition-colors">
+                <X size={16} />
+              </button>
+              <div className="mb-6">
+                <span className="inline-block bg-cyan-400/10 border border-cyan-400/20 text-cyan-400 text-xs font-bold px-3 py-1 rounded-full mb-3">Contribute</span>
+                <h2 className="text-2xl font-black">Write Your Own Blog</h2>
+                <p className="text-[#94a3b8] text-sm mt-1">Share your cybersecurity knowledge with the community.</p>
+                {!user && <p className="text-amber-400 text-sm mt-2 bg-amber-400/10 border border-amber-400/20 rounded-lg px-3 py-2">⚠️ You must be signed in to publish.</p>}
+              </div>
+              <form onSubmit={handlePublish} className="space-y-5">
+                <div>
+                  <label className="block text-sm font-semibold mb-1.5">Title *</label>
+                  <input type="text" required placeholder="Enter an engaging title..." value={form.title}
+                    onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-cyan-400 focus:shadow-[0_0_0_4px_rgba(0,240,255,0.1)] transition-all" />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-1.5">Category *</label>
+                  <select required value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
+                    className="w-full bg-[#0a0a0f] border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-cyan-400 transition-all">
+                    <option value="">Select a Category</option>
+                    {CATEGORIES.filter(c => c !== "All Topics").map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-1.5">Cover Image URL *</label>
+                  <input type="url" required placeholder="https://images.unsplash.com/..." value={form.image}
+                    onChange={e => setForm(f => ({ ...f, image: e.target.value }))}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-cyan-400 transition-all" />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-1.5">Content (HTML allowed) *</label>
+                  <textarea required rows={8} placeholder="<p>Write your content here...</p>" value={form.content}
+                    onChange={e => setForm(f => ({ ...f, content: e.target.value }))}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-cyan-400 transition-all resize-y font-mono" />
+                </div>
+                <button type="submit" disabled={submitting || !user}
+                  className="w-full bg-cyan-400 text-black font-bold py-3 rounded-xl hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2">
+                  {submitting ? <><div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" /> Publishing...</> : <><PenLine size={16} /> Publish Blog</>}
+                </button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Toast */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] bg-[#0f1218] border border-cyan-400/30 text-white px-5 py-3 rounded-xl text-sm font-semibold shadow-xl flex items-center gap-2">
+            ✓ {toast}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <style>{`@keyframes shine { to { background-position: 200% center; } }`}</style>
+    </div>
+  );
+}

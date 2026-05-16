@@ -6,6 +6,7 @@ import Home from "@/pages/Home";
 import Chat from "@/pages/Chat";
 import Tools from "@/pages/Tools";
 import Auth from "@/pages/Auth";
+import Blog from "@/pages/Blog";
 import NotFound from "@/pages/NotFound";
 import { TextPressure } from "@/components/ui/TextPressure";
 import { IntroOverlay } from "@/components/ui/IntroOverlay";
@@ -21,6 +22,7 @@ const Navbar = () => {
 
   const navLinks = [
     { label: "Home", path: "/" },
+    { label: "Blog", path: "/blog" },
     { label: "AI Chat", path: "/chat" },
     { label: "Tools", path: "/tools" },
   ];
@@ -194,6 +196,7 @@ const AppContent = () => {
           <Route path="/auth" element={<PublicRoute><Auth /></PublicRoute>} />
           
           {/* Protected Routes */}
+          <Route path="/blog" element={<Blog />} />
           <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
           <Route path="/tools" element={<ProtectedRoute><Tools /></ProtectedRoute>} />
 
