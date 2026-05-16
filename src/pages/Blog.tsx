@@ -104,66 +104,99 @@ export default function Blog() {
 
   return (
     <div className="min-h-screen bg-[#05070a] text-[#e2e8f0] overflow-x-hidden">
-      {/* Background */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute inset-0" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px)", backgroundSize: "50px 50px", maskImage: "radial-gradient(circle at 50% 50%,black,transparent 80%)" }} />
-        <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full bg-cyan-400 opacity-10 blur-[120px]" />
-        <div className="absolute -bottom-32 -right-32 w-[600px] h-[600px] rounded-full bg-violet-600 opacity-10 blur-[120px]" />
-      </div>
 
-      {/* Hero */}
-      <section className="relative pt-32 pb-20 px-6 max-w-7xl mx-auto z-10">
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 bg-cyan-400/10 border border-cyan-400/20 text-cyan-400 px-4 py-1.5 rounded-full text-sm font-semibold mb-6">
+      {/* ── Video Hero ── */}
+      <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden">
+        {/* Video Background */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover z-0"
+          src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260330_145725_08886141-ed95-4a8e-8d6d-b75eaadce638.mp4"
+        />
+
+        {/* Dark overlay + grid */}
+        <div className="absolute inset-0 z-[1] bg-gradient-to-b from-black/70 via-black/50 to-[#05070a]" />
+        <div className="absolute inset-0 z-[2] pointer-events-none" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px)", backgroundSize: "50px 50px" }} />
+
+        {/* Cyan / Violet ambient glows */}
+        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full bg-cyan-400 opacity-10 blur-[140px] z-[2] pointer-events-none" />
+        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] rounded-full bg-violet-600 opacity-10 blur-[140px] z-[2] pointer-events-none" />
+
+        {/* Hero Content */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="relative z-10 text-center max-w-3xl mx-auto px-6 pt-32 pb-10"
+        >
+          <div className="inline-flex items-center gap-2 bg-cyan-400/10 border border-cyan-400/30 text-cyan-400 px-4 py-1.5 rounded-full text-sm font-semibold mb-6 backdrop-blur-sm">
             <Shield size={14} /> CYZEN Cybersecurity Awareness Blog
           </div>
-          <h1 className="text-5xl md:text-6xl font-black mb-6 tracking-tight leading-tight">
+          <h1 className="text-5xl md:text-7xl font-black mb-6 tracking-tight leading-none drop-shadow-2xl">
             Your Complete Guide to{" "}
-            <span className="bg-gradient-to-r from-cyan-400 via-violet-500 to-cyan-400 bg-clip-text text-transparent bg-[length:200%] animate-[shine_5s_linear_infinite]">
+            <span className="bg-gradient-to-r from-cyan-400 via-violet-400 to-cyan-400 bg-clip-text text-transparent bg-[length:200%] animate-[shine_5s_linear_infinite]">
               Cybersecurity
             </span>
           </h1>
-          <p className="text-lg text-[#94a3b8] mb-8">Expert articles on phishing, passwords, malware, privacy and more — for everyone from beginners to pros.</p>
+          <p className="text-lg text-white/70 mb-10 max-w-xl mx-auto drop-shadow">
+            Expert articles on phishing, passwords, malware, privacy and more — for everyone from beginners to pros.
+          </p>
 
           {/* Stats */}
-          <div className="flex justify-center gap-10 mb-8">
+          <div className="flex justify-center gap-10 mb-10">
             {[
               { num: allBlogs.length, label: "Articles" },
               { num: categories.length, label: "Categories" },
               { num: allBlogs.reduce((a, b) => a + parseInt(b.readTime || "0"), 0) + "+", label: "Min Reading" },
             ].map(s => (
               <div key={s.label} className="text-center">
-                <div className="text-3xl font-black text-white">{s.num}</div>
-                <div className="text-sm text-[#64748b]">{s.label}</div>
+                <div className="text-4xl font-black text-white drop-shadow">{s.num}</div>
+                <div className="text-sm text-white/50 mt-1">{s.label}</div>
               </div>
             ))}
           </div>
 
           {/* Search */}
-          <div className="relative max-w-lg mx-auto">
-            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-[#64748b]" />
+          <div className="relative max-w-lg mx-auto mb-8">
+            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" />
             <input
               ref={searchRef}
               type="text"
               placeholder="Search articles..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-sm outline-none focus:border-cyan-400 focus:shadow-[0_0_0_4px_rgba(0,240,255,0.1)] transition-all"
+              className="w-full bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl pl-12 pr-4 py-3.5 text-sm text-white placeholder-white/40 outline-none focus:border-cyan-400 focus:shadow-[0_0_0_4px_rgba(0,240,255,0.15)] transition-all"
             />
-            {searchQuery && <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#64748b] hover:text-white"><X size={16} /></button>}
+            {searchQuery && <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"><X size={16} /></button>}
           </div>
-        </motion.div>
 
-        {/* Write Blog CTA */}
-        <div className="flex justify-center mb-16">
+          {/* Write CTA */}
           <button
             onClick={() => setShowWriteModal(true)}
-            className="flex items-center gap-2 bg-cyan-400 text-black font-bold px-6 py-3 rounded-xl hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(0,240,255,0.4)] transition-all"
+            className="inline-flex items-center gap-2 bg-cyan-400 text-black font-bold px-7 py-3.5 rounded-2xl hover:-translate-y-1 hover:shadow-[0_0_40px_rgba(0,240,255,0.5)] transition-all text-base"
           >
             <PenLine size={18} /> Write Your Own Blog
           </button>
-        </div>
+        </motion.div>
+
+        {/* Scroll cue */}
+        <motion.div
+          animate={{ y: [0, 10, 0] }}
+          transition={{ repeat: Infinity, duration: 2 }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1 text-white/30 text-xs"
+        >
+          <span>Scroll</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </motion.div>
       </section>
+
+      {/* Page-level subtle grid (below hero) */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute -bottom-32 -right-32 w-[600px] h-[600px] rounded-full bg-violet-600 opacity-5 blur-[120px]" />
+      </div>
 
       {/* Categories */}
       <section className="relative z-10 px-6 max-w-7xl mx-auto mb-20">
