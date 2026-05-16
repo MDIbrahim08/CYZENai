@@ -201,9 +201,9 @@ const AppContent = () => {
           <Route path="/tools" element={<ProtectedRoute><Tools /></ProtectedRoute>} />
 
           {/* Catch broken card links */}
-          <Route path="/scenarios" element={<ProtectedRoute><Tools /></ProtectedRoute>} />
-          <Route path="/quiz" element={<ProtectedRoute><Tools /></ProtectedRoute>} />
-          <Route path="/profile" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+          <Route path="/scenarios" element={<ProtectedRoute><Tools initialTool="scenarios" /></ProtectedRoute>} />
+          <Route path="/quiz" element={<ProtectedRoute><Tools initialTool="posture" /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><Tools initialTool="gamification" /></ProtectedRoute>} />
 
           {/* 404 */}
           <Route path="*" element={<NotFound />} />

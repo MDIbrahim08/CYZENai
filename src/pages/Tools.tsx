@@ -60,9 +60,12 @@ const IframeTool = ({ title, url, onBack }: { title: string; url: string; onBack
 };
 
 /* ───────── MAIN PAGE ───────── */
+interface ToolsProps {
+  initialTool?: 'password' | 'phishing' | 'emergency' | 'posture' | 'scenarios' | 'gamification' | null;
+}
 
-const Tools = () => {
-  const [activeTool, setActiveTool] = useState<'password' | 'phishing' | 'emergency' | 'posture' | 'scenarios' | 'gamification' | null>(null);
+const Tools = ({ initialTool = null }: ToolsProps) => {
+  const [activeTool, setActiveTool] = useState<'password' | 'phishing' | 'emergency' | 'posture' | 'scenarios' | 'gamification' | null>(initialTool);
   if (activeTool === 'password') return <div className="px-6 sm:px-12 min-h-screen bg-[#0a0a0f]"><IframeTool title="Password Shield" url="/tools/password_analyzer/index.html" onBack={() => setActiveTool(null)} /></div>;
   if (activeTool === 'phishing') return <div className="px-6 sm:px-12 min-h-screen bg-[#0a0a0f]"><IframeTool title="Phishing Scanner" url="/tools/phishing_detection_engine/index.html" onBack={() => setActiveTool(null)} /></div>;
   if (activeTool === 'emergency') return <div className="px-6 sm:px-12 min-h-screen bg-[#0a0a0f]"><IframeTool title="Emergency Response Kit" url="/tools/emergency-response-kit/index.html" onBack={() => setActiveTool(null)} /></div>;
