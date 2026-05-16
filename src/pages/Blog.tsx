@@ -248,18 +248,60 @@ export default function Blog() {
           </div>
           <div className="grid md:grid-cols-2 gap-6">
             {featured.map(blog => (
-              <motion.div key={blog.id} whileHover={{ scale: 1.02 }} onClick={() => setSelectedBlog(blog)}
-                className="relative rounded-3xl overflow-hidden h-72 cursor-pointer group">
-                <img src={blog.image} alt={blog.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#05070a] via-transparent" />
-                <div className="absolute bottom-0 left-0 p-6">
-                  <span className="bg-cyan-400 text-black text-xs font-bold px-3 py-1 rounded-full mb-3 inline-block">{blog.category}</span>
-                  <h3 className="text-xl font-bold leading-tight">{blog.title}</h3>
-                  <div className="flex gap-3 text-sm text-[#94a3b8] mt-2">
-                    <span>{blog.author}</span><span>•</span><span>{blog.readTime}</span>
+              <div
+                key={blog.id}
+                onClick={() => setSelectedBlog(blog)}
+                className="group relative w-full h-[400px] overflow-hidden rounded-3xl border border-white/10 bg-[#0f1218] shadow-lg transition-all duration-300 ease-in-out hover:shadow-[0_20px_40px_rgba(0,240,255,0.15)] hover:-translate-y-2 cursor-pointer"
+              >
+                {/* Background Image with Zoom Effect on Hover */}
+                <img
+                  src={blog.image}
+                  alt={blog.title}
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
+                />
+
+                {/* Gradient Overlay for Text Readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent"></div>
+
+                {/* Content Container */}
+                <div className="relative flex h-full flex-col justify-between p-8 text-white">
+                  {/* Top Section: Category Badge */}
+                  <div className="flex h-12 items-start">
+                    <span className="bg-cyan-400 text-black text-xs font-bold px-4 py-1.5 rounded-full inline-block backdrop-blur-md">
+                      {blog.is_user_blog ? "👤 Community" : blog.category}
+                    </span>
+                  </div>
+                  
+                  {/* Middle Section: Details (slides up on hover) */}
+                  <div className="space-y-4 transition-transform duration-500 ease-in-out group-hover:-translate-y-16 mt-auto">
+                    <div>
+                      <h3 className="text-3xl font-black text-white leading-tight mb-2 drop-shadow-lg">{blog.title}</h3>
+                      <p className="text-sm text-cyan-400/80 font-medium">{blog.author} • {blog.date}</p>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-white/90 text-sm tracking-widest uppercase mb-2">Overview</h4>
+                      <p className="text-sm text-white/70 leading-relaxed line-clamp-3">
+                        {blog.excerpt}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Bottom Section: Read Time and Button (revealed on hover) */}
+                  <div className="absolute -bottom-20 left-0 w-full p-8 opacity-0 transition-all duration-500 ease-in-out group-hover:bottom-0 group-hover:opacity-100 bg-gradient-to-t from-black via-black/90 to-transparent pt-12">
+                    <div className="flex items-end justify-between">
+                      <div>
+                        <span className="text-2xl font-bold text-white flex items-center gap-2">
+                          <Clock size={20} className="text-cyan-400" />
+                          {blog.readTime}
+                        </span>
+                      </div>
+                      <button className="bg-cyan-400 text-black font-bold px-6 py-2.5 rounded-xl hover:brightness-110 flex items-center shadow-[0_0_20px_rgba(0,240,255,0.3)]">
+                        Read Now <ArrowRight className="ml-2 h-4 w-4" />
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </section>
