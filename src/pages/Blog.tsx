@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import Hls from "hls.js";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useInView, animate } from "framer-motion";
 import { Search, X, PenLine, Shield, ArrowRight, Clock, User, Calendar, Share2, Bookmark } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
@@ -52,6 +52,42 @@ const categoryImages: Record<string, string> = {
   "Gaming Safety": "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=400",
   "Basic Cryptography": "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&q=80&w=400",
   "Physical Security": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=400",
+};
+
+const AnimatedCounter = ({ value, label }: { value: string | number; label: string }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
+  const [displayValue, setDisplayValue] = useState("0");
+  
+  useEffect(() => {
+    if (!isInView) return;
+    
+    // Check if value has a "+" suffix (like "1042+")
+    const hasPlus = typeof value === "string" && value.endsWith("+");
+    const numericValue = parseInt(String(value).replace(/\D/g, ""));
+    
+    if (isNaN(numericValue)) {
+      setDisplayValue(String(value));
+      return;
+    }
+
+    const controls = animate(0, numericValue, {
+      duration: 2.5,
+      ease: "easeOut",
+      onUpdate: (val) => {
+        setDisplayValue(Math.round(val).toString() + (hasPlus ? "+" : ""));
+      }
+    });
+
+    return () => controls.stop();
+  }, [value, isInView]);
+
+  return (
+    <div ref={ref} className="text-center">
+      <div className="text-4xl font-black text-white drop-shadow tabular-nums">{displayValue}</div>
+      <div className="text-sm text-white/50 mt-1">{label}</div>
+    </div>
+  );
 };
 
 export default function Blog() {
@@ -203,10 +239,7 @@ export default function Blog() {
               { num: categories.length, label: "Categories" },
               { num: allBlogs.reduce((a, b) => a + parseInt(b.readTime || "0"), 0) + "+", label: "Min Reading" },
             ].map(s => (
-              <div key={s.label} className="text-center">
-                <div className="text-4xl font-black text-white drop-shadow">{s.num}</div>
-                <div className="text-sm text-white/50 mt-1">{s.label}</div>
-              </div>
+              <AnimatedCounter key={s.label} value={s.num} label={s.label} />
             ))}
           </div>
 
