@@ -5,9 +5,8 @@ import { Search, X, PenLine, Shield, ArrowRight, Clock, User, Calendar, Share2, 
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { staticBlogs, Blog } from "@/data/blogsData";
-import { HorizontalBlogScroll } from "@/components/ui/HorizontalBlogScroll";
 
-const CATEGORIES = ["All Topics", "Scam Protection", "Identity & Access", "Network Security", "Travel Security", "Malware Education", "Social Privacy", "Device Safety", "Identity Protection", "Data Recovery", "Money Safety"];
+const CATEGORIES = ["All Topics", "Scam Protection", "Identity & Access", "Network Security", "Travel Security", "Malware Education", "Social Privacy", "Device Safety", "Identity Protection", "Data Recovery", "Money Safety", "Email Safety", "Web Safety", "Family Safety", "Workplace Safety", "Senior Protection", "Basic Maintenance", "Advanced Threats", "Gaming Safety", "Basic Cryptography", "Physical Security"];
 
 const categoryIcons: Record<string, string> = {
   "Scam Protection": "🛡️",
@@ -20,6 +19,16 @@ const categoryIcons: Record<string, string> = {
   "Identity Protection": "👤",
   "Data Recovery": "💾",
   "Money Safety": "💰",
+  "Email Safety": "📧",
+  "Web Safety": "🌐",
+  "Family Safety": "👨‍👩‍👧",
+  "Workplace Safety": "🏢",
+  "Senior Protection": "🧓",
+  "Basic Maintenance": "🔧",
+  "Advanced Threats": "⚡",
+  "Gaming Safety": "🎮",
+  "Basic Cryptography": "🔒",
+  "Physical Security": "🏠",
 };
 
 const categoryImages: Record<string, string> = {
@@ -33,6 +42,16 @@ const categoryImages: Record<string, string> = {
   "Identity Protection": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=400",
   "Data Recovery": "https://images.unsplash.com/photo-1618044733300-9472054094ee?auto=format&fit=crop&q=80&w=400",
   "Money Safety": "https://images.unsplash.com/photo-1613243555988-441166d4d6fd?auto=format&fit=crop&q=80&w=400",
+  "Email Safety": "https://images.unsplash.com/photo-1596526131083-e8c633c948d2?auto=format&fit=crop&q=80&w=400",
+  "Web Safety": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&q=80&w=400",
+  "Family Safety": "https://images.unsplash.com/photo-1476703993599-0035a21b17a9?auto=format&fit=crop&q=80&w=400",
+  "Workplace Safety": "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=400",
+  "Senior Protection": "https://images.unsplash.com/photo-1581579438747-1dc8d17bbce4?auto=format&fit=crop&q=80&w=400",
+  "Basic Maintenance": "https://images.unsplash.com/photo-1517430816045-df4b7de11d1d?auto=format&fit=crop&q=80&w=400",
+  "Advanced Threats": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=400",
+  "Gaming Safety": "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=400",
+  "Basic Cryptography": "https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&q=80&w=400",
+  "Physical Security": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=400",
 };
 
 export default function Blog() {
@@ -345,10 +364,10 @@ export default function Blog() {
         </section>
       )}
 
-      {/* All Articles — GSAP Horizontal Scroll Gallery */}
-      <section className="relative z-10">
+      {/* All Articles — Normal Vertical Grid */}
+      <section id="all-articles" className="relative z-10 px-6 max-w-7xl mx-auto pb-24">
         {/* Filter bar */}
-        <div className="flex flex-wrap justify-center gap-3 px-6 pt-16 pb-8 max-w-7xl mx-auto">
+        <div className="flex flex-wrap justify-center gap-3 pt-16 pb-8">
           {["All Topics", ...categories].map(cat => (
             <button key={cat} onClick={() => setActiveFilter(cat)}
               className={`px-4 py-2 rounded-full text-sm font-semibold border transition-all ${
@@ -371,11 +390,52 @@ export default function Blog() {
             <p className="text-lg">No articles found. Try a different search.</p>
           </div>
         ) : (
-          <HorizontalBlogScroll
-            key={activeFilter + searchQuery} // remount when filter/search changes so GSAP recalculates
-            blogs={filtered}
-            onSelect={setSelectedBlog}
-          />
+          <motion.div
+            key={activeFilter + searchQuery}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+          >
+            {filtered.map((blog, i) => (
+              <motion.div
+                key={blog.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, delay: i * 0.04 }}
+                whileHover={{ y: -6, boxShadow: "0 20px 40px -10px rgba(0,240,255,0.15)" }}
+                onClick={() => setSelectedBlog(blog)}
+                className="flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0f1218] text-white shadow-lg cursor-pointer transition-all duration-300"
+              >
+                {/* Image */}
+                <div className="relative h-48 overflow-hidden">
+                  <img
+                    src={blog.image}
+                    alt={blog.title}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0f1218] via-transparent to-transparent" />
+                  <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider bg-black/50 backdrop-blur-md text-cyan-400 border border-cyan-400/30 px-3 py-1 rounded-full">
+                    {blog.is_user_blog ? "👤 Community" : blog.category}
+                  </span>
+                </div>
+                {/* Content */}
+                <div className="flex flex-col flex-1 p-5 gap-3">
+                  <h3 className="text-[14px] font-bold leading-snug line-clamp-2 text-white">{blog.title}</h3>
+                  <p className="text-xs text-white/40 line-clamp-2 flex-1">{blog.excerpt}</p>
+                  <div className="flex items-center justify-between pt-2 border-t border-white/5">
+                    <span className="flex items-center gap-1 text-xs text-cyan-400">
+                      <Clock size={12} />{blog.readTime}
+                    </span>
+                    <button className="flex items-center gap-1 text-xs font-semibold text-white/60 hover:text-white transition-colors">
+                      Read Now <ArrowRight size={12} />
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
         )}
       </section>
 
