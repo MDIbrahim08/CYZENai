@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { motion, AnimatePresence } from "framer-motion";
@@ -207,12 +207,13 @@ export function HorizontalBlogScroll({ blogs, onSelect }: Props) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
 
-  useLayoutEffect(() => {
-    const timer = setTimeout(() => {
-      const section = sectionRef.current;
-      const track = trackRef.current;
-      if (!section || !track) return;
+  useEffect(() => {
+    const section = sectionRef.current;
+    const track = trackRef.current;
+    if (!section || !track) return;
 
+    // Wait one frame for layout to settle — no setTimeout lag
+    const raf = requestAnimationFrame(() => {
       const totalScroll = track.scrollWidth - window.innerWidth;
       if (totalScroll <= 0) return;
 
@@ -220,21 +221,23 @@ export function HorizontalBlogScroll({ blogs, onSelect }: Props) {
         gsap.to(track, {
           x: () => -totalScroll,
           ease: "none",
+          force3D: true,
           scrollTrigger: {
             trigger: section,
             pin: true,
-            scrub: 1.2,
+            scrub: 0.5,          // Lower = more responsive, less lag
             start: "top top",
             end: () => `+=${totalScroll}`,
             invalidateOnRefresh: true,
+            anticipatePin: 1,   // Prevents pin snap-jump
           },
         });
       }, section);
 
       return () => ctx.revert();
-    }, 150);
+    });
 
-    return () => clearTimeout(timer);
+    return () => cancelAnimationFrame(raf);
   }, [blogs]);
 
   return (
@@ -255,8 +258,15 @@ export function HorizontalBlogScroll({ blogs, onSelect }: Props) {
       {/* Horizontal track */}
       <div
         ref={trackRef}
-        className="flex items-center gap-6 px-10 will-change-transform"
-        style={{ paddingTop: "130px", paddingBottom: "60px" }}
+        className="flex items-center gap-6 px-10"
+        style={{
+          paddingTop: "130px",
+          paddingBottom: "60px",
+          willChange: "transform",
+          backfaceVisibility: "hidden",
+          WebkitBackfaceVisibility: "hidden",
+          transform: "translateZ(0)",  // Force GPU layer
+        }}
       >
         {blogs.map((blog, i) => (
           <BlogCard
