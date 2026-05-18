@@ -44,9 +44,101 @@
           }
           
           if (url.includes('/api/assessments/start')) {
+            const mockQuestions = [
+              {
+                id: "Q_AUTH_001",
+                text: "How do users authenticate into your application?",
+                category: "Authentication",
+                options: [
+                  { text: "No authentication — it is fully public" },
+                  { text: "Username and password only" },
+                  { text: "Username and password with optional MFA" },
+                  { text: "MFA is enforced for all users" }
+                ]
+              },
+              {
+                id: "Q_DATA_001",
+                text: "How is sensitive user data (like passwords) stored in your database?",
+                category: "Data Protection",
+                options: [
+                  { text: "Plain text or simple encoding (e.g., Base64)" },
+                  { text: "Hashed using old algorithms (MD5, SHA-1)" },
+                  { text: "Hashed with modern algorithms (bcrypt, Argon2) and salted" }
+                ]
+              },
+              {
+                id: "Q_NET_001",
+                text: "Is all communication between client and server encrypted?",
+                category: "Network Security",
+                options: [
+                  { text: "No, it uses plain HTTP" },
+                  { text: "Partial — some pages use HTTP, some HTTPS" },
+                  { text: "Yes, HTTPS is strictly enforced with HSTS" }
+                ]
+              },
+              {
+                id: "Q_API_002",
+                text: "How do you validate and sanitize user input on the backend?",
+                category: "API Security",
+                options: [
+                  { text: "No validation — we trust client-side validation" },
+                  { text: "Basic checks but no schema validation library" },
+                  { text: "Strict schema validation (e.g., Zod, Joi) on all endpoints" }
+                ]
+              },
+              {
+                id: "Q_CLOUD_001",
+                text: "How are secrets (API keys, DB connection strings) managed?",
+                category: "Cloud Security",
+                options: [
+                  { text: "Hardcoded directly in source code" },
+                  { text: "Stored in .env files committed to version control" },
+                  { text: ".env files excluded from git, used locally" },
+                  { text: "Dedicated secret manager (AWS Secrets Manager, HashiCorp Vault)" }
+                ]
+              },
+              {
+                id: "Q_DEP_001",
+                text: "How often do you update your software dependencies?",
+                category: "Supply Chain",
+                options: [
+                  { text: "Rarely or never" },
+                  { text: "Occasionally, when a major issue is reported" },
+                  { text: "Regularly with automated scanning tools (Snyk, Dependabot)" }
+                ]
+              },
+              {
+                id: "Q_BCP_001",
+                text: "How is your critical data backed up?",
+                category: "Business Continuity",
+                options: [
+                  { text: "No formal backup process" },
+                  { text: "Automated backups, but never tested for recovery" },
+                  { text: "Automated, off-site backups with regular restoration drills" }
+                ]
+              },
+              {
+                id: "Q_DEV_003",
+                text: "How do you manage your passwords?",
+                category: "Endpoint Security",
+                options: [
+                  { text: "I reuse the same password across multiple sites" },
+                  { text: "I try to use different passwords but store them in a text file" },
+                  { text: "I use a password manager (Bitwarden, 1Password, etc.)" }
+                ]
+              }
+            ];
+
             return {
               status: 200,
-              data: { success: true, data: { sessionId: "sess_" + Date.now() } }
+              data: { 
+                success: true, 
+                data: { 
+                  sessionId: "sess_" + Date.now(),
+                  questionCount: mockQuestions.length,
+                  questions: mockQuestions
+                } 
+              }
             };
           }
           
