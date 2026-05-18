@@ -21,16 +21,19 @@
              url = url.toString();
              
              // Catch Supabase or generic auth
-             if (url.includes('/auth/v1/token') || url.includes('/api/auth/login') || url.includes('sign-in')) {
+             if (url.includes('/auth/v1/token') || url.includes('/api/auth/login') || url.includes('sign-in') || url.includes('/api/auth/register')) {
                return new Response(JSON.stringify({ 
+                 success: true,
                  access_token: "local_mock_token", 
                  token: "local_mock_token",
-                 user: { id: "local", email: "user@example.com" } 
+                 user: { id: "local", email: "user@example.com", name: "User", role: "user" } 
                }), { status: 200, headers: { 'Content-Type': 'application/json' } });
              }
              if (url.includes('/auth/v1/user') || url.includes('/api/auth/me')) {
                return new Response(JSON.stringify({ 
-                 id: "local", email: "user@example.com", role: "authenticated", user: { id: "local" } 
+                 success: true,
+                 data: { user: { id: "local", name: "User", role: "user" } },
+                 id: "local", email: "user@example.com", role: "authenticated", user: { id: "local", name: "User", role: "user" } 
                }), { status: 200, headers: { 'Content-Type': 'application/json' } });
              }
              
@@ -77,7 +80,7 @@
               if (url.includes('/auth/v1/') || url.includes('/api/auth/')) {
                 Object.defineProperty(proxy, 'status', { value: 200 });
                 Object.defineProperty(proxy, 'readyState', { value: 4 });
-                Object.defineProperty(proxy, 'responseText', { value: JSON.stringify({ access_token: "mock", token: "mock", user: { id: "local" } }) });
+                Object.defineProperty(proxy, 'responseText', { value: JSON.stringify({ success: true, access_token: "mock", token: "mock", user: { id: "local" }, data: { user: { id: "local" } } }) });
                 setTimeout(() => { if (proxy.onload) proxy.onload(); if (proxy.onreadystatechange) proxy.onreadystatechange(); }, 10);
                 return;
               }
@@ -107,7 +110,14 @@
                 nativeInputValueSetter.call(passInput, 'password123');
                 passInput.dispatchEvent(new Event('input', { bubbles: true }));
                 
-                setTimeout(() => loginBtn.click(), 50);
+                setTimeout(() => {
+                    const form = loginBtn.closest('form');
+                    if (form) {
+                        form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+                    } else {
+                        loginBtn.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+                    }
+                }, 100);
             }
         });
         observer.observe(document.documentElement, { childList: true, subtree: true });
