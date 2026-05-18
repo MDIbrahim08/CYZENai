@@ -24,151 +24,24 @@
           }
 
           if (urlStr.includes('api.groq.com/openai/v1/chat/completions')) {
-            const bodyData = JSON.parse(options.body || '{}');
-            const messages = bodyData.messages || [];
-            
-            const systemPrompt = messages.find(m => m.role === 'system')?.content || '';
-            const userPrompt = messages.find(m => m.role === 'user')?.content || '';
-            
-            const isDocument = systemPrompt.includes('Incident Type:') || systemPrompt.includes('Incident Log') || userPrompt.includes('Generate the document now');
-            
-            if (isDocument) {
-              let docName = "Incident Log";
-              if (systemPrompt.includes("Police Complaint") || userPrompt.includes("Police Complaint")) docName = "Police Complaint";
-              else if (systemPrompt.includes("Breach Notification") || userPrompt.includes("Breach Notification")) docName = "Breach Notification Letter";
-              else if (systemPrompt.includes("Insurance Claim") || userPrompt.includes("Insurance Claim")) docName = "Insurance Claim";
-              else if (systemPrompt.includes("Bank Fraud") || userPrompt.includes("Bank Fraud")) docName = "Bank Fraud Complaint";
-              
-              let docContent = "";
-              
-              if (docName === "Police Complaint") {
-                docContent = `To,\nThe Cyber Crime Police Station / Station House Officer,\n[Local Police Authority]\n[City, State, Zip]\n\nDate: [Current Date]\n\nSubject: Formal Complaint regarding Cyber Crime and Extortion / Ransomware Attack\n\nRespected Sir/Madam,\n\nI am writing to formally report a serious cybersecurity incident that has affected my digital infrastructure. Below are the key details of the incident:\n\n1. Complainant Name: [Your Full Name]\n2. Date & Time of Occurrence: [Date/Time when noticed]\n3. Affected Devices: [e.g., Personal Laptop / Office Server]\n4. Details of the Incident:\n   - Description: An unauthorized actor gained remote access to my device and initiated a malicious payload.\n   - Action: Files were encrypted with a ransomware extension, and a ransom note demanding payment was left on the system.\n   - System Impact: Core work and financial files are completely locked, halting operations.\n\n5. Supporting Evidence Attached:\n   - Screenshot of the ransom note / demand page\n   - File samples showing the encrypted file extension\n   - Network activity logs (if available)\n\nI request you to kindly register this complaint, investigate the IP addresses / wallet addresses associated with the demands, and issue a formal First Information Report (FIR) to assist in security claims and forensic investigations.\n\nThank you.\n\nYours faithfully,\n\n___________________________\n[Your Signature]\n[Your Contact Number]\n[Your Email Address]`;
-              } else if (docName === "Breach Notification Letter") {
-                docContent = `SUBJECT: NOTICE OF DATA SECURITY ANOMALY\n\nDear Valued Contacts / Customers,\n\nWe are writing to inform you of a recent data security incident that may have involved some of your personal information. We take the privacy and security of your details extremely seriously and are providing this notice to help you take protective steps.\n\nWHAT HAPPENED:\nOn [Date], we identified suspicious activity involving one of our core systems. We immediately launched an investigation, isolated the affected systems, and secured our environment. Our investigation determined that an unauthorized third party gained access to a database containing contact records.\n\nWHAT INFORMATION WAS INVOLVED:\nThe affected database contained public-facing profile records including names, email addresses, and general contact numbers. No banking passwords or credit card data were stored in the compromised database.\n\nWHAT WE ARE DOING:\n1. Isolated the compromised servers instantly to stop lateral movement.\n2. Formatted and restored all application platforms from secure, offline backup checkpoints.\n3. Implemented robust Multi-Factor Authentication across all administrative portals to prevent future credential stuffing.\n4. Working closely with security experts and law enforcement authorities to trace the access vector.\n\nWHAT YOU CAN DO:\nWe highly recommend reviewing your personal accounts, changing passwords on related services, and remaining vigilant against any unsolicited emails or communications that ask for sensitive credentials.\n\nFOR MORE INFORMATION:\nIf you have any questions or require additional support, please contact our emergency support desk at support@cyzen.ai.\n\nSincerely,\n\nThe CYZEN Incident Response Team`;
-              } else if (docName === "Insurance Claim") {
-                docContent = `CYBER SECURITY INSURANCE CLAIM FORM\n\nPOLICY NUMBER: [Your Policy Number]\nCLAIM ID: CLA-[Random Number]\n\n1. INSURED DETAILS:\n- Name of Insured: [Your Name / Company Name]\n- Contact Person: [Your Name]\n- Address: [Your Address]\n- Industry/Domain: [e.g., E-Commerce / Small Business]\n\n2. INCIDENT OVERVIEW:\n- Date and Time Identified: [Date/Time]\n- Type of Event: [Ransomware / Extortion / Unauthorized Data Access]\n- Initial Attack Vector: [Compromised Login Credentials / Phishing Email Link]\n\n3. BUSINESS & FINANCIAL IMPACT:\n- System Downtime: [e.g., 24 - 48 Hours]\n- Estimated Restoration Costs: [Estimated Cost in Local Currency]\n- Business Interruption Losses: [Estimated Loss]\n- Extortion Demand (if applicable): [Ransom Amount Requested]\n\n4. CONTAINMENT & MITIGATION ACTIONS TAKEN:\n- Isolated affected subnetworks and disabled administrative logins.\n- Initiated system restoration from clean, offline backup archives.\n- Filed formal cybercrime complaint with law enforcement agency (FIR attached).\n\n5. DOCUMENTATION ATTACHED:\n[ ] Law Enforcement Complaint Copy (FIR)\n[ ] Technical Forensic Report Summary\n[ ] Invoices for Emergency Security Response Vendors\n[ ] Ransomware Screenshot / Extortion Demand Note\n\nDECLARATION:\nI hereby declare that the statements made above are true, accurate, and complete to the best of my knowledge.\n\nSigned:\n\n___________________________\nAuthorized Signatory\nDate: [Current Date]`;
-              } else if (docName === "Bank Fraud Complaint") {
-                docContent = `To,\nThe Branch Manager,\n[Name of Your Bank],\n[Branch Name / City]\n\nDate: [Current Date]\n\nSubject: Urgent Notification of Unauthorized Transactions / Dispute and Block Request\n\nDear Sir/Madam,\n\nI am writing to report unauthorized transactions on my bank account, details of which are provided below. I request immediate interdiction, chargeback registration, and account blocking.\n\n1. ACCOUNT HOLDER Name: [Your Full Name]\n2. Account Number: [Your Account Number]\n3. Associated Mobile Number: [Your Phone Number]\n4. Details of Unauthorized Transactions:\n   - Transaction 1: [Amount] | [Date/Time] | [Beneficiary UPI ID / Account Number]\n   - Transaction 2: [Amount] | [Date/Time] | [Beneficiary UPI ID / Account Number]\n\n5. Incident Description:\n   I was targeted by a phishing/vishing scam where credentials or UPI authorization codes were maliciously intercepted. As soon as I realized, I immediately disconnected my session. The transactions were NOT authorized by me.\n\n6. Actions Requested:\n   - Block/freeze the outbound cards and internet banking access instantly.\n   - Reverse the disputed funds and initiate the chargeback query flow.\n   - File the beneficiary accounts for national fraud screening.\n\nI have also registered a cybercrime complaint on the government portal (Reference No: [Reference ID]). Please find the copy attached.\n\nThank you for your prompt action to secure my capital.\n\nYours sincerely,\n\n___________________________\n[Your Signature]\n[Your Contact Number]`;
-              } else {
-                docContent = `CYBER SECURITY INCIDENT LOG & RECORD OF ACTIONS\n\nINCIDENT REFERENCE: INC-[Random ID]\nDATE REGISTERED: [Current Date]\n\n1. INCIDENT DESCRIPTION:\n- Event Category: [Incident Category]\n- Symptom Observed: [Compromised account / unusual file extensions / strange transactions]\n- Source/Vector: [Phishing link / credentials reuse]\n\n2. TIMELINE OF EVENTS:\n- [Time 00:00]: Anomaly detected by user.\n- [Time +0:15]: Critical network connection severed to isolate assets.\n- [Time +0:30]: Core administrative credentials modified across portals.\n- [Time +1:00]: Initiated compliance reports and logged backup integrity check.\n\n3. EVIDENCE COLLECTED:\n- Screenshot logs of system processes.\n- Network IP communication logs.\n- Phishing email headers / compromised transaction receipts.\n\n4. REMEDIATION & PREVENTIVE STEPS REGISTERED:\n- Implemented robust Multi-Factor Authentication (MFA).\n- Revoked all active device sessions.\n- Initiated secondary firewall configurations and security hardening.\n\nLogged By:\n___________________________\nSecurity Administrator\nDate: [Current Date]`;
+            try {
+              let apiKey = window.localStorage.getItem('GROQ_API_KEY');
+              if (!apiKey) {
+                try { apiKey = window.parent.localStorage.getItem('GROQ_API_KEY'); } catch(e) {}
               }
-
-              return new Response(JSON.stringify({
-                choices: [{
-                  message: { content: docContent }
-                }]
-              }), {
-                status: 200,
-                headers: { 'Content-Type': 'application/json' }
-              });
-            } else {
-              // Plan generator - parse answers to customize plan
-              const answersText = userPrompt;
-              const contains = (words) => words.some(w => answersText.toLowerCase().includes(w));
-              
-              let incidentType = "Compromise Containment Plan";
-              let severity = "Medium";
-              let summary = "A security anomaly or compromised system has been reported. A structured review and isolation strategy is recommended to restore integrity.";
-              let immediateActions = [];
-              let shortTermActions = [];
-              let recoveryActions = [];
-              let documentsNeeded = ["Incident Log", "Breach Notification Letter"];
-
-              if (contains(["ransom", "crypt", "encrypt", "extension", "lock", "ransomware", "malware", "virus"])) {
-                incidentType = "Ransomware & Malware Containment";
-                severity = "Critical";
-                summary = "Your device or server files have been encrypted by ransomware, representing an active breach. Volatile evidence must be protected, and infected systems isolated immediately to prevent cross-network propagation.";
-                immediateActions = [
-                  { "step": 1, "action": "Isolate Infected Systems", "reason": "Disconnect the affected device from all network switches and turn off Wi-Fi immediately to prevent the ransomware from spreading to other computers, servers, or shared network backups." },
-                  { "step": 2, "action": "DO NOT Pay the Ransom", "reason": "Paying extortionists does not guarantee key retrieval, often labels you a high-value target for repeat attacks, and directly finances criminal syndicates." },
-                  { "step": 3, "action": "Preserve Volatile Memory", "reason": "Do not shut down or reboot the machine. Keep the power connected but isolate the network, as shutting down can destroy volatile keys stored in RAM that could decrypt your files." }
-                ];
-                shortTermActions = [
-                  { "step": 1, "action": "Assess Backup Integrity", "reason": "Check if your offline or cloud backups are intact and were not exposed during the initial lateral movement of the malware." },
-                  { "step": 2, "action": "Document Ransom Notes and File Signatures", "reason": "Take screenshots or photos of the ransomware screen and compile file extensions for evidence preservation before recovery." },
-                  { "step": 3, "action": "File Police & Cybercrime Complaints", "reason": "Report the extortion to the official Cyber Crime unit (e.g., cybercrime.gov.in) within 24 hours to secure official documentation." }
-                ];
-                recoveryActions = [
-                  { "step": 1, "action": "Format and Rebuild from Clean State", "reason": "Wipe affected hard drives completely and reinstall operating systems to guarantee no persistent remote-access Trojans remain." },
-                  { "step": 2, "action": "Restore from Offline Backups", "reason": "Deploy verified, clean backups back onto the rebuilt systems after securing the local network environment." },
-                  { "step": 3, "action": "Implement Robust MFA & Network Segmentation", "reason": "Mandate Multi-Factor Authentication across all administrative logins and divide your networks into secure zones to prevent future propagation." }
-                ];
-                documentsNeeded = ["Police Complaint", "Insurance Claim", "Incident Log"];
-              } else if (contains(["bank", "money", "card", "transaction", "payment", "stolen", "fraud", "upi", "card"])) {
-                incidentType = "Phishing-Led Financial Fraud Response";
-                severity = "Critical";
-                summary = "Unauthorized financial transactions or compromised credentials have exposed your banking accounts. Immediate communication with financial partners is required to limit capital loss.";
-                immediateActions = [
-                  { "step": 1, "action": "Freeze Compromised Bank Accounts", "reason": "Call your bank's emergency fraud line immediately to block all outbound transactions, freeze associated cards, and suspend internet banking access." },
-                  { "step": 2, "action": "Reset UPI & Banking Credentials", "reason": "Change passwords and UPI PINs from an alternative, secure mobile device to block further unauthorized authorization." },
-                  { "step": 3, "action": "Revoke Compromised Mobile Device Sessions", "reason": "If your mobile device was accessed, sign out of all active digital banking apps and clear cached sessions." }
-                ];
-                shortTermActions = [
-                  { "step": 1, "action": "Register Bank Dispute & Secure Ticket Reference", "reason": "Submit a formal chargeback dispute with your financial institution and obtain a unique transaction reference number." },
-                  { "step": 2, "action": "File Cybercrime Portal Incident", "reason": "File an immediate complaint on the national Cyber Crime portal (cybercrime.gov.in) to flag the beneficiary account for swift interdiction." },
-                  { "step": 3, "action": "Review Recent Emails & Active Rules", "reason": "Verify that the attacker did not set up silent email forwarding rules in your inbox to hide transactional alerts." }
-                ];
-                recoveryActions = [
-                  { "step": 1, "action": "Transition to App-Based MFA", "reason": "Replace weak SMS-based OTP verification with secure authenticator apps like Google Authenticator to mitigate SIM swap risks." },
-                  { "step": 2, "action": "Audit Shared Financial Integration Access", "reason": "Review third-party app connections to your accounts (PayPal, Stripe, Google Pay) and revoke old access tokens." }
-                ];
-                documentsNeeded = ["Bank Fraud Complaint", "Incident Log", "Police Complaint"];
-              } else if (contains(["password", "login", "hacked", "email", "instagram", "facebook", "accessed", "otp", "code", "account", "compromise"])) {
-                incidentType = "Critical Account Takeover Recovery";
-                severity = "High";
-                summary = "An unauthorized actor has gained access to your digital account, potentially modifying recovery options. Securing the primary recovery email is the highest priority.";
-                immediateActions = [
-                  { "step": 1, "action": "Secure Your Recovery Email Inbox", "reason": "Change the password and review security settings of the email associated with the hacked account, as it represents the recovery master key." },
-                  { "step": 2, "action": "Initiate Platform Identity Verification Flow", "reason": "Launch the platform's official compromised account recovery wizard (e.g., instagram.com/hacked) using a recognized device and network IP." },
-                  { "step": 3, "action": "Revoke Suspicious Device Sessions", "reason": "Once logged in, go to Security Settings and instantly terminate all other active browser and app sessions." }
-                ];
-                shortTermActions = [
-                  { "step": 1, "action": "Audit Recovery Methods & Forwarding Rules", "reason": "Check and remove any hacker-configured phone numbers, secondary emails, or silent email forwarding rules." },
-                  { "step": 2, "action": "Inform Close Contacts of Impersonation", "reason": "Notify friends, family, or followers through alternative channels that your account was compromised, warning them against clicking links." }
-                ];
-                recoveryActions = [
-                  { "step": 1, "action": "Activate Robust Multi-Factor Authentication", "reason": "Enable Google Authenticator or hardware security keys to prevent reuse of stolen credentials." },
-                  { "step": 2, "action": "Download and Secure Recovery Codes", "reason": "Store official platform-provided offline recovery codes in a secure, non-digital location for emergencies." }
-                ];
-                documentsNeeded = ["Breach Notification Letter", "Incident Log"];
-              } else {
-                // General Incident response fallback
-                incidentType = "Compromise Containment Plan";
-                severity = "Medium";
-                summary = "A security anomaly or compromised system has been reported. A structured review and isolation strategy is recommended to restore integrity.";
-                immediateActions = [
-                  { "step": 1, "action": "Isolate Affected Hardware & Networks", "reason": "Disconnect suspicious devices from the local subnet immediately to block outbound connection requests." },
-                  { "step": 2, "action": "Initiate Password Reset of Core Accounts", "reason": "Perform a sweeping credential reset across all administrative portals from a known secure environment." }
-                ];
-                shortTermActions = [
-                  { "step": 1, "action": "Run Full System Anti-Malware Scans", "reason": "Trigger offline endpoint scans on isolated nodes using updated definition packages to identify Trojans." },
-                  { "step": 2, "action": "Analyze Login and Application Access Logs", "reason": "Review administrative access tables to map access vectors and pinpoint compromised accounts." }
-                ];
-                recoveryActions = [
-                  { "step": 1, "action": "Audit System Settings & Access Controls", "reason": "Enforce strict Least Privilege configurations and activate mandatory Multi-Factor Verification." },
-                  { "step": 2, "action": "Deploy Centralized Monitoring Tools", "reason": "Set up continuous intrusion detection alerts to proactively flag unauthorized administrative logins." }
-                ];
-                documentsNeeded = ["Incident Log", "Breach Notification Letter"];
+              if (apiKey) {
+                if (!options.headers) options.headers = {};
+                
+                if (options.headers instanceof Headers) {
+                  options.headers.set('Authorization', 'Bearer ' + apiKey);
+                } else if (typeof options.headers.set === 'function') {
+                  options.headers.set('Authorization', 'Bearer ' + apiKey);
+                } else {
+                  options.headers['Authorization'] = 'Bearer ' + apiKey;
+                }
               }
-
-              const mockResponseObj = {
-                incidentType,
-                severity,
-                summary,
-                immediateActions,
-                shortTermActions,
-                recoveryActions,
-                documentsNeeded
-              };
-
-              return new Response(JSON.stringify({
-                choices: [{
-                  message: { content: JSON.stringify(mockResponseObj) }
-                }]
-              }), {
-                status: 200,
-                headers: { 'Content-Type': 'application/json' }
-              });
+            } catch(e) {
+              console.error('Error injecting API key:', e);
             }
           }
           return originalFetch.apply(this, arguments);
