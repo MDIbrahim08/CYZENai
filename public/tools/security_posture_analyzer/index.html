@@ -17,6 +17,97 @@
         sessionStorage.setItem('token', 'local_mock_token');
         localStorage.setItem('supabase.auth.token', JSON.stringify({currentSession: {access_token: 'mock'}}));
 
+        function getMockResponse(url, method, body) {
+          url = url.toString();
+          method = method ? method.toUpperCase() : 'GET';
+          
+          if (url.includes('/auth/v1/token') || url.includes('/api/auth/login') || url.includes('sign-in') || url.includes('/api/auth/register')) {
+            return {
+              status: 200,
+              data: { 
+                success: true,
+                access_token: "local_mock_token", 
+                token: "local_mock_token",
+                user: { id: "local", email: "user@example.com", name: "User", role: "user" } 
+              }
+            };
+          }
+          if (url.includes('/auth/v1/user') || url.includes('/api/auth/me')) {
+            return {
+              status: 200,
+              data: { 
+                success: true,
+                data: { user: { id: "local", name: "User", role: "user" } },
+                id: "local", email: "user@example.com", role: "authenticated", user: { id: "local", name: "User", role: "user" } 
+              }
+            };
+          }
+          
+          if (url.includes('/api/assessments/start')) {
+            return {
+              status: 200,
+              data: { success: true, data: { sessionId: "sess_" + Date.now() } }
+            };
+          }
+          
+          if (url.includes('/rest/v1/')) {
+            return {
+              status: 200,
+              data: [{
+                 id: "1", score: 85, title: "Initial Assessment",
+                 created_at: new Date().toISOString(),
+                 details: { accessControl: 80, dataProtection: 90, networkSecurity: 85, incidentResponse: 80 }
+              }]
+            };
+          }
+
+          if (url.includes('api.groq.com') || url.includes('/functions/v1/') || url.includes('openai.com')) {
+             const mockPlan = `## Analysis Complete\nYour security posture is generally good, but you need to enable MFA and secure your EU/UK data collection endpoints immediately to comply with GDPR.`;
+             return {
+               status: 200,
+               data: {
+                 choices: [{ message: { content: mockPlan } }],
+                 success: true,
+                 data: {
+                     score: 75,
+                     details: { accessControl: 80, dataProtection: 70, networkSecurity: 85, incidentResponse: 65 },
+                     recommendations: ["Enable MFA on all critical accounts", "Implement regular data backups", "Use a password manager"]
+                 }
+               }
+             };
+          }
+
+          if (url.includes('/submit') || url.includes('/analyze') || url.includes('/responses')) {
+            return {
+              status: 200,
+              data: { 
+                success: true, 
+                data: { 
+                  score: 75, 
+                  details: { accessControl: 80, dataProtection: 70, networkSecurity: 85, incidentResponse: 65 },
+                  recommendations: ["Enable MFA on all critical accounts", "Implement regular data backups", "Use a password manager"]
+                } 
+              }
+            };
+          }
+
+          if (url.includes('/api/assessments/') && method === "GET") {
+            return {
+              status: 200,
+              data: { 
+                success: true, 
+                data: { 
+                  score: 75, 
+                  details: { accessControl: 80, dataProtection: 70, networkSecurity: 85, incidentResponse: 65 },
+                  recommendations: ["Enable MFA on all critical accounts", "Implement regular data backups"]
+                } 
+              }
+            };
+          }
+          
+          return null; // Let original request handle it
+        }
+
         var originalFetch = window.fetch;
         window.fetch = async function() {
           var arg = arguments[0];
@@ -33,77 +124,9 @@
           }
 
           if (url) {
-             url = url.toString();
-             
-             // Catch Supabase or generic auth
-             if (url.includes('/auth/v1/token') || url.includes('/api/auth/login') || url.includes('sign-in') || url.includes('/api/auth/register')) {
-               return new Response(JSON.stringify({ 
-                 success: true,
-                 access_token: "local_mock_token", 
-                 token: "local_mock_token",
-                 user: { id: "local", email: "user@example.com", name: "User", role: "user" } 
-               }), { status: 200, headers: { 'Content-Type': 'application/json' } });
-             }
-             if (url.includes('/auth/v1/user') || url.includes('/api/auth/me')) {
-               return new Response(JSON.stringify({ 
-                 success: true,
-                 data: { user: { id: "local", name: "User", role: "user" } },
-                 id: "local", email: "user@example.com", role: "authenticated", user: { id: "local", name: "User", role: "user" } 
-               }), { status: 200, headers: { 'Content-Type': 'application/json' } });
-             }
-             
-             if (url.includes('/api/assessments/start')) {
-               return new Response(JSON.stringify({ success: true, data: { sessionId: "sess_" + Date.now() } }), {
-                 status: 200, headers: { 'Content-Type': 'application/json' }
-               });
-             }
-             
-             // Catch any Supabase REST data fetches
-             if (url.includes('/rest/v1/')) {
-                return new Response(JSON.stringify([{
-                    id: "1", score: 85, title: "Initial Assessment",
-                    created_at: new Date().toISOString(),
-                    details: { accessControl: 80, dataProtection: 90, networkSecurity: 85, incidentResponse: 80 }
-                }]), { status: 200, headers: { 'Content-Type': 'application/json', 'Content-Range': '0-0/1' } });
-             }
-
-             // Catch any Groq API or Edge Functions
-             if (url.includes('api.groq.com') || url.includes('/functions/v1/') || url.includes('openai.com')) {
-                const mockPlan = `## Analysis Complete\nYour security posture is generally good, but you need to enable MFA and secure your EU/UK data collection endpoints immediately to comply with GDPR.`;
-                return new Response(JSON.stringify({
-                  choices: [{ message: { content: mockPlan } }],
-                  success: true,
-                  data: {
-                      score: 75,
-                      details: { accessControl: 80, dataProtection: 70, networkSecurity: 85, incidentResponse: 65 },
-                      recommendations: ["Enable MFA on all critical accounts", "Implement regular data backups", "Use a password manager"]
-                  }
-                }), { status: 200, headers: { 'Content-Type': 'application/json' } });
-             }
-
-             if (url.includes('/submit') || url.includes('/analyze')) {
-               return new Response(JSON.stringify({ 
-                    success: true, 
-                    data: { 
-                      score: 75, 
-                      details: { accessControl: 80, dataProtection: 70, networkSecurity: 85, incidentResponse: 65 },
-                      recommendations: ["Enable MFA on all critical accounts", "Implement regular data backups", "Use a password manager"]
-                    } 
-                  }), {
-                 status: 200, headers: { 'Content-Type': 'application/json' }
-               });
-             }
-             if (url.includes('/api/assessments/') && method === "GET") {
-                return new Response(JSON.stringify({ 
-                    success: true, 
-                    data: { 
-                      score: 75, 
-                      details: { accessControl: 80, dataProtection: 70, networkSecurity: 85, incidentResponse: 65 },
-                      recommendations: ["Enable MFA on all critical accounts", "Implement regular data backups"]
-                    } 
-                  }), {
-                 status: 200, headers: { 'Content-Type': 'application/json' }
-               });
+             const mock = getMockResponse(url, method);
+             if (mock) {
+               return new Response(JSON.stringify(mock.data), { status: mock.status, headers: { 'Content-Type': 'application/json' } });
              }
           }
           return originalFetch.apply(this, arguments);
@@ -116,10 +139,11 @@
           var proxy = {
             open: function(m, u) { method = m.toUpperCase(); url = u; xhr.open.apply(xhr, arguments); },
             send: function(body) {
-              if (url.includes('/auth/v1/') || url.includes('/api/auth/')) {
-                Object.defineProperty(proxy, 'status', { value: 200 });
+              const mock = getMockResponse(url, method, body);
+              if (mock) {
+                Object.defineProperty(proxy, 'status', { value: mock.status });
                 Object.defineProperty(proxy, 'readyState', { value: 4 });
-                Object.defineProperty(proxy, 'responseText', { value: JSON.stringify({ success: true, access_token: "mock", token: "mock", user: { id: "local" }, data: { user: { id: "local" } } }) });
+                Object.defineProperty(proxy, 'responseText', { value: JSON.stringify(mock.data) });
                 setTimeout(() => { if (proxy.onload) proxy.onload(); if (proxy.onreadystatechange) proxy.onreadystatechange(); }, 10);
                 return;
               }
