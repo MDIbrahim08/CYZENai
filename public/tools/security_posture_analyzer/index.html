@@ -169,22 +169,144 @@
              };
           }
 
-          const mockReport = {
-            sessionId: "sess_12345678",
-            overallScore: 78,
-            riskLevel: "medium",
-            maturityLevel: "Intermediate",
-            confidence: {
-              confidenceScore: 88,
-              confidenceLevel: "High",
-              confidenceFactors: [
-                "Highly consistent authentication questions answers",
-                "Demonstrated mature understanding of Network and API controls",
-                "Provided complete answers for the full questionnaire"
-              ],
-              contradictions: []
-            },
-            findings: [
+          let score = 78;
+          let calculatedRisk = "medium";
+          let calculatedMaturity = "Intermediate";
+          let calculatedFindings = [];
+          
+          let authScore = 6.0;
+          let dataScore = 7.5;
+          let netScore = 8.0;
+          let apiScore = 6.5;
+          let cloudScore = 5.0;
+          let supplyScore = 8.0;
+          let bcpScore = 7.0;
+          let devScore = 6.0;
+
+          if (body && body.answers && Array.isArray(body.answers)) {
+            let totalMax = 0;
+            let totalObtained = 0;
+            
+            const questionData = {
+              "Q_AUTH_001": {
+                category: "Authentication",
+                options: [
+                  { score: 0, severity: "critical", title: "No Authentication Mechanism", desc: "The application is fully public without any authentication, exposing all data." },
+                  { score: 2, severity: "critical", title: "Missing MFA Protection", desc: "Access is secured with username and password only, leaving it highly vulnerable to brute force and credential stuffing attacks." },
+                  { score: 6, severity: "warning", title: "Optional MFA Policy", desc: "MFA is only optional for users, exposing accounts that choose not to enable it." },
+                  { score: 10, severity: null }
+                ]
+              },
+              "Q_DATA_001": {
+                category: "Data Protection",
+                options: [
+                  { score: 0, severity: "critical", title: "Plaintext Password Storage", desc: "Passwords are stored in clear text or trivial encoding, exposing credentials completely in case of database access." },
+                  { score: 3, severity: "critical", title: "Obsolete Cryptographic Hashing", desc: "Passwords are hashed using insecure, obsolete algorithms that are easily cracked using precomputed rainbow tables." },
+                  { score: 10, severity: null }
+                ]
+              },
+              "Q_NET_001": {
+                category: "Network Security",
+                options: [
+                  { score: 0, severity: "critical", title: "Unencrypted Network Traffic", desc: "All client-server communications are sent in clear HTTP, exposing data to man-in-the-middle sniffing." },
+                  { score: 4, severity: "warning", title: "Mixed HTTP/HTTPS Content", desc: "Partial HTTPS implementation allows cookie hijacking and insecure fallback vectors." },
+                  { score: 10, severity: null }
+                ]
+              },
+              "Q_API_002": {
+                category: "API Security",
+                options: [
+                  { score: 0, severity: "critical", title: "Absent Server-side Input Validation", desc: "Trusting client-side validation allows attackers to bypass controls easily and execute SQL Injection/XSS." },
+                  { score: 4, severity: "warning", title: "Weak Server-side Sanitization", desc: "Manual parameters checking leaves room for edge cases and injection vulnerabilities." },
+                  { score: 10, severity: null }
+                ]
+              },
+              "Q_CLOUD_001": {
+                category: "Cloud Security",
+                options: [
+                  { score: 0, severity: "critical", title: "Hardcoded Code Credentials", desc: "Sensitive API keys and database strings are hardcoded directly in source code, easily leaked." },
+                  { score: 2, severity: "critical", title: "Exposed Configuration Secrets", desc: "Environment secrets are committed to git repositories, exposing them to any user with source access." },
+                  { score: 6, severity: "warning", title: "Local Secrets Exposure", desc: "Secrets are kept in plaintext files on servers, which can be leaked through filesystem traversal." },
+                  { score: 10, severity: null }
+                ]
+              },
+              "Q_DEP_001": {
+                category: "Supply Chain",
+                options: [
+                  { score: 0, severity: "critical", title: "Vulnerable & Outdated Dependencies", desc: "Software packages are rarely updated, leaving known CVEs unpatched and exploitable." },
+                  { score: 5, severity: "warning", title: "Irregular Package Patching", desc: "Dependencies are updated only reactively, leaving systems vulnerable to known exploits in the interim." },
+                  { score: 10, severity: null }
+                ]
+              },
+              "Q_BCP_001": {
+                category: "Business Continuity",
+                options: [
+                  { score: 0, severity: "critical", title: "No System Backups", desc: "No backup system exists, putting all data at risk of permanent loss from ransomware or hardware failures." },
+                  { score: 5, severity: "warning", title: "Untested Backups Restoration", desc: "Backups are created but never dry-run tested, risking corrupted backups during a real recovery emergency." },
+                  { score: 10, severity: null }
+                ]
+              },
+              "Q_DEV_003": {
+                category: "Endpoint Security",
+                options: [
+                  { score: 0, severity: "critical", title: "Widespread Password Reuse", desc: "Reusing passwords means a single credential breach on a third-party site will compromise the primary system." },
+                  { score: 3, severity: "warning", title: "Insecure Password Storage", desc: "Storing passwords in unencrypted files allows anyone with local access or simple malware to steal all credentials." },
+                  { score: 10, severity: null }
+                ]
+              }
+            };
+            
+            body.answers.forEach(ans => {
+              const q = questionData[ans.questionId];
+              if (q) {
+                const opt = q.options[ans.selectedOptionIndex];
+                if (opt) {
+                  totalMax += 10;
+                  totalObtained += opt.score;
+                  
+                  const category = q.category;
+                  if (category === "Authentication") authScore = opt.score;
+                  else if (category === "Data Protection") dataScore = opt.score;
+                  else if (category === "Network Security") netScore = opt.score;
+                  else if (category === "API Security") apiScore = opt.score;
+                  else if (category === "Cloud Security") cloudScore = opt.score;
+                  else if (category === "Supply Chain") supplyScore = opt.score;
+                  else if (category === "Business Continuity") bcpScore = opt.score;
+                  else if (category === "Endpoint Security") devScore = opt.score;
+                  
+                  if (opt.severity) {
+                    calculatedFindings.push({
+                      severity: opt.severity,
+                      category: q.category,
+                      title: opt.title,
+                      description: opt.desc
+                    });
+                  }
+                }
+              }
+            });
+            
+            if (totalMax > 0) {
+              score = Math.round((totalObtained / totalMax) * 100);
+            }
+            
+            if (score < 40) {
+              calculatedRisk = "high";
+              calculatedMaturity = "Beginner";
+            } else if (score < 75) {
+              calculatedRisk = "medium";
+              calculatedMaturity = "Intermediate";
+            } else {
+              calculatedRisk = "low";
+              calculatedMaturity = "Advanced";
+            }
+            
+            calculatedFindings.sort((a, b) => {
+              const sevOrder = { "critical": 3, "warning": 2, "low": 1 };
+              return (sevOrder[b.severity] || 0) - (sevOrder[a.severity] || 0);
+            });
+          } else {
+            calculatedFindings = [
               {
                 severity: "critical",
                 category: "Authentication",
@@ -209,92 +331,109 @@
                 title: "Basic input validation",
                 description: "Backend inputs are validated manually instead of using strict schema validation libraries, leaving room for injection risks."
               }
-            ],
+            ];
+          }
+
+          const mockReport = {
+            sessionId: "sess_12345678",
+            overallScore: score,
+            riskLevel: calculatedRisk,
+            maturityLevel: calculatedMaturity,
+            confidence: {
+              confidenceScore: 88,
+              confidenceLevel: "High",
+              confidenceFactors: [
+                "Highly consistent authentication questions answers",
+                "Demonstrated mature understanding of Network and API controls",
+                "Provided complete answers for the full questionnaire"
+              ],
+              contradictions: []
+            },
+            findings: calculatedFindings,
             categoryBreakdown: [
-              { category: "Authentication", score: 6.0 },
-              { category: "Data Protection", score: 7.5 },
-              { category: "Network Security", score: 8.0 },
-              { category: "API Security", score: 6.5 },
-              { category: "Cloud Security", score: 5.0 },
-              { category: "Supply Chain", score: 8.0 },
-              { category: "Business Continuity", score: 7.0 },
-              { category: "Endpoint Security", score: 6.0 }
+              { category: "Authentication", score: authScore },
+              { category: "Data Protection", score: dataScore },
+              { category: "Network Security", score: netScore },
+              { category: "API Security", score: apiScore },
+              { category: "Cloud Security", score: cloudScore },
+              { category: "Supply Chain", score: supplyScore },
+              { category: "Business Continuity", score: bcpScore },
+              { category: "Endpoint Security", score: devScore }
             ],
             compliance: [
               {
                 key: "gdpr",
                 name: "GDPR Compliance Mapping",
                 fullName: "General Data Protection Regulation (Regulation (EU) 2016/679)",
-                complianceScore: 75,
+                complianceScore: score >= 80 ? 95 : score >= 50 ? 75 : 30,
                 maxPenalty: "Up to €20,000,000 or 4% of annual global turnover, whichever is higher.",
                 hardStopTriggered: false,
                 requirements: [
-                  { id: "R_GDPR_1", title: "Valid Consent Flow", article: "Article 7 - Conditions for consent", status: "met" },
-                  { id: "R_GDPR_2", title: "Data Deletion / Right to Erasure", article: "Article 17 - Right to erasure ('right to be forgotten')", status: "partial" },
-                  { id: "R_GDPR_3", title: "Data Portability", article: "Article 20 - Right to data portability", status: "not_met" }
+                  { id: "R_GDPR_1", title: "Valid Consent Flow", article: "Article 7 - Conditions for consent", status: score >= 50 ? "met" : "not_met" },
+                  { id: "R_GDPR_2", title: "Data Deletion / Right to Erasure", article: "Article 17 - Right to erasure ('right to be forgotten')", status: score >= 80 ? "met" : "partial" },
+                  { id: "R_GDPR_3", title: "Data Portability", article: "Article 20 - Right to data portability", status: score >= 80 ? "met" : "not_met" }
                 ]
               },
               {
                 key: "pci_dss",
                 name: "PCI-DSS v4.0 Scoping",
                 fullName: "Payment Card Industry Data Security Standard",
-                complianceScore: 60,
+                complianceScore: score >= 90 ? 90 : score >= 60 ? 60 : 25,
                 maxPenalty: "Significant direct fines, merchant account suspension, and transactional transaction fee increases.",
-                hardStopTriggered: true,
+                hardStopTriggered: score < 80,
                 hardStopReason: "Failure to enforce MFA on remote access endpoints automatically triggers non-compliance status under Requirement 8.3.",
                 requirements: [
-                  { id: "R_PCI_1", title: "Strong Access Control Measures", article: "Requirement 8 - Identify and authenticate access to system components", status: "not_met" },
-                  { id: "R_PCI_2", title: "Encrypt Cardholder Data Transmission", article: "Requirement 4 - Protect cardholder data with strong cryptography during transmission", status: "met" }
+                  { id: "R_PCI_1", title: "Strong Access Control Measures", article: "Requirement 8 - Identify and authenticate access to system components", status: score >= 80 ? "met" : "not_met" },
+                  { id: "R_PCI_2", title: "Encrypt Cardholder Data Transmission", article: "Requirement 4 - Protect cardholder data with strong cryptography during transmission", status: score >= 60 ? "met" : "not_met" }
                 ]
               }
             ],
             roadmap: {
-              immediate: [
-                {
-                  action: "Enforce MFA across all administrative and user accounts",
+              immediate: calculatedFindings.filter(f => f.severity === "critical").map(f => {
+                let action = "Remediate Critical Vulnerability";
+                let steps = ["Review configurations", "Enforce security controls"];
+                if (f.category === "Authentication") {
+                  action = "Enforce MFA across all administrative and user accounts";
+                  steps = ["Enable conditional access policy inside your Identity Provider", "Notify users", "Set enforcement deadline"];
+                } else if (f.category === "Cloud Security") {
+                  action = "Migrate env secrets to AWS Secrets Manager / Vault";
+                  steps = ["Provision secret store", "Replace .env references with dynamic retrieval", "Rotate keys"];
+                } else if (f.category === "Network Security") {
+                  action = "Enforce HTTP to HTTPS redirects globally";
+                  steps = ["Configure permanent 301 redirects", "Include security headers"];
+                }
+                return {
+                  action: action,
                   timeEstimate: "1-2 days",
                   difficulty: "Easy",
-                  whyItMatters: "Credential theft is the #1 vector for system access breaches globally.",
-                  attackNarrative: "An attacker targets an admin email, guesses a password or uses a leaked database credential, and gains complete administrative access instantly.",
-                  confidenceInsights: ["Highly recommended immediate step backed by industry best practices"],
-                  steps: [
-                    "Enable conditional access policy or forced MFA setting inside your Identity Provider.",
-                    "Inform all users and supply setup guides.",
-                    "Audit session logs to verify zero bypasses."
-                  ],
-                  links: ["https://owasp.org/www-community/controls/Multifactor_Authentication"]
-                }
-              ],
-              this_week: [
-                {
-                  action: "Migrate secrets to AWS Secrets Manager / Vault",
+                  whyItMatters: f.description,
+                  steps: steps,
+                  links: ["https://owasp.org/"]
+                };
+              }),
+              this_week: calculatedFindings.filter(f => f.severity === "warning").map(f => {
+                return {
+                  action: "Resolve Warning: " + f.title,
                   timeEstimate: "3-5 days",
                   difficulty: "Medium",
-                  whyItMatters: "Hardcoded credentials or environment files on disk can easily be leaked through server-side errors or developer mistakes.",
-                  steps: [
-                    "Provision an AWS Secrets Manager or HashiCorp Vault instance.",
-                    "Migrate database connection string and OAuth client keys to the secret store.",
-                    "Refactor application bootstrap code to retrieve configurations dynamically at launch."
-                  ],
-                  links: ["https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure"]
-                }
-              ],
-              this_month: [
-                {
-                  action: "Enforce HTTPS redirect and enable strict HSTS headers",
-                  timeEstimate: "1 week",
+                  whyItMatters: f.description,
+                  steps: ["Audit active occurrences", "Implement structural validation and patches"]
+                };
+              }),
+              this_month: calculatedFindings.filter(f => f.severity === "low").map(f => {
+                return {
+                  action: "Address Low-risk issue: " + f.title,
+                  timeEstimate: "1-2 weeks",
                   difficulty: "Easy",
-                  whyItMatters: "Failing to redirect unencrypted traffic allows man-in-the-middle attacks on public Wi-Fi networks.",
-                  steps: [
-                    "Update Web Server configuration to return a 301 Redirect for all HTTP requests.",
-                    "Add the strict-transport-security response header with a long max-age and preload directives."
-                  ]
-                }
-              ]
+                  whyItMatters: f.description,
+                  steps: ["Incorporate into monthly sprint", "Validate with automated scanning tools"]
+                };
+              })
             }
           };
 
           if (url.includes('/submit') || url.includes('/analyze') || url.includes('/responses')) {
+            localStorage.setItem('last_mock_report', JSON.stringify(mockReport));
             return {
               status: 200,
               data: { 
@@ -305,6 +444,18 @@
           }
 
           if (url.includes('/api/assessments/') && method === "GET") {
+            let savedReport = localStorage.getItem('last_mock_report');
+            if (savedReport) {
+              try {
+                return {
+                  status: 200,
+                  data: {
+                    success: true,
+                    data: JSON.parse(savedReport)
+                  }
+                };
+              } catch(e) {}
+            }
             return {
               status: 200,
               data: { 
@@ -322,6 +473,7 @@
           var arg = arguments[0];
           var url = '';
           var method = (arguments[1] && arguments[1].method) ? arguments[1].method.toUpperCase() : 'GET';
+          var body = (arguments[1] && arguments[1].body) ? arguments[1].body : null;
           
           if (typeof arg === 'string') {
             url = arg;
@@ -332,8 +484,15 @@
             if (arg.method) method = arg.method.toUpperCase();
           }
 
+          let parsedBody = null;
+          if (body) {
+            try {
+              if (typeof body === 'string') parsedBody = JSON.parse(body);
+            } catch(e) {}
+          }
+
           if (url) {
-             const mock = getMockResponse(url, method);
+             const mock = getMockResponse(url, method, parsedBody);
              if (mock) {
                return new Response(JSON.stringify(mock.data), { status: mock.status, headers: { 'Content-Type': 'application/json' } });
              }
@@ -348,7 +507,13 @@
           var proxy = {
             open: function(m, u) { method = m.toUpperCase(); url = u; xhr.open.apply(xhr, arguments); },
             send: function(body) {
-              const mock = getMockResponse(url, method, body);
+              let parsedBody = null;
+              if (body) {
+                try {
+                  if (typeof body === 'string') parsedBody = JSON.parse(body);
+                } catch(e) {}
+              }
+              const mock = getMockResponse(url, method, parsedBody);
               if (mock) {
                 Object.defineProperty(proxy, 'status', { value: mock.status });
                 Object.defineProperty(proxy, 'readyState', { value: 4 });
