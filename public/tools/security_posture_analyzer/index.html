@@ -64,7 +64,21 @@
                 }]), { status: 200, headers: { 'Content-Type': 'application/json', 'Content-Range': '0-0/1' } });
              }
 
-             if (url.includes('/submit')) {
+             // Catch any Groq API or Edge Functions
+             if (url.includes('api.groq.com') || url.includes('/functions/v1/') || url.includes('openai.com')) {
+                const mockPlan = `## Analysis Complete\nYour security posture is generally good, but you need to enable MFA and secure your EU/UK data collection endpoints immediately to comply with GDPR.`;
+                return new Response(JSON.stringify({
+                  choices: [{ message: { content: mockPlan } }],
+                  success: true,
+                  data: {
+                      score: 75,
+                      details: { accessControl: 80, dataProtection: 70, networkSecurity: 85, incidentResponse: 65 },
+                      recommendations: ["Enable MFA on all critical accounts", "Implement regular data backups", "Use a password manager"]
+                  }
+                }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+             }
+
+             if (url.includes('/submit') || url.includes('/analyze')) {
                return new Response(JSON.stringify({ 
                     success: true, 
                     data: { 
