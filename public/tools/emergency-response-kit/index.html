@@ -12,8 +12,17 @@
       (function() {
         const originalFetch = window.fetch;
         window.fetch = async function() {
-          const url = arguments[0];
-          if (typeof url === 'string' && url.includes('api.groq.com/openai/v1/chat/completions')) {
+          const arg = arguments[0];
+          let urlStr = '';
+          if (typeof arg === 'string') {
+            urlStr = arg;
+          } else if (arg instanceof URL) {
+            urlStr = arg.href;
+          } else if (arg && arg.url) {
+            urlStr = arg.url;
+          }
+
+          if (urlStr.includes('api.groq.com/openai/v1/chat/completions')) {
             // Mock response
             const mockPlan = `## Incident Assessment
 Based on the details you provided, this appears to be a critical incident.

@@ -7,146 +7,222 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: Arial, sans-serif;
-            background: #f0f2f5;
-            padding: 30px;
-            color: #333;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #05070a;
+            color: #e2e8f0;
+            padding: 40px 20px;
+            min-height: 100vh;
         }
 
         h1 {
             text-align: center;
-            margin-bottom: 5px;
-            font-size: 28px;
+            margin-bottom: 10px;
+            font-size: 36px;
+            font-weight: 900;
+            background: linear-gradient(to right, #22d3ee, #8b5cf6, #22d3ee);
+            -webkit-background-clip: text;
+            color: transparent;
+            background-size: 200%;
+            animation: shine 5s linear infinite;
         }
+
+        @keyframes shine { to { background-position: 200% center; } }
 
         .subtitle {
             text-align: center;
-            color: #666;
-            margin-bottom: 30px;
+            color: #94a3b8;
+            margin-bottom: 40px;
+            font-size: 16px;
         }
 
         .container {
             max-width: 800px;
             margin: 0 auto;
+            background: #0f1218;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
         }
+
+        /* Ambient glows */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -100px; left: -100px;
+            width: 300px; height: 300px;
+            background: rgba(34, 211, 238, 0.15);
+            filter: blur(100px);
+            z-index: 0; pointer-events: none;
+        }
+        
+        .container > * { relative; z-index: 1; }
 
         textarea {
             width: 100%;
             height: 250px;
-            padding: 15px;
+            padding: 20px;
             font-size: 14px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
             resize: vertical;
-            font-family: monospace;
+            font-family: 'JetBrains Mono', monospace;
+            color: #e2e8f0;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        textarea:focus {
+            border-color: #22d3ee;
+            box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.15);
+            background: rgba(255, 255, 255, 0.08);
         }
 
         button {
             width: 100%;
-            margin-top: 15px;
-            padding: 14px;
-            background: #2563eb;
-            color: white;
+            margin-top: 20px;
+            padding: 16px;
+            background: #22d3ee;
+            color: #000;
             font-size: 16px;
+            font-weight: bold;
             border: none;
-            border-radius: 8px;
+            border-radius: 16px;
             cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px -10px rgba(34, 211, 238, 0.5);
         }
 
-        button:hover { background: #1d4ed8; }
-        button:disabled { background: #93c5fd; cursor: not-allowed; }
+        button:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(34, 211, 238, 0.4), 0 10px 10px -5px rgba(34, 211, 238, 0.2);
+            filter: brightness(1.1);
+        }
+        button:disabled { background: #475569; color: #94a3b8; cursor: not-allowed; box-shadow: none; transform: none; }
 
-        #result { margin-top: 30px; }
+        #result { margin-top: 40px; }
 
         .verdict-box {
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 24px;
             text-align: center;
+            backdrop-filter: blur(10px);
         }
 
-        .verdict-PHISHING   { background: #fee2e2; border: 2px solid #ef4444; }
-        .verdict-SUSPICIOUS { background: #fef3c7; border: 2px solid #f59e0b; }
-        .verdict-LIKELYSAFE { background: #e0f2fe; border: 2px solid #38bdf8; }
-        .verdict-SAFE       { background: #dcfce7; border: 2px solid #22c55e; }
+        .verdict-PHISHING   { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); }
+        .verdict-SUSPICIOUS { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); }
+        .verdict-LIKELYSAFE { background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); }
+        .verdict-SAFE       { background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); }
 
         .verdict-title {
-            font-size: 26px;
-            font-weight: bold;
-            margin-bottom: 8px;
+            font-size: 32px;
+            font-weight: 900;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
         }
+        .verdict-PHISHING .verdict-title { color: #f87171; }
+        .verdict-SUSPICIOUS .verdict-title { color: #fbbf24; }
+        .verdict-LIKELYSAFE .verdict-title { color: #7dd3fc; }
+        .verdict-SAFE .verdict-title { color: #4ade80; }
 
         .risk-score {
-            font-size: 18px;
-            margin-bottom: 10px;
+            font-size: 16px;
+            margin-bottom: 16px;
+            color: #cbd5e1;
+            font-weight: 500;
         }
+        .risk-score strong { color: #fff; }
 
         .summary {
-            font-size: 15px;
+            font-size: 16px;
             line-height: 1.6;
-            margin-bottom: 10px;
+            color: #94a3b8;
         }
 
         .section {
-            background: white;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border: 1px solid #e5e7eb;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .section h3 {
-            margin-bottom: 15px;
-            font-size: 17px;
-            border-bottom: 1px solid #e5e7eb;
-            padding-bottom: 8px;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #f8fafc;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .flag-item {
-            margin-bottom: 14px;
-            padding: 12px;
-            border-radius: 6px;
-            background: #f9fafb;
+            margin-bottom: 16px;
+            padding: 16px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border-left: 4px solid #475569;
         }
 
+        .flag-item.red { border-left-color: #ef4444; }
+        .flag-item.warn { border-left-color: #f59e0b; }
+        .flag-item.safe { border-left-color: #22c55e; }
+
         .flag-title {
-            font-weight: bold;
-            margin-bottom: 5px;
+            font-weight: 700;
+            margin-bottom: 6px;
             font-size: 15px;
+            color: #f8fafc;
         }
 
         .flag-detail {
             font-size: 14px;
-            color: #555;
-            line-height: 1.5;
+            color: #94a3b8;
+            line-height: 1.6;
         }
 
         .what-to-do li {
-            padding: 8px 0;
-            font-size: 14px;
-            border-bottom: 1px solid #f3f4f6;
+            padding: 12px 0;
+            font-size: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             list-style: none;
+            color: #cbd5e1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
+        .what-to-do li::before {
+            content: '→';
+            color: #22d3ee;
+            font-weight: bold;
+        }
+        .what-to-do li:last-child { border-bottom: none; padding-bottom: 0; }
 
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            gap: 16px;
         }
 
         .stat-box {
-            background: #f9fafb;
-            border-radius: 6px;
-            padding: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 16px;
+            padding: 20px 10px;
             text-align: center;
-            border: 1px solid #e5e7eb;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .stat-value { font-size: 22px; font-weight: bold; }
-        .stat-label { font-size: 12px; color: #666; margin-top: 4px; }
+        .stat-value { font-size: 32px; font-weight: 900; line-height: 1; }
+        .stat-label { font-size: 13px; color: #94a3b8; margin-top: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        .loading { text-align: center; color: #666; padding: 20px; font-size: 16px; }
-        .error-box { background: #fee2e2; padding: 15px; border-radius: 8px; color: #b91c1c; }
+        .loading { text-align: center; color: #22d3ee; padding: 40px; font-size: 18px; font-weight: 600; animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 50% { opacity: .5; } }
+        .error-box { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); padding: 20px; border-radius: 16px; color: #fca5a5; text-align: center; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -305,7 +381,7 @@
             html += `<div class="section">
                 <h3>🚨 Red Flags (${a.red_flags.length})</h3>`;
             a.red_flags.forEach(f => {
-                html += `<div class="flag-item">
+                html += `<div class="flag-item red">
                     <div class="flag-title">${f.flag}</div>
                     <div class="flag-detail">${f.detail}</div>
                 </div>`;
@@ -318,7 +394,7 @@
             html += `<div class="section">
                 <h3>⚠️ Warnings (${a.warnings.length})</h3>`;
             a.warnings.forEach(f => {
-                html += `<div class="flag-item">
+                html += `<div class="flag-item warn">
                     <div class="flag-title">${f.flag}</div>
                     <div class="flag-detail">${f.detail}</div>
                 </div>`;
@@ -331,7 +407,7 @@
             html += `<div class="section">
                 <h3>✅ Safe Signals (${a.safe_signals.length})</h3>`;
             a.safe_signals.forEach(f => {
-                html += `<div class="flag-item">
+                html += `<div class="flag-item safe">
                     <div class="flag-title">${f.flag}</div>
                     <div class="flag-detail">${f.detail}</div>
                 </div>`;

@@ -12,22 +12,28 @@
         // Auto-login by setting mock token
         localStorage.setItem('token', 'local_mock_token');
         sessionStorage.setItem('token', 'local_mock_token');
+        localStorage.setItem('supabase.auth.token', JSON.stringify({currentSession: {access_token: 'mock'}}));
 
         var originalFetch = window.fetch;
         window.fetch = async function() {
           var url = arguments[0];
           if (typeof url === 'string' || url instanceof URL) {
              url = url.toString();
-             if (url.includes('/api/auth/me')) {
-               return new Response(JSON.stringify({ success: true, data: { user: { id: "local", name: "User", role: "user" } } }), {
-                 status: 200, headers: { 'Content-Type': 'application/json' }
-               });
+             
+             // Catch Supabase or generic auth
+             if (url.includes('/auth/v1/token') || url.includes('/api/auth/login') || url.includes('sign-in')) {
+               return new Response(JSON.stringify({ 
+                 access_token: "local_mock_token", 
+                 token: "local_mock_token",
+                 user: { id: "local", email: "user@example.com" } 
+               }), { status: 200, headers: { 'Content-Type': 'application/json' } });
              }
-             if (url.includes('/api/auth/login') || url.includes('/api/auth/register')) {
-               return new Response(JSON.stringify({ success: true, token: "local_mock_token" }), {
-                 status: 200, headers: { 'Content-Type': 'application/json' }
-               });
+             if (url.includes('/auth/v1/user') || url.includes('/api/auth/me')) {
+               return new Response(JSON.stringify({ 
+                 id: "local", email: "user@example.com", role: "authenticated", user: { id: "local" } 
+               }), { status: 200, headers: { 'Content-Type': 'application/json' } });
              }
+             
              if (url.includes('/api/assessments/start')) {
                return new Response(JSON.stringify({ success: true, data: { sessionId: "sess_" + Date.now() } }), {
                  status: 200, headers: { 'Content-Type': 'application/json' }
@@ -61,7 +67,6 @@
           return originalFetch.apply(this, arguments);
         };
 
-        // Also keep MockXHR just in case
         var originalXHR = window.XMLHttpRequest;
         function MockXHR() {
           var xhr = new originalXHR();
@@ -69,17 +74,10 @@
           var proxy = {
             open: function(m, u) { method = m.toUpperCase(); url = u; xhr.open.apply(xhr, arguments); },
             send: function(body) {
-              if (url.includes('/api/auth/me')) {
+              if (url.includes('/auth/v1/') || url.includes('/api/auth/')) {
                 Object.defineProperty(proxy, 'status', { value: 200 });
                 Object.defineProperty(proxy, 'readyState', { value: 4 });
-                Object.defineProperty(proxy, 'responseText', { value: JSON.stringify({ success: true, data: { user: { id: "local", name: "User", role: "user" } } }) });
-                setTimeout(() => { if (proxy.onload) proxy.onload(); if (proxy.onreadystatechange) proxy.onreadystatechange(); }, 10);
-                return;
-              }
-              if (url.includes('/api/auth/login') || url.includes('/api/auth/register')) {
-                Object.defineProperty(proxy, 'status', { value: 200 });
-                Object.defineProperty(proxy, 'readyState', { value: 4 });
-                Object.defineProperty(proxy, 'responseText', { value: JSON.stringify({ success: true, token: "local_mock_token" }) });
+                Object.defineProperty(proxy, 'responseText', { value: JSON.stringify({ access_token: "mock", token: "mock", user: { id: "local" } }) });
                 setTimeout(() => { if (proxy.onload) proxy.onload(); if (proxy.onreadystatechange) proxy.onreadystatechange(); }, 10);
                 return;
               }
@@ -91,6 +89,28 @@
           return proxy;
         }
         window.XMLHttpRequest = MockXHR;
+
+        // Auto-clicker to bypass the login UI if it still shows up
+        const observer = new MutationObserver((mutations) => {
+            const emailInput = document.querySelector('input[type="email"]');
+            const passInput = document.querySelector('input[type="password"]');
+            const loginBtn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Sign In') || b.textContent.includes('Login'));
+            
+            if (emailInput && passInput && loginBtn && !loginBtn.disabled && !window.hasAutoLogged) {
+                window.hasAutoLogged = true;
+                
+                // Simulate React input events
+                const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
+                nativeInputValueSetter.call(emailInput, 'auto@user.com');
+                emailInput.dispatchEvent(new Event('input', { bubbles: true }));
+                
+                nativeInputValueSetter.call(passInput, 'password123');
+                passInput.dispatchEvent(new Event('input', { bubbles: true }));
+                
+                setTimeout(() => loginBtn.click(), 50);
+            }
+        });
+        observer.observe(document.documentElement, { childList: true, subtree: true });
       })();
     </script>
   </head>
