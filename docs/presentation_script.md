@@ -5,35 +5,36 @@
 
 ---
 
-## Part 1: Introduction & Problem (Ibrahim)
-**Ibrahim:** "Good morning, respected judges and faculty. We are here to present **CYZEN**, an AI-powered platform for cybersecurity awareness and incident response. 
+## Part 1: Introduction & Problem Statement (Ibrahim)
+**Ibrahim:** "Good morning, respected judges and faculty. We are here to present **CYZEN**, an advanced AI-powered platform designed for proactive cybersecurity awareness and threat mitigation. 
 
-The core problem we identified is the 'Human Link' vulnerability. Every year, billions are lost to phishing and compromised credentials because users lack technical literacy. Furthermore, during a cyber-attack, users experience a 'Panic Gap'—a critical window where poor decisions can lead to total data loss. Ibrahim and Riyan teamed up to build a platform that neutralizes these threats."
-
----
-
-## Part 2: Technical Intelligence (Riyan)
-**Riyan:** "To address these threats, I developed the predictive core of the platform. First, the **Phishing Detection Engine**. Traditional blacklists are reactive, so I trained a **LightGBM Machine Learning model** on 164,000+ emails. It extracts 17 custom signals to detect malicious intent with 98.31% accuracy.
-
-Secondly, I built the **Password Shield**. Instead of just checking length, it uses **k-anonymity** to securely check passwords against 12.5 billion breached records. The password never leaves the user's device, ensuring total privacy while providing real-world crack-time estimations."
+The core problem we are solving is the 'Human Vulnerability Factor'. Despite advanced firewalls, social engineering, phishing, and weak passwords remain the primary entry points for breaches. Users lack an accessible, unified platform to test their security posture and get immediate guidance. To solve this, Riyan and I developed CYZEN—a complete ecosystem that brings enterprise-grade intelligence to the everyday user."
 
 ---
 
-## Part 3: Emergency Kit & AI Expert (Ibrahim)
-**Ibrahim:** "While Riyan built the analysis engines, I architected the **Emergency Response Kit** to bridge the 'Panic Gap.' Using the **Llama-3.3-70B model via Groq’s LPU hardware**, I created an AI assistant that provides immediate, safety-validated action plans during crises. 
+## Part 2: Web App Architecture & UI/UX Design (Ibrahim)
+**Ibrahim:** "My primary focus was building the foundation, architecture, and user experience of the platform. I developed the entire frontend web application using React and a modern 'Luxury-Tech' glassmorphism design system to make complex security tools feel approachable and premium.
 
-I also integrated the **AI Intelligence Chat** for real-time technical support and a **Security Posture Analyzer** that evaluates a user's digital hygiene and provides a quantifiable risk score."
-
----
-
-## Part 4: Community Blog & Intelligence (Riyan & Ibrahim)
-**Riyan:** "We also believe in crowdsourced intelligence. I engineered the core **Community Blog** module. This is a situational awareness hub where experts can post deep-dives into malware and the latest scam tactics, ensuring our users are always one step ahead of attackers."
-
-**Ibrahim:** "I then took the core blog system and integrated it with **Supabase** for real-time data sync. I also altered and refined the entire **UI/UX design**, implementing a 'Luxury-Tech' liquid-glass aesthetic that makes these complex tools approachable and engaging for everyday users."
+For user management, I integrated secure OAuth Authentication via Supabase, ensuring user data is protected. Additionally, I engineered the 'CYZEN AI Chatbot'. By integrating the Groq API and the ultra-fast Llama-3.3-70B model, I built a real-time, context-aware cybersecurity expert that can dynamically generate process flowcharts, provide real-world external tool links, and guide users through panic scenarios during a cyber-attack."
 
 ---
 
-## Part 5: Deployment & Conclusion (Ibrahim)
-**Ibrahim:** "Finally, I deployed the entire platform using a **serverless architecture on Netlify**. By using advanced client-side mocking and API interceptors, we ensured the platform has 100% reliability and sub-second load times without the need for expensive backend servers.
+## Part 3: Core Security Tools & Intelligence (Riyan)
+**Riyan:** "While Ibrahim built the platform architecture, my focus was on the core intelligence and security tools that power CYZEN. I developed and integrated four main analysis engines:
 
-In conclusion, CYZEN is not just a website; it’s a complete cybersecurity ecosystem. It takes the advanced data science models developed by Riyan and places them into a high-performance, accessible interface that protects users in real-time. Thank you."
+First, the **Phishing Detection Scanner**, where I utilized LightGBM machine learning training on a dataset of over 164,000 emails to detect malicious intent by analyzing 17 custom signals.
+Second, the **Password Shield**, which uses secure k-anonymity hashing to check passwords against 12.5 billion known breached records without ever exposing the user's password.
+Third, the **Deepfake Studio**, an educational tool demonstrating how AI manipulates media, teaching users how to spot synthetic audio and video.
+And finally, the **Knowledge Assessment Quiz**, which dynamically tests users on security concepts to validate their learning."
+
+---
+
+## Part 4: Community Blog & Training Integration (Riyan & Ibrahim)
+**Riyan:** "Beyond the interactive tools, education requires detailed, structured content. I engineered the **Community Blog** module and structured our training materials. We successfully compiled and formatted 47 detailed cybersecurity articles—covering everything from network security to advanced cryptography—providing users with a vast, categorized library of threat intelligence."
+
+**Ibrahim:** "Building upon Riyan's blog structure, I integrated the content into the UI with a high-performance layout. I designed the responsive grid systems, animated statistical counters, and connected the blog to our Supabase backend so that the community can seamlessly contribute and publish their own articles in real-time."
+
+---
+
+## Part 5: Conclusion & Demo (Ibrahim)
+**Ibrahim:** "To summarize, CYZEN represents the convergence of machine learning, modern web development, and AI integration. Riyan’s security engines and intelligence models provide the backbone, while the web architecture and AI chatbot I developed provide an interactive, accessible face for the platform. We are now ready to demonstrate the live application. Thank you."
